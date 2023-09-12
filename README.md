@@ -1,0 +1,1 @@
+# richMinime
