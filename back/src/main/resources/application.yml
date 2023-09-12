@@ -1,0 +1,95 @@
+management:
+  health:
+    diskspace:
+      enabled: "true"
+    default:
+      enabled: "true"
+    db:
+      enabled: "true"
+  servlet:
+    context-path: /manage
+spa:
+  default-file: /dist/index.html
+spring:
+  web:
+    resources:
+      static-locations: classpath:/dist/
+      add-mappings: "false"
+jpa:
+  properties:
+    hibernate:
+      dialect: org.hibernate.dialect.H2Dialect
+      format_sql: 'true'
+      show_sql: 'true'
+  hibernate:
+    ddl-auto: create
+  database-platform: org.hibernate.dialect.H2Dialect
+  datasource:
+    driverClassName: org.h2.Driver
+    password: ''
+    username: sa
+    url: jdbc:h2:~/test;
+  h2:
+    console:
+      path: /h2-console
+      enabled: 'true'
+  profiles:
+    include: secure
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: "true"
+  mvc:
+    throw-exception-if-no-handler-found: "true"
+  devtools:
+    livereload:
+      enabled: "true"
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username:
+    password:
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+  redis:
+    host: localhost
+    port: 6379
+logging:
+  level:
+    org:
+      org.hibernate.SQL: DEBUG
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+      org.springframework.boot: DEBUG
+      org.springframework.security: DEBUG
+      org.springframework.web: DEBUG
+      apache:
+        tiles: INFO
+    root: INFO
+    com:
+      samsung:
+        security: DEBUG
+  file:
+    name: ./ssafy-web.log
+server:
+  servlet:
+    encoding:
+      enabled: "true"
+      force: "true"
+      charset: UTF-8
+    contextPath: /api
+  address: localhost
+  port: "8080"
+  compression:
+    enabled: "true"
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
+build:
+  date: "@build.date@"
+jwt:
+  expiration: '1296000000'
+  cookieName: cookie
+  secret: dyAeHubOOc8KaOfYB6XEQoEj1QzRlVgtjNL8PYs1A1tymZvvqkcEU7L1imkKHeDa
+springfox:
+  documentation:
+    swagger:
+      use-model-v3: 'false'
