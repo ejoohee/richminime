@@ -1,0 +1,6 @@
+금융결재원 API를 이용한 거래내역 조회 예시 https://data-make.tistory.com/434
+--> 사업자번호가 따로 없으면 힘듦
+
+CODE F
+https://codef.io/?utm_source=google&utm_medium=cpc&utm_campaign=g_sa_codef_api&utm_content=g_sa_codefapi_public&utm_term=%EC%BD%94%EB%93%9C%EC%97%90%ED%94%84&gclid=Cj0KCQjw9MCnBhCYARIsAB1WQVXGdCWOMxPDR6bv_-kiLrPtkuzQjHLDyV9lNg4oqrElTEMEtmUQ-RkaAlkzEALw_wcB
+3개월 무료 금융API 
