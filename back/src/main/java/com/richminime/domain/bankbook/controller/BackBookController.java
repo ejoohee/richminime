@@ -1,5 +1,6 @@
 package com.richminime.domain.bankbook.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class BackBookController {
 
     @GetMapping
-    public String test1 (){
+    public ResponseEntity<String> test1 (){
 
-        return "성공";
+        return ResponseEntity.ok("ㅇㅇㅇ");
     }
 }
