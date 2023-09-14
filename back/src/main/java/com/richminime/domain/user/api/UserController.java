@@ -1,5 +1,7 @@
 package com.richminime.domain.user.api;
 
+import com.richminime.domain.user.dto.request.AddUserRequest;
+import com.richminime.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +10,19 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
+
+    private final UserService userService;
+
+    /**
+     * 회원 가입
+     * @param addUserRequest
+     * @return
+     */
+    @PostMapping
+    public ResponseEntity<Void> addUser(@RequestBody AddUserRequest addUserRequest) {
+        userService.addUser(addUserRequest);
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/check-login-email")
     public ResponseEntity<Void> checkEmail(@RequestParam(name = "email") String email) {

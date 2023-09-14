@@ -30,7 +30,6 @@ public class User {
     @Column(length = 20, nullable = false)
     private String nickname;
 
-
     @Column(columnDefinition = "long default 0")
     private long balance;
 
