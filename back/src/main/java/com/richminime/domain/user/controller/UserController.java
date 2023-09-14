@@ -1,4 +1,4 @@
-package com.richminime.domain.user.api;
+package com.richminime.domain.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,5 +16,5 @@ public class UserController {
     public ResponseEntity<Boolean> test() {
         return ResponseEntity.ok(true);
     }
-    //test test test test test
+    //test test test test test tetet
 }
