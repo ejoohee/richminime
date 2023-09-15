@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-//@Tag(name ="clothing", description = "clothing domain apis")
 @RequiredArgsConstructor
-@RequestMapping("/api/clothing")
+@RequestMapping("/clothing")
 @RestController
 public class ClothingController {
     private final ClothingService clothingService;
