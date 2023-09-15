@@ -1,6 +1,8 @@
 package com.richminime.domain.user.service;
 
+import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.dto.request.AddUserRequest;
+import com.richminime.domain.user.dto.response.CheckEmailResponse;
 import com.richminime.domain.user.exception.UserExceptionMessage;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.OrganizationCode;
@@ -40,6 +42,15 @@ public class UserServiceImpl implements UserService {
         put("수협카드", OrganizationCode.SUHYUP_CARD);
         put("제주카드", OrganizationCode.JEJU_CARD);
     }};
+
+    @Override
+    public CheckEmailResponse checkEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        return CheckEmailResponse.builder()
+                // 존재하면 false, 존재하지 않으면 true 반환
+                .success(!user.isPresent())
+                .build();
+    }
 
     @Override
     public void addUser(AddUserRequest addUserRequest) {
