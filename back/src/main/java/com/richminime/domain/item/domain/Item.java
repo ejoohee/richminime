@@ -1,42 +1,44 @@
-package com.richminime.domain.item.entity;
+package com.richminime.domain.item.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
-@Builder
+@SuperBuilder
+@DynamicInsert
 @NoArgsConstructor
 @AllArgsConstructor
 public class Item {
-    // itemId, itemName, itemType, itemImg, itemInfo, price
 
+    // itemId, itemName, itemType, itemImg, itemInfo, price\
     @Id @GeneratedValue
+    @Column(name = "item_id")
     private Long itemId;
 
     @Column(name = "item_name", length = 50, nullable = false)
     private String itemName;
 
     @Column(name = "item_type", columnDefinition = "varchar(50)", nullable = false)
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private ItemType itemType;
 
-    @Column(name = "item_img", length = 250, nullable = false)
+    @Column(name = "item_img", length = 255, nullable = false)
     private String itemImg;
 
-    @Column(name = "item_info", length = 250)
+    @Column(name = "item_info", length = 255, nullable = true)
     private String itemInfo;
 
-    @Column(name = "price", columnDefinition = "BIGINT DEFAULT 0")
+    @Column(name = "price", nullable = false)
     private Long price;
 
-    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
-    private List<UserItem> userItems;
+
+
+
 
 }
