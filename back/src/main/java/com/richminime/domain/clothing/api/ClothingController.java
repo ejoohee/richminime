@@ -2,6 +2,7 @@ package com.richminime.domain.clothing.api;
 
 
 import com.richminime.domain.clothing.constant.ClothingResponseMessage;
+import com.richminime.domain.clothing.constant.ClothingType;
 import com.richminime.domain.clothing.dto.ClothingRequestDto.ClothingCreateRequestDto;
 import com.richminime.domain.clothing.dto.ClothingRequestDto.ClothingUpdateRequestDto;
 import com.richminime.domain.clothing.service.ClothingService;
@@ -43,5 +44,24 @@ public class ClothingController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 ClothingResponseMessage.DELETE_CLOTHING.getMessage()
         ));
+    }
+
+    @GetMapping("/{clothingId}")
+    public ResponseEntity<ResponseDto<?>> findOneClothing(@PathVariable Long clothingId) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.create(
+                        ClothingResponseMessage.FIND_ONE_CLOTHING.getMessage(),
+                        clothingService.findOneClothing(clothingId)
+                )
+        );
+    }
+
+    @GetMapping("")
+    public ResponseEntity<ResponseDto<?>> findAllClothingByType(@RequestParam(required = false) ClothingType clothingType) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.create(ClothingResponseMessage.FIND_ALL_CLOTHING.getMessage(),
+                        clothingService.findAllClothingByType(clothingType)
+                )
+        );
     }
 }
