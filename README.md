@@ -1,1 +1,1 @@
-# richMinime test
+# richMinime testt
