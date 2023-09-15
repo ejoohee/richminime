@@ -1,8 +1,14 @@
 package com.richminime.domain.user.api;
 
 import com.richminime.domain.user.dto.request.AddUserRequest;
+import com.richminime.domain.user.dto.request.GenerateConnectedIdRequest;
+import com.richminime.domain.user.dto.request.LoginRequest;
+import com.richminime.domain.user.dto.response.CheckEmailResponse;
+import com.richminime.domain.user.dto.response.GenerateConnectedIdResponse;
+import com.richminime.domain.user.dto.response.LoginResponse;
 import com.richminime.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +30,14 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 이메일 중복 검사
+     * @param email
+     * @return
+     */
     @GetMapping("/check-login-email")
-    public ResponseEntity<Void> checkEmail(@RequestParam(name = "email") String email) {
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<CheckEmailResponse> checkEmail(@RequestParam(name = "email") String email) {
+        return ResponseEntity.ok().body(userService.checkEmail(email));
     }
 
     @PostMapping("/send-email-code")
@@ -43,9 +53,8 @@ public class UserController {
     }
 
     @PostMapping("/connected-id")
-    public ResponseEntity<Void> generateConnectedId(@RequestParam(name = "email") String email) {
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<GenerateConnectedIdResponse> generateConnectedId(@RequestBody GenerateConnectedIdRequest generateConnectedIdRequest) {
+//        return ResponseEntity.status(HttpStatus.CREATED).body(userService.generateConnectedId(generateConnectedIdRequest));
     }
 
     @PostMapping("/password")
@@ -55,9 +64,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestParam(name = "email") String email) {
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+//        LoginResponse loginResponse = userService.login(loginRequest);
+//        return ResponseEntity.ok().body(loginResponse);
     }
 
     @PostMapping("/logout")
