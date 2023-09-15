@@ -16,7 +16,6 @@ spring:
       static-locations: classpath:/dist/
       add-mappings: "false"
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
         format_sql: 'true'
