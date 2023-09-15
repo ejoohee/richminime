@@ -1,23 +1,28 @@
 package com.richminime.domain.user.service;
 
 import com.richminime.domain.user.dto.request.AddUserRequest;
+import com.richminime.domain.user.exception.UserExceptionMessage;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.OrganizationCode;
+import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final PasswordEncoder passwordEncoder;
+    private final JWTUtil jwtUtil;
+
     private final UserRepository userRepository;
-    private Map<String, String> connectedIdMap = new HashMap<>();
+    private Map<UUID, String> connectedIdMap = new HashMap<>();
     private Map<String, OrganizationCode> organizationCodeMap = new HashMap<>() {{
         put("KB카드", OrganizationCode.KB_CARD);
         put("현대카드", OrganizationCode.HYNDAI_CARD);
@@ -38,9 +43,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addUser(AddUserRequest addUserRequest) {
-        String connectedId = connectedIdMap.get(addUserRequest.getEmail());
+        // uuid에 해당하는 커넥티드 아이디 가져오기
+        String connectedId = connectedIdMap.remove(addUserRequest.getUuid());
+        if(connectedId == null) throw new NoSuchElementException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
         String organizationCode = organizationCodeMap.get(addUserRequest.getOrganization()).getCode();
+        // 패스워드 암호화
+        addUserRequest.setPassword(passwordEncoder.encode(addUserRequest.getPassword()));
         userRepository.save(addUserRequest.toEntity(connectedId, organizationCode));
+    }
+
+    /**
+     * 현재 로그인한 회원 아이디(이메일)을 반환
+     */
+    private String getLoginId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails principal = (UserDetails) authentication.getPrincipal();
+        return principal.getUsername();
     }
 
 }
