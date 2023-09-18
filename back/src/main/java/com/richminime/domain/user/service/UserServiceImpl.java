@@ -2,9 +2,14 @@ package com.richminime.domain.user.service;
 
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.dto.request.AddUserRequest;
+import com.richminime.domain.user.dto.request.GenerateConnectedIdRequest;
+import com.richminime.domain.user.dto.request.LoginRequest;
 import com.richminime.domain.user.dto.response.CheckEmailResponse;
+import com.richminime.domain.user.dto.response.GenerateConnectedIdResponse;
+import com.richminime.domain.user.dto.response.LoginResponse;
 import com.richminime.domain.user.exception.UserExceptionMessage;
 import com.richminime.domain.user.repository.UserRepository;
+import com.richminime.global.common.codef.CodefWebClient;
 import com.richminime.global.common.codef.OrganizationCode;
 import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +19,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 
 @Service
@@ -22,6 +33,7 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
+    private final CodefWebClient codefWebClient;
 
     private final UserRepository userRepository;
     private Map<UUID, String> connectedIdMap = new HashMap<>();
@@ -53,6 +65,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public GenerateConnectedIdResponse generateConnectedId(GenerateConnectedIdRequest generateConnectedIdRequest) {
+        String organization = organizationCodeMap.get(generateConnectedIdRequest.getOrganization()).getCode();
+        String id = generateConnectedIdRequest.getId();
+        String password = generateConnectedIdRequest.getPassword();
+        //외부 API 호출
+        try {
+            String connectedId = codefWebClient.createConnectedId(organization, id, password);
+            // uuid 생성
+            UUID uuid = UUID.randomUUID();
+            // uuid를 키로 생성된 커넥티드 아이디 저장
+            connectedIdMap.put(uuid, connectedId);
+            return GenerateConnectedIdResponse.builder()
+                    .uuid(uuid)
+                    .build();
+        } catch (NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalBlockSizeException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        } catch (BadPaddingException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void addUser(AddUserRequest addUserRequest) {
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = connectedIdMap.remove(addUserRequest.getUuid());
@@ -61,6 +103,26 @@ public class UserServiceImpl implements UserService {
         // 패스워드 암호화
         addUserRequest.setPassword(passwordEncoder.encode(addUserRequest.getPassword()));
         userRepository.save(addUserRequest.toEntity(connectedId, organizationCode));
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest loginRequest) {
+        // 이메일 인증 후 로그인 가능하게 변경해야 함
+        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new NoSuchElementException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        // 패스워드 일치 비교
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
+            throw new IllegalArgumentException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
+        // 로그인 성공
+        // 토큰 생성
+        String accessToken = jwtUtil.generateAccessToken(loginRequest.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(loginRequest.getEmail());
+        // Redis에 refresh 토큰 저장 필요
+
+        return LoginResponse.builder()
+                .accessToken(accessToken)
+                .nickname(user.getNickname())
+                .balance(user.getBalance())
+                .build();
     }
 
     /**
