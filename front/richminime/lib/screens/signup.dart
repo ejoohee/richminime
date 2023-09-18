@@ -75,7 +75,9 @@ class _SignUpState extends State<SignUp> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const SignUp2()));
+                            builder: (context) => SignUp2(
+                                  bank: _selectBank,
+                                )));
                   },
                   child: Container(
                     width: 100,
