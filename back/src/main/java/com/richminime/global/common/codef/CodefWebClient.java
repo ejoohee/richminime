@@ -45,6 +45,7 @@ public class CodefWebClient {
     // 스케줄링으로 만료되기 전 갱신해주는 작업 필요할듯?
     private void generateAccessToken(){
         // 클라이언트아이디, 시크릿코드 Base64 인코딩
+        // 헤더에 추가
         WebClient oAuthWebClient = WebClient.builder()
                 .baseUrl("https://oauth.codef.io")
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic MjFjZTRiYTgtNTUzNy00NTRmLTg3YmUtN2RhYWQyOGVjYjFmOjA0MTZmODdjLWI4YTYtNGJjMS05ZDM2LTJlYTgwOTVlMTNjNA==") // 예시: Authorization 헤더 추가
