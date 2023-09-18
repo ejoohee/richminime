@@ -63,6 +63,7 @@ public class CodefWebClient {
     // 호출하는 api를 메서드로 설정
     public String createConnectedId(String organization, String id, String password) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         CreateConnectedIdRequest request = new CreateConnectedIdRequest();
+        // 등록할 계정 정보
         AccountDto account = AccountDto.builder()
                 .organization(organization)
                 .id(id)
