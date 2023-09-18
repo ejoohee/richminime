@@ -82,6 +82,8 @@ tasks.named('test') {
 sonar {
 	properties {
 		property "sonar.host.url", "http://sonarqube.richminime.site/"
+		property "sonar.login", "admin"
+		property "sonar.password", "richminime"		
 	}
 }
 
