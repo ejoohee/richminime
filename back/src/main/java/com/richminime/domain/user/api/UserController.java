@@ -54,7 +54,7 @@ public class UserController {
 
     @PostMapping("/connected-id")
     public ResponseEntity<GenerateConnectedIdResponse> generateConnectedId(@RequestBody GenerateConnectedIdRequest generateConnectedIdRequest) {
-//        return ResponseEntity.status(HttpStatus.CREATED).body(userService.generateConnectedId(generateConnectedIdRequest));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.generateConnectedId(generateConnectedIdRequest));
     }
 
     @PostMapping("/password")
@@ -63,10 +63,15 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 회원 로그인
+     * @param loginRequest
+     * @return
+     */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-//        LoginResponse loginResponse = userService.login(loginRequest);
-//        return ResponseEntity.ok().body(loginResponse);
+        LoginResponse loginResponse = userService.login(loginRequest);
+        return ResponseEntity.ok().body(loginResponse);
     }
 
     @PostMapping("/logout")
