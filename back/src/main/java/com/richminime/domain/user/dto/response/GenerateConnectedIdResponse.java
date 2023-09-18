@@ -5,13 +5,16 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+@Getter
 public class GenerateConnectedIdResponse {
 
-    UUID uuid;
+    private UUID uuid;
+    private String message;
 
     @Builder
-    public GenerateConnectedIdResponse(UUID uuid) {
+    public GenerateConnectedIdResponse(UUID uuid, String message) {
         this.uuid = uuid;
+        this.message = message;
     }
 
 }
