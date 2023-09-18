@@ -18,8 +18,10 @@ public interface UserItemService {
     // 5-2. 소유한 테마 벗기기
 
 
+    // 소유하지 않은 테마 구매하기
+    Long addUserItem(Long itemId, String token);
 
-    // 6. 소유한 테마 판메하기
+    // 6. 소유한 테마 판매하기
 
 
     // 2. 소유한 테마 카테고리별 조회(확장)
