@@ -63,6 +63,11 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 회원 로그인
+     * @param loginRequest
+     * @return
+     */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         LoginResponse loginResponse = userService.login(loginRequest);

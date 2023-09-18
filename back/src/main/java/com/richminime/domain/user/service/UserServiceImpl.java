@@ -108,6 +108,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         // 이메일 인증 후 로그인 가능하게 변경해야 함
+        // 해당 이메일 아이디의 회원이 존재하지 않으면 예외처리
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new NoSuchElementException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
         // 패스워드 일치 비교
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
