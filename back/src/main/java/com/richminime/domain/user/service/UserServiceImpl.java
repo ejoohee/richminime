@@ -18,10 +18,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -29,6 +31,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
@@ -90,6 +93,8 @@ public class UserServiceImpl implements UserService {
         } catch (BadPaddingException e) {
             throw new RuntimeException(e);
         } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }

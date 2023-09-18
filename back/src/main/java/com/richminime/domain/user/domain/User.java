@@ -19,7 +19,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Integer userId;
+    private Long userId;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -60,5 +60,8 @@ public class User {
         this.birthDate = birthDate;
     }
 
+    public void updateBalance(long balance) {
+        this.balance = balance;
+    }
 
 }

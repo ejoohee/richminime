@@ -3,11 +3,9 @@ package com.richminime.global.common.codef;
 import com.richminime.global.common.codef.dto.request.AccountDto;
 import com.richminime.global.common.codef.dto.request.CreateConnectedIdRequest;
 import com.richminime.global.common.codef.dto.response.CodefOAuthResponse;
-import com.richminime.global.common.codef.dto.response.CreateConnectedIdResponse;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.util.rsa.RSAUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -17,6 +15,11 @@ import reactor.core.publisher.Mono;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.json.Json;
+import javax.json.JsonObject;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -61,7 +64,7 @@ public class CodefWebClient {
     }
 
     // 호출하는 api를 메서드로 설정
-    public String createConnectedId(String organization, String id, String password) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
+    public String createConnectedId(String organization, String id, String password) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException, UnsupportedEncodingException {
         CreateConnectedIdRequest request = new CreateConnectedIdRequest();
         // 등록할 계정 정보
         AccountDto account = AccountDto.builder()
@@ -77,15 +80,19 @@ public class CodefWebClient {
                 .body(BodyInserters.fromValue(request))  // 폼 데이터 전송
                 .retrieve()
                 .bodyToMono(String.class);
+        // URL 디코드
+        String decodedResponse = URLDecoder.decode(response.block(), "UTF-8");
+        log.info("response------------------->{}", decodedResponse);
         // json 파싱
-        CreateConnectedIdResponse createConnectedIdResponse = (CreateConnectedIdResponse) parseDataFromJson(response.block());
-        log.info("connectedId------------------->{}", createConnectedIdResponse.getConnectedId());
-        return createConnectedIdResponse.getConnectedId();
+        String connectedId = parseConnectedIdFromJson(decodedResponse);
+        log.info("connectedId------------------->{}", connectedId);
+        return connectedId;
     }
 
-    public Object parseDataFromJson(String jsonResponse) {
-        JSONObject jsonObject = new JSONObject(jsonResponse);
-        return jsonObject.get("data");
+    public String parseConnectedIdFromJson(String jsonResponse) {
+        JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
+//        JSONObject jsonObject = new JSONObject(jsonResponse);
+        return jsonObject.getJsonObject("data").getString("connectedId");
     }
 
 }
