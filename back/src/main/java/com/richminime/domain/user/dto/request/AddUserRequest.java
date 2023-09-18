@@ -35,6 +35,9 @@ public class AddUserRequest {
                 .organizationCode(organizationCode)
                 .cardNumber(this.cardNumber)
                 .birthDate(this.birthDate)
+                // 관리자는 별도로 생성할 예정
+                // 기본값 ROLE_USER
+                .userType("ROLE_USER")
                 .build();
     }
 
