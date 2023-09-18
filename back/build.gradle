@@ -79,7 +79,7 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-sonarqube {
+sonar {
 	properties {
 		property "sonar.host.url", "http://richminime.site/sonarqube"
 	}
