@@ -4,17 +4,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Getter
 @NoArgsConstructor
-public class GenerateConnectedIdResponse {
+public class CheckEmailResDto {
 
-    private UUID uuid;
+    private Boolean success;
 
     @Builder
-    public GenerateConnectedIdResponse(UUID uuid) {
-        this.uuid = uuid;
+    public CheckEmailResDto(Boolean success) {
+        this.success = success;
     }
 
 }
