@@ -1,14 +1,13 @@
 package com.richminime.domain.item.domain;
 
+import com.richminime.domain.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.catalina.User;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Builder
 @DynamicInsert
@@ -24,10 +23,12 @@ public class UserItem {
     @Column(name = "user_item_id")
     private Long userItemId;
 
-    @OneToMany(mappedBy = "userItem" , fetch = FetchType.LAZY)
-    private List<Item> item;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id")
+    private Item item;
 
-    @OneToOne(mappedBy = "")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     
