@@ -1,21 +1,15 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:richminime/screens/sign_up.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:richminime/screens/sign_up4.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class SignUp3 extends StatefulWidget {
+  final String code;
+  const SignUp3({required this.code, Key? key}) : super(key: key);
 
   @override
-  State<Login> createState() => _LoginState();
+  State<SignUp3> createState() => _SignUp3State();
 }
 
-onSignUpButtonTap() async {
-  final url = Uri.parse("https://google.com");
-  await launchUrl(url);
-}
-
-class _LoginState extends State<Login> {
+class _SignUp3State extends State<SignUp3> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,9 +24,9 @@ class _LoginState extends State<Login> {
             child: Container(
               alignment: Alignment.bottomCenter,
               child: Text(
-                '로그인하기',
+                '카드사 정보를 입력해주세요',
                 style: TextStyle(
-                  fontSize: 50,
+                  fontSize: 25,
                   fontWeight: FontWeight.w900,
                   color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
@@ -53,7 +47,7 @@ class _LoginState extends State<Login> {
                         border: InputBorder.none,
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        labelText: '이메일',
+                        labelText: '아이디',
                         fillColor: Color(0xFFFFFDFD),
                         filled: true,
                       ),
@@ -75,29 +69,13 @@ class _LoginState extends State<Login> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         GestureDetector(
-                          onTap: onSignUpButtonTap,
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: 110,
-                            height: 50,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFFBEBE),
-                            ),
-                            child: const Text(
-                              "로그인",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
                           onTap: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const SignUp()));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SignUp4(),
+                              ),
+                            );
                           },
                           child: Container(
                             alignment: Alignment.center,
@@ -105,10 +83,9 @@ class _LoginState extends State<Login> {
                             height: 50,
                             decoration: const BoxDecoration(
                               color: Color(0xFFFFBEBE),
-                              borderRadius: BorderRadius.zero,
                             ),
                             child: const Text(
-                              "회원가입",
+                              "다음",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 15,

@@ -1,21 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:richminime/screens/sign_up.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class SignUp4 extends StatefulWidget {
+  const SignUp4({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<SignUp4> createState() => _SignUp4State();
 }
 
-onSignUpButtonTap() async {
-  final url = Uri.parse("https://google.com");
-  await launchUrl(url);
-}
+class _SignUp4State extends State<SignUp4> {
+  DateTime? _selectedDate;
 
-class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,9 +25,9 @@ class _LoginState extends State<Login> {
             child: Container(
               alignment: Alignment.bottomCenter,
               child: Text(
-                '로그인하기',
+                '회원가입',
                 style: TextStyle(
-                  fontSize: 50,
+                  fontSize: 25,
                   fontWeight: FontWeight.w900,
                   color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
@@ -41,7 +36,7 @@ class _LoginState extends State<Login> {
           ),
           const SizedBox(height: 20),
           Flexible(
-            flex: 2,
+            flex: 5,
             child: Container(
               alignment: Alignment.topCenter,
               child: SizedBox(
@@ -70,12 +65,23 @@ class _LoginState extends State<Login> {
                         filled: true,
                       ),
                     ),
+                    const SizedBox(height: 10),
+                    const TextField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        labelText: '닉네임',
+                        fillColor: Color(0xFFFFFDFD),
+                        filled: true,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         GestureDetector(
-                          onTap: onSignUpButtonTap,
                           child: Container(
                             alignment: Alignment.center,
                             width: 110,
@@ -84,31 +90,7 @@ class _LoginState extends State<Login> {
                               color: Color(0xFFFFBEBE),
                             ),
                             child: const Text(
-                              "로그인",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const SignUp()));
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: 110,
-                            height: 50,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFFBEBE),
-                              borderRadius: BorderRadius.zero,
-                            ),
-                            child: const Text(
-                              "회원가입",
+                              "다음",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 15,

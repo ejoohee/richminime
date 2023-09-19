@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:richminime/screens/signup2.dart';
+import 'package:richminime/screens/sign_up2.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -73,11 +73,13 @@ class _SignUpState extends State<SignUp> {
               ? GestureDetector(
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SignUp2(
-                                  bank: _selectBank,
-                                )));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SignUp2(
+                          bank: _selectBank,
+                        ),
+                      ),
+                    );
                   },
                   child: Container(
                     width: 100,

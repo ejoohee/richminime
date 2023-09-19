@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:richminime/screens/sign_up3.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SignUp2 extends StatefulWidget {
@@ -124,17 +125,29 @@ class _SignUp2State extends State<SignUp2> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Container(
-                    alignment: Alignment.center,
-                    width: 100,
-                    height: 50,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFFBEBE),
-                    ),
-                    child: const Text(
-                      '예',
-                      style: TextStyle(
-                        color: Colors.white,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SignUp3(
+                            code: bankCode,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 100,
+                      height: 50,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFFBEBE),
+                      ),
+                      child: const Text(
+                        '예',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
