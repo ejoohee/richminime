@@ -1,12 +1,13 @@
 package com.richminime.domain.user.api;
 
-import com.richminime.domain.user.dto.request.AddUserRequest;
-import com.richminime.domain.user.dto.request.GenerateConnectedIdRequest;
-import com.richminime.domain.user.dto.request.LoginRequest;
-import com.richminime.domain.user.dto.response.CheckEmailResponse;
-import com.richminime.domain.user.dto.response.GenerateConnectedIdResponse;
-import com.richminime.domain.user.dto.response.LoginResponse;
+import com.richminime.domain.user.dto.request.AddUserReqDto;
+import com.richminime.domain.user.dto.request.GenerateConnectedIdReqDto;
+import com.richminime.domain.user.dto.request.LoginReqDto;
+import com.richminime.domain.user.dto.response.CheckEmailResDto;
+import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
+import com.richminime.domain.user.dto.response.LoginResDto;
 import com.richminime.domain.user.service.UserService;
+import com.richminime.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class UserController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<Void> addUser(@RequestBody AddUserRequest addUserRequest) {
+    public ResponseEntity<ResponseDto<Void>> addUser(@RequestBody AddUserReqDto addUserRequest) {
         userService.addUser(addUserRequest);
         return ResponseEntity.ok().build();
     }
@@ -36,7 +37,8 @@ public class UserController {
      * @return
      */
     @GetMapping("/check-login-email")
-    public ResponseEntity<CheckEmailResponse> checkEmail(@RequestParam(name = "email") String email) {
+    public ResponseEntity<CheckEmailResDto> checkEmail(@RequestParam(name = "email") String email) {
+
         return ResponseEntity.ok().body(userService.checkEmail(email));
     }
 
@@ -53,7 +55,7 @@ public class UserController {
     }
 
     @PostMapping("/connected-id")
-    public ResponseEntity<GenerateConnectedIdResponse> generateConnectedId(@RequestBody GenerateConnectedIdRequest generateConnectedIdRequest) {
+    public ResponseEntity<GenerateConnectedIdResDto> generateConnectedId(@RequestBody GenerateConnectedIdReqDto generateConnectedIdRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.generateConnectedId(generateConnectedIdRequest));
     }
 
@@ -69,14 +71,14 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        LoginResponse loginResponse = userService.login(loginRequest);
+    public ResponseEntity<LoginResDto> login(@RequestBody LoginReqDto loginRequest) {
+        LoginResDto loginResponse = userService.login(loginRequest);
         return ResponseEntity.ok().body(loginResponse);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestParam(name = "email") String email) {
-
+    public ResponseEntity<Void> logout(@RequestParam(name = "email") String email, @RequestHeader("Authorization") String accessToken) {
+        userService.logout(email, accessToken);
         return ResponseEntity.ok().build();
     }
 
@@ -133,7 +135,5 @@ public class UserController {
 
         return ResponseEntity.ok().build();
     }
-
-
 
 }

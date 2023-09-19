@@ -1,20 +1,22 @@
 package com.richminime.domain.user.service;
 
-import com.richminime.domain.user.dto.request.AddUserRequest;
-import com.richminime.domain.user.dto.request.GenerateConnectedIdRequest;
-import com.richminime.domain.user.dto.request.LoginRequest;
-import com.richminime.domain.user.dto.response.CheckEmailResponse;
-import com.richminime.domain.user.dto.response.GenerateConnectedIdResponse;
-import com.richminime.domain.user.dto.response.LoginResponse;
+import com.richminime.domain.user.dto.request.AddUserReqDto;
+import com.richminime.domain.user.dto.request.GenerateConnectedIdReqDto;
+import com.richminime.domain.user.dto.request.LoginReqDto;
+import com.richminime.domain.user.dto.response.CheckEmailResDto;
+import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
+import com.richminime.domain.user.dto.response.LoginResDto;
 
 public interface UserService {
 
-    void addUser(AddUserRequest addUserRequest);
+    void addUser(AddUserReqDto addUserRequest);
 
-    LoginResponse login(LoginRequest loginRequest);
+    LoginResDto login(LoginReqDto loginRequest);
 
-    CheckEmailResponse checkEmail(String email);
+    CheckEmailResDto checkEmail(String email);
 
-    GenerateConnectedIdResponse generateConnectedId(GenerateConnectedIdRequest generateConnectedIdRequest);
+    GenerateConnectedIdResDto generateConnectedId(GenerateConnectedIdReqDto generateConnectedIdRequest);
+
+    void logout(String email, String accessToken);
 
 }
