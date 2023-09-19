@@ -1,5 +1,6 @@
 package com.richminime.domain.user.service;
 
+import com.richminime.domain.user.domain.RefreshToken;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.dto.request.AddUserRequest;
 import com.richminime.domain.user.dto.request.GenerateConnectedIdRequest;
@@ -8,9 +9,11 @@ import com.richminime.domain.user.dto.response.CheckEmailResponse;
 import com.richminime.domain.user.dto.response.GenerateConnectedIdResponse;
 import com.richminime.domain.user.dto.response.LoginResponse;
 import com.richminime.domain.user.exception.UserExceptionMessage;
+import com.richminime.domain.user.repository.RefreshTokenRepository;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
 import com.richminime.global.common.codef.OrganizationCode;
+import com.richminime.global.common.jwt.JwtExpirationEnums;
 import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -39,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private final CodefWebClient codefWebClient;
 
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private Map<UUID, String> connectedIdMap = new HashMap<>();
     private Map<String, OrganizationCode> organizationCodeMap = new HashMap<>() {{
         put("KB카드", OrganizationCode.KB_CARD);
@@ -58,6 +62,7 @@ public class UserServiceImpl implements UserService {
         put("제주카드", OrganizationCode.JEJU_CARD);
     }};
 
+    @Transactional(readOnly = true)
     @Override
     public CheckEmailResponse checkEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
@@ -123,7 +128,12 @@ public class UserServiceImpl implements UserService {
         String accessToken = jwtUtil.generateAccessToken(loginRequest.getEmail());
         String refreshToken = jwtUtil.generateRefreshToken(loginRequest.getEmail());
         // Redis에 refresh 토큰 저장 필요
-
+        // 회원의 이메일 아이디를 키로 저장
+        refreshTokenRepository.save(RefreshToken.builder()
+                        .email(user.getEmail())
+                        .refreshToken(refreshToken)
+                        .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
+                .build());
         return LoginResponse.builder()
                 .accessToken(accessToken)
                 .nickname(user.getNickname())
