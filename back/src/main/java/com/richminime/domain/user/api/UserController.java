@@ -1,12 +1,14 @@
 package com.richminime.domain.user.api;
 
 import com.richminime.domain.user.dto.request.AddUserReqDto;
+import com.richminime.domain.user.dto.request.CheckEmailCodeReqDto;
 import com.richminime.domain.user.dto.request.GenerateConnectedIdReqDto;
 import com.richminime.domain.user.dto.request.LoginReqDto;
 import com.richminime.domain.user.dto.response.CheckEmailResDto;
 import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
 import com.richminime.domain.user.dto.response.LoginResDto;
 import com.richminime.domain.user.service.UserService;
+import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +30,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<ResponseDto<Void>> addUser(@RequestBody AddUserReqDto addUserRequest) {
         userService.addUser(addUserRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /**
@@ -38,20 +40,18 @@ public class UserController {
      */
     @GetMapping("/check-login-email")
     public ResponseEntity<CheckEmailResDto> checkEmail(@RequestParam(name = "email") String email) {
-
         return ResponseEntity.ok().body(userService.checkEmail(email));
     }
 
     @PostMapping("/send-email-code")
     public ResponseEntity<Void> sendEmailCode(@RequestParam(name = "email") String email) {
-
+        userService.sendEmailCode(email);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/check-email-code")
-    public ResponseEntity<Void> checkEmailCode(@RequestParam(name = "email") String email) {
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<CheckEmailResDto> checkEmailCode(@RequestBody CheckEmailCodeReqDto checkEmailCodeReqDto) {
+        return ResponseEntity.ok().body(userService.checkEmailCode(checkEmailCodeReqDto));
     }
 
     @PostMapping("/connected-id")
@@ -78,7 +78,7 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestParam(name = "email") String email, @RequestHeader("Authorization") String accessToken) {
-        userService.logout(email, accessToken);
+        userService.logout(email, accessToken.substring(JwtHeaderUtilEnums.GRANT_TYPE.getValue().length()));
         return ResponseEntity.ok().build();
     }
 
@@ -119,7 +119,7 @@ public class UserController {
     }
 
     @PostMapping("/reissue-token")
-    public ResponseEntity<Void> reissueToken(@RequestParam(name = "email") String email) {
+    public ResponseEntity<Void> reissueToken(@RequestHeader("Authorization") String accessToken) {
 
         return ResponseEntity.ok().build();
     }
