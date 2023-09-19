@@ -1,7 +1,6 @@
 package com.richminime.domain.user.dto.request;
 
 import com.richminime.domain.user.domain.User;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +9,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class AddUserRequest {
+public class AddUserReqDto {
 
     private String email;
 
