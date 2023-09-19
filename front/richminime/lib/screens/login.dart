@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:richminime/screens/sign_up.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -10,12 +12,30 @@ class Login extends StatefulWidget {
   State<Login> createState() => _LoginState();
 }
 
-onSignUpButtonTap() async {
-  final url = Uri.parse("https://google.com");
-  await launchUrl(url);
-}
-
 class _LoginState extends State<Login> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  Future<void> onLoginButtonTap() async {
+    final url = Uri.parse("http://localhost:8080/api/user/login");
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({
+        "email": emailController.text,
+        "password": passwordController.text,
+      }),
+    );
+    // print(emailController.text);
+    // print(passwordController.text);
+    if (response.statusCode == 201) {
+    } else {
+      // 로그인 실패 or 서버 오류
+      // 오류 메시지를 표시하거나 다른 적절한 처리를 수행하세요.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,8 +68,9 @@ class _LoginState extends State<Login> {
                 width: 300,
                 child: Column(
                   children: [
-                    const TextField(
-                      decoration: InputDecoration(
+                    TextField(
+                      controller: emailController,
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -59,9 +80,10 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const TextField(
+                    TextField(
+                      controller: passwordController,
                       obscureText: true, // 비밀번호 숨기기 옵션
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -75,7 +97,7 @@ class _LoginState extends State<Login> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         GestureDetector(
-                          onTap: onSignUpButtonTap,
+                          onTap: onLoginButtonTap,
                           child: Container(
                             alignment: Alignment.center,
                             width: 110,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:richminime/screens/sign_up4.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SignUp3 extends StatefulWidget {
   final String code;
@@ -10,6 +12,39 @@ class SignUp3 extends StatefulWidget {
 }
 
 class _SignUp3State extends State<SignUp3> {
+  TextEditingController cardEmailController = TextEditingController();
+  TextEditingController cardPasswordController = TextEditingController();
+  TextEditingController cardNumController = TextEditingController();
+  Future<void> onNextButtonTap() async {
+    final url = Uri.parse("http://localhost:8080/api/user/connected-id");
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({
+        "id": cardEmailController.text,
+        "password": cardPasswordController.text,
+        "organiztion": widget.code,
+        "cardNumber": cardNumController.text,
+      }),
+    );
+    // print(cardEmailController.text);
+    // print(cardPasswordController.text);
+    // print(widget.code);
+    // print(cardNumController.text);
+    if (response.statusCode == 201) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SignUp4(),
+        ),
+      );
+    } else {
+      // 로그인 실패 or 서버 오류
+      // 오류 메시지를 표시하거나 다른 적절한 처리를 수행하세요.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,8 +77,9 @@ class _SignUp3State extends State<SignUp3> {
                 width: 300,
                 child: Column(
                   children: [
-                    const TextField(
-                      decoration: InputDecoration(
+                    TextField(
+                      controller: cardEmailController,
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -53,9 +89,10 @@ class _SignUp3State extends State<SignUp3> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const TextField(
+                    TextField(
+                      controller: cardPasswordController,
                       obscureText: true, // 비밀번호 숨기기 옵션
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -64,36 +101,37 @@ class _SignUp3State extends State<SignUp3> {
                         filled: true,
                       ),
                     ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: cardNumController,
+                      obscureText: true, // 비밀번호 숨기기 옵션
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        labelText: '카드번호',
+                        fillColor: Color(0xFFFFFDFD),
+                        filled: true,
+                      ),
+                    ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SignUp4(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: 110,
-                            height: 50,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFFBEBE),
-                            ),
-                            child: const Text(
-                              "다음",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                              ),
-                            ),
+                    GestureDetector(
+                      onTap: onNextButtonTap,
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: 110,
+                        height: 50,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFFBEBE),
+                        ),
+                        child: const Text(
+                          "다음",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
