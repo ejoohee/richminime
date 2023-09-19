@@ -30,6 +30,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation group: 'org.glassfish', name: 'javax.json', version: '1.0.4'
+
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -55,7 +58,8 @@ def querydslDir = "$buildDir/generated/querydsl"
 
 querydsl {
 	jpa = true
-	querydslSourcesDir = querydslDir}
+	querydslSourcesDir = querydslDir
+}
 
 sourceSets {
 	main.java.srcDir querydslDir
@@ -78,9 +82,11 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+
 sonarqube {
 	properties {
 		property "sonar.host.url", "http://your-sonarqube-server"
 		// 추가 설정
 	}
 }
+

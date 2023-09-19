@@ -1,0 +1,86 @@
+package com.richminime.global.common.security;
+
+import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
+import com.richminime.global.exception.security.SecurityExceptionMessage;
+import com.richminime.global.util.jwt.JWTUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@Component
+@RequiredArgsConstructor
+public class CustomAuthenticationFilter extends OncePerRequestFilter {
+
+    private final JWTUtil jwtUtil;
+    private final CustomUserDetailsService customUserDetailService;
+
+    /**
+     * 특정 URI는 필터를 거치지 않음
+     * @param request current HTTP request
+     * @return
+     * @throws ServletException
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        // refresh 토큰을 이용한 access 토큰 재발급 시 필터를 거치치 않도록 함
+        return request.getRequestURI().contains("/reissue-token");
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String accessToken = getToken(request);
+        if (accessToken != null && !accessToken.equals("undefined")) {
+            // 로그아웃 여부 추가해야 함
+            String id = jwtUtil.getUsername(accessToken);
+            if (id != null) {
+                UserDetails userDetails = customUserDetailService.loadUserByUsername(id);
+                // 액세스 토큰 생성 시 사용된 이메일 아이디와 현재 이메일 아이디가 일치하는지 확인
+                equalsUsernameFromTokenAndUserDetails(userDetails.getUsername(), id);
+                // 액세스 토큰의 유효성 검증
+                validateAccessToken(accessToken, userDetails);
+                // securityContextHolder에 인증된 회원의 정보를 저장
+                processSecurity(request, userDetails);
+            }
+        }
+        // 다음 순서 필터로 넘어가기
+        filterChain.doFilter(request, response);
+    }
+
+    private String getToken(HttpServletRequest request) {
+        String headerAuth = request.getHeader(JwtHeaderUtilEnums.AUTHORIZATION.getValue());
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(JwtHeaderUtilEnums.GRANT_TYPE.getValue())) {
+            return headerAuth.substring(JwtHeaderUtilEnums.GRANT_TYPE.getValue().length());
+        }
+        return null;
+    }
+
+    private void equalsUsernameFromTokenAndUserDetails(String userDetailsUsername, String tokenUsername) {
+        if (!userDetailsUsername.equals(tokenUsername)) {
+            throw new IllegalArgumentException(SecurityExceptionMessage.MISMATCH_TOKEN_ID.getMessage());
+        }
+    }
+
+    private void validateAccessToken(String accessToken, UserDetails userDetails) {
+        if (!jwtUtil.validateToken(accessToken, userDetails)) {
+            throw new IllegalArgumentException(SecurityExceptionMessage.INVALID_TOKEN.getMessage());
+        }
+    }
+
+    private void processSecurity(HttpServletRequest request, UserDetails userDetails) {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
+        usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+    }
+
+}
