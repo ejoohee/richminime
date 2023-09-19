@@ -1,10 +1,10 @@
-package com.richminime.domain.item.controller;
+package com.richminime.domain.item.api;
 
 import com.richminime.domain.item.dto.ItemReqDto;
 import com.richminime.domain.item.dto.ItemResDto;
 import com.richminime.domain.item.dto.ItemUpdateReqDto;
 import com.richminime.domain.item.service.ItemService;
-import com.richminime.global.dto.ResponseDto;
+import com.richminime.global.dto.MessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/item")
+@RequestMapping("/item")
 public class ItemController {
 
     private final String ACCESS_TOKEN = "AccessToken";
@@ -48,11 +48,15 @@ public class ItemController {
     
     // 테마 삭제
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<ResponseDto<?>> deleteItem(@PathVariable Long itemId, @RequestHeader(ACCESS_TOKEN) String token){
+//    public ResponseEntity<ResponseDto<?>> deleteItem(@PathVariable Long itemId, @RequestHeader(ACCESS_TOKEN) String token){
+//        itemService.deleteItem(itemId, token);
+//        return ResponseEntity.ok(ResponseDto.create("DELETE SUCCESS"));
+//    }
+    public ResponseEntity<MessageDto> deleteItem(@PathVariable Long itemId, @RequestHeader(ACCESS_TOKEN) String token) {
         itemService.deleteItem(itemId, token);
-        return ResponseEntity.ok(ResponseDto.create("DELETE SUCCESS"));
+        return ResponseEntity.ok(MessageDto.msg("DELETE SUCCESS"));
     }
-    
+
     // 테마 수정
     @PutMapping("/{itemId}")
     public ResponseEntity<ItemResDto> updateItem(@PathVariable Long itemId, @RequestBody ItemUpdateReqDto itemUpdateReqDto, @RequestHeader(ACCESS_TOKEN) String token) {
