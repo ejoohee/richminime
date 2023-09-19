@@ -1,12 +1,11 @@
 package com.richminime.domain.user.dto.request;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GenerateConnectedIdRequest {
+public class GenerateConnectedIdReqDto {
 
     private String id;
 
