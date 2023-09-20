@@ -45,11 +45,11 @@ public class User {
     @Column(nullable = false)
     private String userType;
 
-    @Column(nullable = false)
-    private Date birthDate;
+//    @Column(nullable = false)
+//    private Date birthDate;
 
     @Builder
-    public User(String email, String password, String nickname, String connectedId, String organizationCode, String cardNumber, String userType, Date birthDate) {
+    public User(String email, String password, String nickname, String connectedId, String organizationCode, String cardNumber, String userType) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -57,7 +57,7 @@ public class User {
         this.organizationCode = organizationCode;
         this.cardNumber = cardNumber;
         this.userType = userType;
-        this.birthDate = birthDate;
+//        this.birthDate = birthDate;
     }
 
     public void updateBalance(long balance) {
