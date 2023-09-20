@@ -1,11 +1,10 @@
-package com.richminime.domain.item.controller;
+package com.richminime.domain.item.api;
 
 import com.richminime.domain.item.dto.ItemReqDto;
 import com.richminime.domain.item.dto.ItemResDto;
 import com.richminime.domain.item.dto.ItemUpdateReqDto;
 import com.richminime.domain.item.service.ItemService;
 import com.richminime.global.dto.MessageDto;
-import com.richminime.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
