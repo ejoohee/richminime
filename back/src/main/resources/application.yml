@@ -89,7 +89,7 @@ build:
   date: "@build.date@"
 jwt:
   expiration: '1296000000'
-  cookieName: cookie
+  cookieName: refresh-token
   secret: dyAeHubOOc8KaOfYB6XEQoEj1QzRlVgtjNL8PYs1A1tymZvvqkcEU7L1imkKHeDa
 springfox:
   documentation:

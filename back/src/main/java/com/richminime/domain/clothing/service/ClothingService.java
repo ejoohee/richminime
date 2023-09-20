@@ -1,16 +1,20 @@
 package com.richminime.domain.clothing.service;
 
 import com.richminime.domain.clothing.constant.ClothingType;
-import com.richminime.domain.clothing.dto.ClothingRequestDto.ClothingCreateRequestDto;
-import com.richminime.domain.clothing.dto.ClothingRequestDto.ClothingUpdateRequestDto;
-import com.richminime.domain.clothing.dto.ClothingResponseDto.ClothingInfoResponseDto;
+import com.richminime.domain.clothing.dto.ClothingReqDto;
+import com.richminime.domain.clothing.dto.ClothingResDto;
+import com.richminime.domain.clothing.dto.ClothingUpdateReqDto;
 
 import java.util.List;
 
 public interface ClothingService {
-    void addClothing(ClothingCreateRequestDto clothingCreateRequestDto);
-    void updateClothing(ClothingUpdateRequestDto clothingUpdateRequestDto);
-    List<ClothingInfoResponseDto> findAllClothingByType(ClothingType clothingType);
-    ClothingInfoResponseDto findOneClothing(Long clothingId);
+    void addClothing(ClothingReqDto clothingReqDto);
+
+    void updateClothing(ClothingUpdateReqDto clothingUpdateReqDto);
+
+    List<ClothingResDto> findAllClothingByType(ClothingType clothingType);
+
+    ClothingResDto findOneClothing(Long clothingId);
+
     void deleteClothing(Long clothingId);
 }
