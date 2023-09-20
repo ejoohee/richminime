@@ -2,6 +2,8 @@ package com.richminime.domain.user.service;
 
 import com.richminime.domain.user.dto.request.*;
 import com.richminime.domain.user.dto.response.CheckEmailResDto;
+import com.richminime.domain.user.dto.response.FindBalanceResDto;
+import com.richminime.domain.user.dto.response.FindUserResDto;
 import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
 
 import java.util.Map;
@@ -27,5 +29,11 @@ public interface UserService {
     void updateUser(UpdateUserReqDto updateUserReqDto);
 
     void deleteUser();
+
+    FindUserResDto findUser();
+
+    FindBalanceResDto findBalance();
+
+    void updateBalance(Long balance);
 
 }

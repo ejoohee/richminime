@@ -4,17 +4,13 @@ import com.richminime.domain.user.domain.LogoutAccessToken;
 import com.richminime.domain.user.domain.RefreshToken;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.dto.request.*;
-import com.richminime.domain.user.dto.response.CheckEmailResDto;
-import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
-import com.richminime.domain.user.dto.response.LoginResDto;
-import com.richminime.domain.user.dto.response.ReissueTokenResDto;
+import com.richminime.domain.user.dto.response.*;
 import com.richminime.domain.user.exception.UserExceptionMessage;
 import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.LogoutAccessTokenRedisRepository;
 import com.richminime.domain.user.repository.RefreshTokenRedisRepository;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
-import com.richminime.global.common.codef.OrganizationCode;
 import com.richminime.global.common.jwt.JwtExpirationEnums;
 import com.richminime.global.exception.NotFoundException;
 import com.richminime.global.exception.TokenException;
@@ -197,6 +193,33 @@ public class UserServiceImpl implements UserService {
     public void deleteUser() {
         String email = getLoginId();
         userRepository.deleteByEmail(email);
+    }
+
+    @Override
+    public FindUserResDto findUser() {
+        String email = getLoginId();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        return FindUserResDto.builder()
+                .email(email)
+                .nickname(user.getNickname())
+                .balance(user.getBalance())
+                .build();
+    }
+
+    @Override
+    public FindBalanceResDto findBalance() {
+        String email = getLoginId();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        return FindBalanceResDto.builder()
+                .balance(user.getBalance())
+                .build();
+    }
+
+    @Override
+    public void updateBalance(Long balance) {
+        String email = getLoginId();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        user.updateBalance(balance);
     }
 
     @Override
