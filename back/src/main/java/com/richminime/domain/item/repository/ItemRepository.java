@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     Optional<Item> findItemByItemId(Long itemId);
-    List<Item> findAllByItemAndItemType(ItemType itemType);
+//    List<Item> findAllByItemType(ItemType itemType);
 
 
 }
