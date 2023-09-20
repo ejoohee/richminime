@@ -10,6 +10,7 @@ import com.richminime.domain.user.dto.request.LoginReqDto;
 import com.richminime.domain.user.dto.response.CheckEmailResDto;
 import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
 import com.richminime.domain.user.dto.response.LoginResDto;
+import com.richminime.domain.user.dto.response.ReissueTokenResDto;
 import com.richminime.domain.user.exception.UserExceptionMessage;
 import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.LogoutAccessTokenRedisRepository;
@@ -18,6 +19,8 @@ import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
 import com.richminime.global.common.codef.OrganizationCode;
 import com.richminime.global.common.jwt.JwtExpirationEnums;
+import com.richminime.global.exception.NotFoundException;
+import com.richminime.global.exception.TokenException;
 import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -129,6 +132,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public CheckEmailResDto checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto) {
         return null;
+    }
+
+    @Override
+    public Map<String, Object> reissueToken(String accessToken, String refreshToken) {
+        // accessToken에서 email 가져오기
+        String email = jwtUtil.getUsername(accessToken);
+        // refresh 토큰 redis 레포지토리에서 가져와서 일치 여부 검사
+        String originRefreshToken = refreshTokenRepository.findById(email).orElseThrow(() -> new NotFoundException("해당 이메일에 대한 토큰이 존재하지 않습니다.")).getRefreshToken();
+        if(!originRefreshToken.equals(refreshToken)) {
+            // 토큰 재발급 불가능
+            throw new TokenException("토큰이 일치하지 않습니다.");
+        }
+        // access & refresh 토큰 재발급
+        accessToken = jwtUtil.generateAccessToken(email);
+        refreshToken = jwtUtil.generateRefreshToken(email);
+        // Redis에 refresh 토큰 저장 필요
+        // 회원의 이메일 아이디를 키로 저장
+        // 기존에 저장된 refresh 토큰 삭제
+        refreshTokenRepository.deleteById(email);
+        refreshTokenRepository.save(RefreshToken.builder()
+                .email(email)
+                .refreshToken(refreshToken)
+                .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
+                .build());
+        Map<String, Object> map = new HashMap<>();
+        map.put("accessToken", ReissueTokenResDto.builder()
+                .accessToken(accessToken)
+                .build());
+        map.put("refreshToken", refreshToken);
+        return map;
     }
 
     @Override

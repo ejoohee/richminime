@@ -6,7 +6,6 @@ import com.richminime.domain.user.dto.request.GenerateConnectedIdReqDto;
 import com.richminime.domain.user.dto.request.LoginReqDto;
 import com.richminime.domain.user.dto.response.CheckEmailResDto;
 import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
-import com.richminime.domain.user.dto.response.LoginResDto;
 
 import java.util.Map;
 
@@ -25,5 +24,7 @@ public interface UserService {
     void sendEmailCode(String email);
 
     CheckEmailResDto checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto);
+
+    Map<String, Object> reissueToken(String accessToken, String refreshToken);
 
 }

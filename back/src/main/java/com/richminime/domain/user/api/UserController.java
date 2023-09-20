@@ -7,6 +7,7 @@ import com.richminime.domain.user.dto.request.LoginReqDto;
 import com.richminime.domain.user.dto.response.CheckEmailResDto;
 import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
 import com.richminime.domain.user.dto.response.LoginResDto;
+import com.richminime.domain.user.dto.response.ReissueTokenResDto;
 import com.richminime.domain.user.service.UserService;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.dto.ResponseDto;
@@ -131,9 +132,13 @@ public class UserController {
     }
 
     @PostMapping("/reissue-token")
-    public ResponseEntity<Void> reissueToken(@RequestHeader("Authorization") String accessToken) {
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ReissueTokenResDto> reissueToken(@RequestHeader("Authorization") String accessToken, @RequestHeader("Refresh-Token") String refreshToken) {
+        Map<String, Object> map = userService.reissueToken(accessToken, refreshToken);
+        ReissueTokenResDto reissueResDto = (ReissueTokenResDto) map.get("accessToken");
+       refreshToken = (String) map.get("refreshToken");
+        return ResponseEntity.ok()
+                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure")
+                .body(reissueResDto);
     }
 
     @DeleteMapping("/{email}")
