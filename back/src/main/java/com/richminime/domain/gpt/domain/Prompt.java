@@ -1,10 +1,18 @@
 package com.richminime.domain.gpt.domain;
 
 import com.richminime.domain.user.domain.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Getter
 public class Prompt {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "prompt_id")
