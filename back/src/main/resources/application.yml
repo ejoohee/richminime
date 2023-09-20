@@ -28,12 +28,13 @@ spring:
     driverClassName: org.h2.Driver
     password: ''
     username: sa
-    hikari:
-      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
+#    hikari:
+#      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
+    url: jdbc:h2:mem:testdb
   h2:
     console:
       path: /h2-console
-      enabled: 'true'
+      enabled: true
   profiles:
     include: secure
   data:
@@ -71,7 +72,7 @@ logging:
       samsung:
         security: DEBUG
 #  file:
-#    name: ./ssafy-web.log
+#    name: ./ssafy-web.log 로그 저장
 server:
   servlet:
     encoding:
