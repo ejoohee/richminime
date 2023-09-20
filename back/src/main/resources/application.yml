@@ -70,8 +70,8 @@ logging:
     com:
       samsung:
         security: DEBUG
-  file:
-    name: ./ssafy-web.log
+#  file:
+#    name: ./ssafy-web.log
 server:
   servlet:
     encoding:
