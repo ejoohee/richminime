@@ -23,6 +23,10 @@ import com.richminime.global.exception.NotFoundException;
 import com.richminime.global.exception.TokenException;
 import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,24 +37,30 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class UserServiceImpl implements UserService {
 
+
     private final PasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
     private final CodefWebClient codefWebClient;
-
     private final UserRepository userRepository;
     private final RefreshTokenRedisRepository refreshTokenRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final JavaMailSender javaMailSender;
+
     private Map<UUID, String> connectedIdMap = new HashMap<>();
     private Map<String, OrganizationCode> organizationCodeMap = new HashMap<>() {{
         put("KB카드", OrganizationCode.KB_CARD);
@@ -126,12 +136,45 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void sendEmailCode(String email) {
+        // 임의의 authKey 생성
+        Random random = new Random();
+        String authKey = String.valueOf(random.nextInt(888888) + 111111);
 
+        String subject = "리치미니미 회원가입 인증번호";
+        String text = "회원 가입을 위한 인증번호는 " + authKey + "입니다. <br/>";
+
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(text, true); // HTML이라는 의미로 true.
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+
+        // 유효 시간(5분)동안 {email, authKey} 저장
+        valueOperations.set(email, authKey, 60 * 5L, TimeUnit.SECONDS);
     }
 
     @Override
     public CheckEmailResDto checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto) {
-        return null;
+        ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
+        String originCode = (String) valueOperations.get(checkEmailCodeReqDto.getEmail());
+        if(originCode == null)
+            throw new NotFoundException("해당 이메일로 유효한 인증 코드가 존재하지 않습니다");
+        Boolean result = false;
+        if(originCode.equals(checkEmailCodeReqDto.getCode())) {
+            result = true;
+            // 코드를 확인했으므로 redis 에서 삭제
+            valueOperations.getOperations().delete(checkEmailCodeReqDto.getEmail());
+        }
+        return CheckEmailResDto.builder()
+                // 존재하면 false, 존재하지 않으면 true 반환
+                .success(result)
+                .build();
     }
 
     @Override
