@@ -16,8 +16,9 @@ public class ClothingResDto {
     private final String clothingInfo;
     private final Long price;
 
-    public ClothingResDto entityToDto(Clothing clothing) {
+    public static ClothingResDto entityToDto(Clothing clothing) {
         return ClothingResDto.builder()
+                .clothingId(clothing.getClothingId())
                 .clothingName(clothing.getClothingName())
                 .clothingType(clothing.getClothingType())
                 .clothingImg(clothing.getClothingImg())
