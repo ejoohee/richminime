@@ -204,7 +204,7 @@ public class UserServiceImpl implements UserService {
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = connectedIdMap.remove(addUserRequest.getUuid());
         if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
-        String organizationCode = organizationCodeMap.get(addUserRequest.getOrganization()).getCode();
+        String organizationCode = addUserRequest.getOrganization();
         // 패스워드 암호화
         addUserRequest.setPassword(passwordEncoder.encode(addUserRequest.getPassword()));
         userRepository.save(addUserRequest.toEntity(connectedId, organizationCode));
