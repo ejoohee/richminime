@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface UserClothingRepository extends JpaRepository<UserClothing, Long> {
-    List<UserClothing> findAllByClothingType(ClothingType clothingType);
+    List<UserClothing> findAllByClothing_ClothingType(ClothingType clothingType);
 }

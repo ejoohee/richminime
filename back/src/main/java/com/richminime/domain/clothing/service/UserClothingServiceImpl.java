@@ -5,9 +5,8 @@ import com.richminime.domain.clothing.dao.ClothingRepository;
 import com.richminime.domain.clothing.dao.UserClothingRepository;
 import com.richminime.domain.clothing.domain.Clothing;
 import com.richminime.domain.clothing.domain.UserClothing;
-import com.richminime.domain.clothing.dto.ClothingRequestDto.UserClothingCreateRequestDto;
-import com.richminime.domain.clothing.dto.ClothingRequestDto.UserClothingUpdateRequestDto;
-import com.richminime.domain.clothing.dto.ClothingResponseDto.UserClothingInfoResponseDto;
+import com.richminime.domain.clothing.dto.UserClothingReqDto;
+import com.richminime.domain.clothing.dto.UserClothingResDto;
 import com.richminime.domain.clothing.exception.ClothingNotFoundException;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.exception.UserNotFoundException;
@@ -32,13 +31,13 @@ public class UserClothingServiceImpl implements UserClothingService {
 
     @Transactional
     @Override
-    public void addMyClothing(UserClothingCreateRequestDto userClothingCreateRequestDto) {
+    public void addMyClothing(UserClothingReqDto userClothingReqDto) {
 
-        long userId = userClothingCreateRequestDto.getUserId();
+        long userId = userClothingReqDto.getUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        long clothingId = userClothingCreateRequestDto.getClothingId();
+        long clothingId = userClothingReqDto.getClothingId();
         Clothing clothing = clothingRepository.findById(clothingId)
                 .orElseThrow(() -> new ClothingNotFoundException(CLOTHING_NOT_FOUND.getMessage()));
 
@@ -48,11 +47,6 @@ public class UserClothingServiceImpl implements UserClothingService {
                 .build();
 
         userClothingRepository.save(userClothing);
-    }
-
-    @Transactional
-    @Override
-    public void updateMyClothing(UserClothingUpdateRequestDto userClothingUpdateRequestDto) {
     }
 
     @Transactional
@@ -72,27 +66,23 @@ public class UserClothingServiceImpl implements UserClothingService {
 
     @Transactional
     @Override
-    public List<UserClothingInfoResponseDto> findAllMyClothingByType(ClothingType clothingType) {
+    public List<UserClothingResDto> findAllMyClothingByType(ClothingType clothingType) {
         if (clothingType == null) {
             List<UserClothing> userClothingList = userClothingRepository.findAll();
-            List<UserClothingInfoResponseDto> userClothingInfoResponseDtoList = new ArrayList<>();
+            List<UserClothingResDto> userClothingResDtoList = new ArrayList<>();
             for (UserClothing userClothing : userClothingList) {
-                UserClothingInfoResponseDto dto = UserClothingInfoResponseDto.builder()
-                        .userclothing(userClothing)
-                        .build();
-                userClothingInfoResponseDtoList.add(dto);
+                UserClothingResDto dto = UserClothingResDto.entityToDto(userClothing);
+                userClothingResDtoList.add(dto);
             }
-            return userClothingInfoResponseDtoList;
+            return userClothingResDtoList;
         } else {
-            List<UserClothing> userClothingListByType = userClothingRepository.findAllByClothingType(clothingType);
-            List<UserClothingInfoResponseDto> userClothingInfoResponseDtoListByType = new ArrayList<>();
+            List<UserClothing> userClothingListByType = userClothingRepository.findAllByClothing_ClothingType(clothingType);
+            List<UserClothingResDto> userClothingResDtoListByType = new ArrayList<>();
             for (UserClothing userClothing : userClothingListByType) {
-                UserClothingInfoResponseDto dto = UserClothingInfoResponseDto.builder()
-                        .userclothing(userClothing)
-                        .build();
-                userClothingInfoResponseDtoListByType.add(dto);
+                UserClothingResDto dto = UserClothingResDto.entityToDto(userClothing);
+                userClothingResDtoListByType.add(dto);
             }
-            return userClothingInfoResponseDtoListByType;
+            return userClothingResDtoListByType;
         }
     }
 }
