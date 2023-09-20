@@ -28,9 +28,9 @@ spring:
     driverClassName: org.h2.Driver
     password: ''
     username: sa
-    hikari:
-      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
-#    url: jdbc:h2:mem:testdb
+#    hikari:
+#      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
+    url: jdbc:h2:mem:testdb
   h2:
     console:
       path: /h2-console
