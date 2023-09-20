@@ -3,8 +3,8 @@ package com.richminime.domain.clothing.api;
 
 import com.richminime.domain.clothing.constant.ClothingResponseMessage;
 import com.richminime.domain.clothing.constant.ClothingType;
-import com.richminime.domain.clothing.dto.ClothingRequestDto.ClothingCreateRequestDto;
-import com.richminime.domain.clothing.dto.ClothingRequestDto.ClothingUpdateRequestDto;
+import com.richminime.domain.clothing.dto.ClothingReqDto;
+import com.richminime.domain.clothing.dto.ClothingUpdateReqDto;
 import com.richminime.domain.clothing.service.ClothingService;
 import com.richminime.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -22,16 +22,16 @@ public class ClothingController {
 
     //관리자
     @PostMapping("")
-    public ResponseEntity<ResponseDto<?>> addClothing(@RequestBody @Valid ClothingCreateRequestDto clothingCreateRequestDto) {
-        clothingService.addClothing(clothingCreateRequestDto);
+    public ResponseEntity<ResponseDto<?>> addClothing(@RequestBody @Valid ClothingReqDto clothingReqDto) {
+        clothingService.addClothing(clothingReqDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
                 ClothingResponseMessage.ADD_CLOTHING.getMessage()
         ));
     }
 
     @PutMapping("")
-    public ResponseEntity<ResponseDto<?>> updateClothing(@RequestBody @Valid ClothingUpdateRequestDto clothingUpdateRequestDto) {
-        clothingService.updateClothing(clothingUpdateRequestDto);
+    public ResponseEntity<ResponseDto<?>> updateClothing(@RequestBody @Valid ClothingUpdateReqDto clothingUpdateReqDto) {
+        clothingService.updateClothing(clothingUpdateReqDto);
 
         return ResponseEntity.ok(ResponseDto.create(
                 ClothingResponseMessage.UPDATE_CLOTHING.getMessage()
