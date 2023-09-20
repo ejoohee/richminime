@@ -1,2 +1,5 @@
-package com.richminime.domain.gpt.dao;public interface PromptRepository {
+package com.richminime.domain.gpt.dao;
+
+public interface PromptRepository {
+
 }

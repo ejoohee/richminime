@@ -1,6 +1,7 @@
 package com.richminime.domain.user.domain;
 
 
+import com.richminime.domain.gpt.domain.Prompt;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +9,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @DynamicInsert
@@ -48,6 +51,8 @@ public class User {
     @Column(nullable = false)
     private Date birthDate;
 
+    @OneToMany(mappedBy = "prompt_id")
+    private List<Prompt> prompts = new ArrayList<>();
     @Builder
     public User(String email, String password, String nickname, String connectedId, String organizationCode, String cardNumber, String userType, Date birthDate) {
         this.email = email;

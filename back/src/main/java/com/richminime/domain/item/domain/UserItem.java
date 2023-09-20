@@ -24,11 +24,11 @@ public class UserItem {
     @Column(name = "user_item_id")
     private Long userItemId;
 
-    @OneToMany(mappedBy = "userItem" , fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "itemId" , fetch = FetchType.LAZY)
     private List<Item> item;
 
-    @OneToOne(mappedBy = "")
-    private User user;
+//    @OneToOne(mappedBy = "")
+//    private User user;
 
     
 }
