@@ -1,9 +1,6 @@
 package com.richminime.domain.user.api;
 
-import com.richminime.domain.user.dto.request.AddUserReqDto;
-import com.richminime.domain.user.dto.request.CheckEmailCodeReqDto;
-import com.richminime.domain.user.dto.request.GenerateConnectedIdReqDto;
-import com.richminime.domain.user.dto.request.LoginReqDto;
+import com.richminime.domain.user.dto.request.*;
 import com.richminime.domain.user.dto.response.CheckEmailResDto;
 import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
 import com.richminime.domain.user.dto.response.LoginResDto;
@@ -96,8 +93,8 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<Void> updateUser(@RequestParam(name = "email") String email) {
-
+    public ResponseEntity<Void> updateUser(@RequestBody UpdateUserReqDto updateUserReqDto) {
+        userService.updateUser(updateUserReqDto);
         return ResponseEntity.ok().build();
     }
 
@@ -108,8 +105,8 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteUser(@RequestParam(name = "email") String email) {
-
+    public ResponseEntity<Void> deleteUser() {
+        userService.deleteUser();
         return ResponseEntity.ok().build();
     }
 
