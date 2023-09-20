@@ -11,16 +11,23 @@ import com.richminime.domain.user.service.UserService;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
+
     private final UserService userService;
+
+    @Value("${jwt.cookieName}")
+    private String jwtCookieName;
 
     /**
      * 회원 가입
@@ -61,19 +68,24 @@ public class UserController {
 
     @PostMapping("/password")
     public ResponseEntity<Void> findPassword(@RequestParam(name = "email") String email) {
-
         return ResponseEntity.ok().build();
     }
 
     /**
      * 회원 로그인
+     * 바디에 access 토큰 전달
+     * 쿠키로 refresh 토큰 전달
      * @param loginRequest
      * @return
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResDto> login(@RequestBody LoginReqDto loginRequest) {
-        LoginResDto loginResponse = userService.login(loginRequest);
-        return ResponseEntity.ok().body(loginResponse);
+        Map<String, Object> map = userService.login(loginRequest);
+        LoginResDto loginResDto = (LoginResDto) map.get("accessToken");
+        String refreshToken = (String) map.get("refreshToken");
+        return ResponseEntity.ok()
+                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure")
+                .body(loginResDto);
     }
 
     @PostMapping("/logout")
