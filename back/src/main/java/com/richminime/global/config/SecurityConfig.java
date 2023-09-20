@@ -36,7 +36,8 @@ public class SecurityConfig {
                 // 토큰 인증 없이도 접근 가능한 api
                 .antMatchers(HttpMethod.POST, "/user", "/user/login", "/user/send-email-code", "/user/check-email-code", "/user/connected-id", "/user/reissue-token").permitAll()
                 .antMatchers(HttpMethod.GET, "/user/check-login-email", "/user/email").permitAll()
-                .antMatchers("/api/**").hasRole("USER")
+                .antMatchers("/user/all").hasRole("ADMIN")
+                .antMatchers("/**").hasRole("USER")
                 .and()
                 // HTTP 기본 인증을 사용하지 않도록 설정
                 .httpBasic().disable()
