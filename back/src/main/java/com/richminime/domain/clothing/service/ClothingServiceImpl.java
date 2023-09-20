@@ -3,9 +3,9 @@ package com.richminime.domain.clothing.service;
 import com.richminime.domain.clothing.constant.ClothingType;
 import com.richminime.domain.clothing.dao.ClothingRepository;
 import com.richminime.domain.clothing.domain.Clothing;
-import com.richminime.domain.clothing.dto.ClothingRequestDto.ClothingCreateRequestDto;
-import com.richminime.domain.clothing.dto.ClothingRequestDto.ClothingUpdateRequestDto;
-import com.richminime.domain.clothing.dto.ClothingResponseDto.ClothingInfoResponseDto;
+import com.richminime.domain.clothing.dto.ClothingReqDto;
+import com.richminime.domain.clothing.dto.ClothingResDto;
+import com.richminime.domain.clothing.dto.ClothingUpdateReqDto;
 import com.richminime.domain.clothing.exception.ClothingNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,14 +24,14 @@ public class ClothingServiceImpl implements ClothingService {
 
     @Transactional
     @Override
-    public void addClothing(ClothingCreateRequestDto clothingCreateRequestDto) {
+    public void addClothing(ClothingReqDto clothingReqDto) {
         //관리자 확인 필요
         Clothing clothing = Clothing.builder()
-                .clothingName(clothingCreateRequestDto.getClothingName())
-                .clothingType(clothingCreateRequestDto.getClothingType())
-                .clothingImg(clothingCreateRequestDto.getClothingImg())
-                .clothingInfo(clothingCreateRequestDto.getClothingInfo())
-                .price(clothingCreateRequestDto.getPrice())
+                .clothingName(clothingReqDto.getClothingName())
+                .clothingType(clothingReqDto.getClothingType())
+                .clothingImg(clothingReqDto.getClothingImg())
+                .clothingInfo(clothingReqDto.getClothingInfo())
+                .price(clothingReqDto.getPrice())
                 .build();
 
         clothingRepository.save(clothing);
@@ -39,36 +39,32 @@ public class ClothingServiceImpl implements ClothingService {
 
     @Transactional
     @Override
-    public void updateClothing(ClothingUpdateRequestDto clothingUpdateRequestDto) {
-        Clothing clothing = clothingRepository.findById(clothingUpdateRequestDto.getClothingId())
+    public void updateClothing(ClothingUpdateReqDto clothingUpdateReqDto) {
+        Clothing clothing = clothingRepository.findById(clothingUpdateReqDto.getClothingId())
                 .orElseThrow(() -> new ClothingNotFoundException(CLOTHING_NOT_FOUND.getMessage()));
 
-        clothing.update(clothingUpdateRequestDto.getClothingName(), clothingUpdateRequestDto.getClothingType(),
-                clothingUpdateRequestDto.getClothingImg(), clothingUpdateRequestDto.getClothingInfo(),
-                clothingUpdateRequestDto.getPrice());
+        clothing.update(clothingUpdateReqDto.getClothingName(), clothingUpdateReqDto.getClothingType(),
+                clothingUpdateReqDto.getClothingImg(), clothingUpdateReqDto.getClothingInfo(),
+                clothingUpdateReqDto.getPrice());
     }
 
     @Transactional
     @Override
-    public List<ClothingInfoResponseDto> findAllClothingByType(ClothingType clothingType) {
+    public List<ClothingResDto> findAllClothingByType(ClothingType clothingType) {
 
         if (clothingType == null) {
             List<Clothing> clothingList = clothingRepository.findAll();
-            List<ClothingInfoResponseDto> clothingInfoResponseDtoList = new ArrayList<>();
+            List<ClothingResDto> clothingInfoResponseDtoList = new ArrayList<>();
             for (Clothing clothing : clothingList) {
-                ClothingInfoResponseDto dto = ClothingInfoResponseDto.builder()
-                        .clothing(clothing)
-                        .build();
+                ClothingResDto dto = ClothingResDto.entityToDto(clothing);
                 clothingInfoResponseDtoList.add(dto);
             }
             return clothingInfoResponseDtoList;
         } else {
             List<Clothing> clothingListByType = clothingRepository.findAllByClothingType(clothingType);
-            List<ClothingInfoResponseDto> clothingInfoResponseDtoListByType = new ArrayList<>();
+            List<ClothingResDto> clothingInfoResponseDtoListByType = new ArrayList<>();
             for (Clothing clothing : clothingListByType) {
-                ClothingInfoResponseDto dto = ClothingInfoResponseDto.builder()
-                        .clothing(clothing)
-                        .build();
+                ClothingResDto dto = ClothingResDto.entityToDto(clothing);
                 clothingInfoResponseDtoListByType.add(dto);
             }
             return clothingInfoResponseDtoListByType;
@@ -77,12 +73,10 @@ public class ClothingServiceImpl implements ClothingService {
 
     @Transactional
     @Override
-    public ClothingInfoResponseDto findOneClothing(Long clothingId) {
+    public ClothingResDto findOneClothing(Long clothingId) {
         Clothing clothing = clothingRepository.findById(clothingId)
                 .orElseThrow(() -> new ClothingNotFoundException(CLOTHING_NOT_FOUND.getMessage()));
-        return ClothingInfoResponseDto.builder()
-                .clothing(clothing)
-                .build();
+        return ClothingResDto.entityToDto(clothing);
     }
 
     @Transactional
