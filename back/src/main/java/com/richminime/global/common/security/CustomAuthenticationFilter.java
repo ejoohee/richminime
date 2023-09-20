@@ -1,5 +1,6 @@
 package com.richminime.global.common.security;
 
+import com.richminime.domain.user.repository.LogoutAccessTokenRedisRepository;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.exception.security.SecurityExceptionMessage;
 import com.richminime.global.util.jwt.JWTUtil;
@@ -24,6 +25,8 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailService;
+    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+
 
     /**
      * 특정 URI는 필터를 거치지 않음
@@ -41,7 +44,9 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = getToken(request);
         if (accessToken != null && !accessToken.equals("undefined")) {
-            // 로그아웃 여부 추가해야 함
+            // 로그아웃 여부 확인
+            // 로그아웃 한 상태면 해당 액세스 토큰은 만료되지 않았어도 유효하지 않음
+            checkLogout(accessToken);
             String id = jwtUtil.getUsername(accessToken);
             if (id != null) {
                 UserDetails userDetails = customUserDetailService.loadUserByUsername(id);
@@ -63,6 +68,12 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             return headerAuth.substring(JwtHeaderUtilEnums.GRANT_TYPE.getValue().length());
         }
         return null;
+    }
+
+    private void checkLogout(String accessToken) {
+        if (logoutAccessTokenRedisRepository.existsById(accessToken)) {
+            throw new IllegalArgumentException("이미 로그아웃된 회원입니다.");
+        }
     }
 
     private void equalsUsernameFromTokenAndUserDetails(String userDetailsUsername, String tokenUsername) {

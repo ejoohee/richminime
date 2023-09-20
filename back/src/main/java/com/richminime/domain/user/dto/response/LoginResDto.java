@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginResponse {
+public class LoginResDto {
 
     private String accessToken;
 
@@ -15,7 +15,7 @@ public class LoginResponse {
     private Long balance;
 
     @Builder
-    public LoginResponse(String accessToken, String nickname, Long balance) {
+    public LoginResDto(String accessToken, String nickname, Long balance) {
         this.accessToken = accessToken;
         this.nickname = nickname;
         this.balance = balance;

@@ -1,7 +1,6 @@
 package com.richminime.domain.user.dto.request;
 
 import com.richminime.domain.user.domain.User;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +9,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class AddUserRequest {
+public class AddUserReqDto {
 
     private String email;
 
@@ -22,7 +21,7 @@ public class AddUserRequest {
 
     private String cardNumber;
 
-    private Date birthDate;
+//    private Date birthDate;
 
     private UUID uuid;
 
@@ -34,7 +33,7 @@ public class AddUserRequest {
                 .connectedId(connectedId)
                 .organizationCode(organizationCode)
                 .cardNumber(this.cardNumber)
-                .birthDate(this.birthDate)
+//                .birthDate(this.birthDate)
                 // 관리자는 별도로 생성할 예정
                 // 기본값 ROLE_USER
                 .userType("ROLE_USER")
