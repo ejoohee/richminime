@@ -1,21 +1,26 @@
 package com.richminime.domain.user.service;
 
-import com.richminime.domain.user.domain.LogOutAccessToken;
+import com.richminime.domain.user.domain.LogoutAccessToken;
 import com.richminime.domain.user.domain.RefreshToken;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.dto.request.AddUserReqDto;
+import com.richminime.domain.user.dto.request.CheckEmailCodeReqDto;
 import com.richminime.domain.user.dto.request.GenerateConnectedIdReqDto;
 import com.richminime.domain.user.dto.request.LoginReqDto;
 import com.richminime.domain.user.dto.response.CheckEmailResDto;
 import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
 import com.richminime.domain.user.dto.response.LoginResDto;
+import com.richminime.domain.user.dto.response.ReissueTokenResDto;
 import com.richminime.domain.user.exception.UserExceptionMessage;
+import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.LogoutAccessTokenRedisRepository;
 import com.richminime.domain.user.repository.RefreshTokenRedisRepository;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
 import com.richminime.global.common.codef.OrganizationCode;
 import com.richminime.global.common.jwt.JwtExpirationEnums;
+import com.richminime.global.exception.NotFoundException;
+import com.richminime.global.exception.TokenException;
 import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -112,7 +117,7 @@ public class UserServiceImpl implements UserService {
         // 로그아웃 여부 redis에 넣어서 accessToken가 유효한지 확인
         long remainMilliSeconds = jwtUtil.getRemainMilliSeconds((accessToken));
         refreshTokenRepository.deleteById(email);
-        logoutAccessTokenRepository.save(LogOutAccessToken.builder()
+        logoutAccessTokenRepository.save(LogoutAccessToken.builder()
                         .email(email)
                         .accessToken(accessToken)
                         .expiration(remainMilliSeconds / 1000)
@@ -120,10 +125,50 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void sendEmailCode(String email) {
+
+    }
+
+    @Override
+    public CheckEmailResDto checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> reissueToken(String accessToken, String refreshToken) {
+        // accessToken에서 email 가져오기
+        String email = jwtUtil.getUsername(accessToken);
+        // refresh 토큰 redis 레포지토리에서 가져와서 일치 여부 검사
+        String originRefreshToken = refreshTokenRepository.findById(email).orElseThrow(() -> new NotFoundException("해당 이메일에 대한 토큰이 존재하지 않습니다.")).getRefreshToken();
+        if(!originRefreshToken.equals(refreshToken)) {
+            // 토큰 재발급 불가능
+            throw new TokenException("토큰이 일치하지 않습니다.");
+        }
+        // access & refresh 토큰 재발급
+        accessToken = jwtUtil.generateAccessToken(email);
+        refreshToken = jwtUtil.generateRefreshToken(email);
+        // Redis에 refresh 토큰 저장 필요
+        // 회원의 이메일 아이디를 키로 저장
+        // 기존에 저장된 refresh 토큰 삭제
+        refreshTokenRepository.deleteById(email);
+        refreshTokenRepository.save(RefreshToken.builder()
+                .email(email)
+                .refreshToken(refreshToken)
+                .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
+                .build());
+        Map<String, Object> map = new HashMap<>();
+        map.put("accessToken", ReissueTokenResDto.builder()
+                .accessToken(accessToken)
+                .build());
+        map.put("refreshToken", refreshToken);
+        return map;
+    }
+
+    @Override
     public void addUser(AddUserReqDto addUserRequest) {
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = connectedIdMap.remove(addUserRequest.getUuid());
-        if(connectedId == null) throw new NoSuchElementException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
+        if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
         String organizationCode = organizationCodeMap.get(addUserRequest.getOrganization()).getCode();
         // 패스워드 암호화
         addUserRequest.setPassword(passwordEncoder.encode(addUserRequest.getPassword()));
@@ -131,10 +176,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public LoginResDto login(LoginReqDto loginRequest) {
+    public Map<String, Object> login(LoginReqDto loginRequest) {
         // 이메일 인증 후 로그인 가능하게 변경해야 함
         // 해당 이메일 아이디의 회원이 존재하지 않으면 예외처리
-        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new NoSuchElementException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
         // 패스워드 일치 비교
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
             throw new IllegalArgumentException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
@@ -149,11 +194,14 @@ public class UserServiceImpl implements UserService {
                         .refreshToken(refreshToken)
                         .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
                 .build());
-        return LoginResDto.builder()
+        Map<String, Object> map = new HashMap<>();
+         map.put("accessToken", LoginResDto.builder()
                 .accessToken(accessToken)
                 .nickname(user.getNickname())
                 .balance(user.getBalance())
-                .build();
+                .build());
+        map.put("refreshToken", refreshToken);
+        return map;
     }
 
     /**
