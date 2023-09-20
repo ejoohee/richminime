@@ -91,7 +91,7 @@ public class ClothingController {
     }
 
     //유저 소유 옷 타입별 전체보기
-    @GetMapping("")
+    @GetMapping("/my")
     public ResponseEntity<ResponseDto<List<UserClothingResDto>>> findAllMyClothingByType(@RequestParam(required = false) ClothingType clothingType) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.create(ClothingResponseMessage.FIND_ALL_MY_CLOTHING.getMessage(),
