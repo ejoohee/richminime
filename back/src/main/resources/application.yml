@@ -95,3 +95,5 @@ springfox:
     swagger:
       use-model-v3: 'false'
 
+gpt:
+  api-key: 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
