@@ -3,21 +3,14 @@ package com.richminime.domain.user.service;
 import com.richminime.domain.user.domain.LogoutAccessToken;
 import com.richminime.domain.user.domain.RefreshToken;
 import com.richminime.domain.user.domain.User;
-import com.richminime.domain.user.dto.request.AddUserReqDto;
-import com.richminime.domain.user.dto.request.CheckEmailCodeReqDto;
-import com.richminime.domain.user.dto.request.GenerateConnectedIdReqDto;
-import com.richminime.domain.user.dto.request.LoginReqDto;
-import com.richminime.domain.user.dto.response.CheckEmailResDto;
-import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
-import com.richminime.domain.user.dto.response.LoginResDto;
-import com.richminime.domain.user.dto.response.ReissueTokenResDto;
+import com.richminime.domain.user.dto.request.*;
+import com.richminime.domain.user.dto.response.*;
 import com.richminime.domain.user.exception.UserExceptionMessage;
 import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.LogoutAccessTokenRedisRepository;
 import com.richminime.domain.user.repository.RefreshTokenRedisRepository;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
-import com.richminime.global.common.codef.OrganizationCode;
 import com.richminime.global.common.jwt.JwtExpirationEnums;
 import com.richminime.global.exception.NotFoundException;
 import com.richminime.global.exception.TokenException;
@@ -51,7 +44,6 @@ import java.util.concurrent.TimeUnit;
 @Transactional
 public class UserServiceImpl implements UserService {
 
-
     private final PasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
     private final CodefWebClient codefWebClient;
@@ -62,23 +54,6 @@ public class UserServiceImpl implements UserService {
     private final JavaMailSender javaMailSender;
 
     private Map<UUID, String> connectedIdMap = new HashMap<>();
-    private Map<String, OrganizationCode> organizationCodeMap = new HashMap<>() {{
-        put("KB카드", OrganizationCode.KB_CARD);
-        put("현대카드", OrganizationCode.HYUNDAI_CARD);
-        put("삼성카드", OrganizationCode.SAMSUNG_CARD);
-        put("NH카드", OrganizationCode.NH_CARD);
-        put("BC카드", OrganizationCode.BC_CARD);
-        put("신한카드", OrganizationCode.SINHAN_CARD);
-        put("씨티카드", OrganizationCode.CITY_CARD);
-        put("산업은행카드", OrganizationCode.DEV_BANK_CARD);
-        put("우리카드", OrganizationCode.WOORI_CARD);
-        put("롯데카드", OrganizationCode.LOTTE_CARD);
-        put("하나카드", OrganizationCode.HANA_CARD);
-        put("전북카드", OrganizationCode.JEONBOOK_CARD);
-        put("광주카드", OrganizationCode.KWANGJU_CARD);
-        put("수협카드", OrganizationCode.SUHYUP_CARD);
-        put("제주카드", OrganizationCode.JEJU_CARD);
-    }};
 
     @Transactional(readOnly = true)
     @Override
@@ -128,9 +103,9 @@ public class UserServiceImpl implements UserService {
         long remainMilliSeconds = jwtUtil.getRemainMilliSeconds((accessToken));
         refreshTokenRepository.deleteById(email);
         logoutAccessTokenRepository.save(LogoutAccessToken.builder()
-                        .email(email)
-                        .accessToken(accessToken)
-                        .expiration(remainMilliSeconds / 1000)
+                .email(email)
+                .accessToken(accessToken)
+                .expiration(remainMilliSeconds / 1000)
                 .build());
     }
 
@@ -208,11 +183,51 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateUser(UpdateUserReqDto updateUserReqDto) {
+        String email = getLoginId();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        user.updateUser(updateUserReqDto);
+    }
+
+    @Override
+    public void deleteUser() {
+        String email = getLoginId();
+        userRepository.deleteByEmail(email);
+    }
+
+    @Override
+    public FindUserResDto findUser() {
+        String email = getLoginId();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        return FindUserResDto.builder()
+                .email(email)
+                .nickname(user.getNickname())
+                .balance(user.getBalance())
+                .build();
+    }
+
+    @Override
+    public FindBalanceResDto findBalance() {
+        String email = getLoginId();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        return FindBalanceResDto.builder()
+                .balance(user.getBalance())
+                .build();
+    }
+
+    @Override
+    public void updateBalance(Long balance) {
+        String email = getLoginId();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        user.updateBalance(balance);
+    }
+
+    @Override
     public void addUser(AddUserReqDto addUserRequest) {
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = connectedIdMap.remove(addUserRequest.getUuid());
         if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
-        String organizationCode = organizationCodeMap.get(addUserRequest.getOrganization()).getCode();
+        String organizationCode = addUserRequest.getOrganization();
         // 패스워드 암호화
         addUserRequest.setPassword(passwordEncoder.encode(addUserRequest.getPassword()));
         userRepository.save(addUserRequest.toEntity(connectedId, organizationCode));
@@ -233,12 +248,12 @@ public class UserServiceImpl implements UserService {
         // Redis에 refresh 토큰 저장 필요
         // 회원의 이메일 아이디를 키로 저장
         refreshTokenRepository.save(RefreshToken.builder()
-                        .email(user.getEmail())
-                        .refreshToken(refreshToken)
-                        .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
+                .email(user.getEmail())
+                .refreshToken(refreshToken)
+                .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
                 .build());
         Map<String, Object> map = new HashMap<>();
-         map.put("accessToken", LoginResDto.builder()
+        map.put("accessToken", LoginResDto.builder()
                 .accessToken(accessToken)
                 .nickname(user.getNickname())
                 .balance(user.getBalance())
