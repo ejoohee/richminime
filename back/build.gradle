@@ -84,11 +84,11 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-
-sonarqube {
+sonar {
 	properties {
-		property "sonar.host.url", "http://your-sonarqube-server"
-		// 추가 설정
+		property "sonar.host.url", "http://sonarqube.richminime.site/"
+		property "sonar.login", "admin"
+		property "sonar.password", "richminime"		
 	}
 }
 

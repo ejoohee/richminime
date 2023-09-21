@@ -42,7 +42,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = getToken(request);
+        String accessToken = getAccessToken(request);
         if (accessToken != null && !accessToken.equals("undefined")) {
             // 로그아웃 여부 확인
             // 로그아웃 한 상태면 해당 액세스 토큰은 만료되지 않았어도 유효하지 않음
@@ -62,7 +62,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String getToken(HttpServletRequest request) {
+    private String getAccessToken(HttpServletRequest request) {
         String headerAuth = request.getHeader(JwtHeaderUtilEnums.AUTHORIZATION.getValue());
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(JwtHeaderUtilEnums.GRANT_TYPE.getValue())) {
             return headerAuth.substring(JwtHeaderUtilEnums.GRANT_TYPE.getValue().length());

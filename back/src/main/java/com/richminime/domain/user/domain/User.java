@@ -1,7 +1,7 @@
 package com.richminime.domain.user.domain;
 
 
-import com.richminime.domain.gpt.domain.Prompt;
+import com.richminime.domain.user.dto.request.UpdateUserReqDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -68,5 +68,10 @@ public class User {
     public void updateBalance(long balance) {
         this.balance = balance;
     }
+
+    public void updateUser(UpdateUserReqDto updateUserReqDto){
+        this.nickname = updateUserReqDto.getNickname();
+    }
+
 
 }
