@@ -35,10 +35,10 @@ public class ItemController {
     }
     
     // 테마 카테고리별 조회(확장)
-    @GetMapping
-    public ResponseEntity<List<ItemResDto>> findAllItemByType(@RequestParam(required = false) ItemType itemType, @RequestHeader(ACCESS_TOKEN) String token) {
-        return ResponseEntity.ok(itemService.findAllItemByType(itemType, token));
-    }
+//    @GetMapping
+//    public ResponseEntity<List<ItemResDto>> findAllItemByType(@RequestParam(required = false) ItemType itemType, @RequestHeader(ACCESS_TOKEN) String token) {
+//        return ResponseEntity.ok(itemService.findAllItemByType(itemType, token));
+//    }
 
     // 관리자 기능
     // 테마 등록

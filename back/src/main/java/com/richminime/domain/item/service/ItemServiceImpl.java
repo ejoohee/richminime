@@ -7,6 +7,7 @@ import com.richminime.domain.item.dto.ItemResDto;
 import com.richminime.domain.item.dto.ItemSearchCondition;
 import com.richminime.domain.item.dto.ItemUpdateReqDto;
 import com.richminime.domain.item.repository.ItemRepository;
+import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ public class ItemServiceImpl implements ItemService {
      */
 
     private final ItemRepository itemRepository;
+    private final JWTUtil jwtUtil;
 
     /**
      * 상점에 등록된 아이템 전체 조회
@@ -114,6 +116,9 @@ public class ItemServiceImpl implements ItemService {
     public ItemResDto addItem(ItemReqDto itemReqDto, String token) {
         log.info("[테마 상점 테마 등록] 테마 상점에 새로운 테마 등록 요청");
         // token => 관리자 유저인지 확인
+
+        Long userId = jwtUtil.getUserNo(token);
+        log.info("[테마 상점 테마 등록] 로그인 유저 userId : {}", userId);
 
         Item item = Item.builder()
                 .itemName(itemReqDto.getItemName())

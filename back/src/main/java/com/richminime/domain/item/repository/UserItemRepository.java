@@ -24,5 +24,5 @@ public interface UserItemRepository extends JpaRepository<Item, Long> {
     @Query(value = "select * from user_item where user_id = :userId", nativeQuery = true)
     List<UserItem> findAllByUserId(Long userId);
 
-    List<Item> findAllByItemType(ItemType itemType, String token);
+//    List<Item> findAllByItemType(ItemType itemType, String token);
 }

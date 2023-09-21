@@ -48,6 +48,9 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Override
     public UserItemResDto findUserItem(Long itemId, String token) {
+        log.info("[소유한 테마 상세 조회] 사용자가 선택한 소유테마 상세 조회 요청. itemId : {}, token : {}", itemId, token);
+
+
         return null;
     }
 
