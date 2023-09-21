@@ -6,6 +6,7 @@ import com.richminime.domain.user.dto.response.FindBalanceResDto;
 import com.richminime.domain.user.dto.response.FindUserResDto;
 import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
 
+import java.util.List;
 import java.util.Map;
 
 public interface UserService {
@@ -35,5 +36,11 @@ public interface UserService {
     FindBalanceResDto findBalance();
 
     void updateBalance(Long balance);
+
+    List<FindUserResDto> findUserList();
+
+    void deleteUser(String email);
+
+    void updatePassword(UpdatePasswordReqDto updatePasswordReqDto);
 
 }

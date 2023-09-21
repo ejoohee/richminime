@@ -67,13 +67,23 @@ public class User {
 //        this.birthDate = birthDate;
     }
 
+    /**
+     * 비즈니스 메서드
+     */
+
+    // 잔액 업데이트
     public void updateBalance(long balance) {
         this.balance = balance;
     }
 
+    // 회원 정보 업데이트
     public void updateUser(UpdateUserReqDto updateUserReqDto){
         this.nickname = updateUserReqDto.getNickname();
     }
 
+    // 비밀번호 업데이트
+    public void updatePassowrd(String encrypted) {
+        this.password = encrypted;
+    }
 
 }
