@@ -46,6 +46,9 @@ public class UserClothingServiceImpl implements UserClothingService {
                 .user(user)
                 .build();
 
+        long newBalance = user.getBalance() - userClothing.getClothing().getPrice();
+        user.updateBalance(newBalance);
+
         userClothingRepository.save(userClothing);
     }
 
