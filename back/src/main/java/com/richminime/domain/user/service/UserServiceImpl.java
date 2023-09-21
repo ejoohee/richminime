@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
     private Map<UUID, String> connectedIdMap = new HashMap<>();
     private Map<String, OrganizationCode> organizationCodeMap = new HashMap<>() {{
         put("KB카드", OrganizationCode.KB_CARD);
-        put("현대카드", OrganizationCode.HYNDAI_CARD);
+        put("현대카드", OrganizationCode.HYUNDAI_CARD);
         put("삼성카드", OrganizationCode.SAMSUNG_CARD);
         put("NH카드", OrganizationCode.NH_CARD);
         put("BC카드", OrganizationCode.BC_CARD);
