@@ -11,7 +11,7 @@ import java.util.List;
 public interface ItemService {
 
     // 1. 테마 전체 목록 조회
-    // 2. 테마 상세 조회(미리보기)
+    // 2. 테마 상세 조회(R미리보기)
     // 3. 테마 구매하기
     // 4. 테마 카테고리별 조회(확장)
     List<ItemResDto> findAllItem();

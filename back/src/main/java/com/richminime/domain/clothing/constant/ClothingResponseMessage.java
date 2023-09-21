@@ -9,7 +9,7 @@ public enum ClothingResponseMessage {
 
     ADD_MY_CLOTHING("의상 구매 완료"),
     DELETE_MY_CLOTHING("의상 판매 완료"),
-    FIND_MY_CLOTHING("내가 보유한 의상 목록 조회");
+    FIND_ALL_MY_CLOTHING("내가 보유한 의상 목록 조회");
 
 
     private final String message;

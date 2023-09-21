@@ -92,12 +92,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public GenerateConnectedIdResDto generateConnectedId(GenerateConnectedIdReqDto generateConnectedIdRequest) {
-        String organization = organizationCodeMap.get(generateConnectedIdRequest.getOrganization()).getCode();
+        String organizationCode = generateConnectedIdRequest.getOrganization();
         String id = generateConnectedIdRequest.getId();
         String password = generateConnectedIdRequest.getPassword();
         //외부 API 호출
         try {
-            String connectedId = codefWebClient.createConnectedId(organization, id, password);
+            String connectedId = codefWebClient.createConnectedId(organizationCode, id, password);
             // uuid 생성
             UUID uuid = UUID.randomUUID();
             // uuid를 키로 생성된 커넥티드 아이디 저장
