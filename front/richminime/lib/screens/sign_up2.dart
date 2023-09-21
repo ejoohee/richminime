@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:richminime/screens/sign_up3.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class SignUp2 extends StatefulWidget {
   final String bank;
@@ -103,6 +104,18 @@ class _SignUp2State extends State<SignUp2> {
     return Scaffold(
       body: Column(
         children: [
+          const SizedBox(height: 20),
+          LinearPercentIndicator(
+            alignment: MainAxisAlignment.center,
+            width: MediaQuery.of(context).size.width,
+            animation: true,
+            animationDuration: 1200,
+            lineHeight: 30,
+            percent: 0.5,
+            center: const Text('2/4'),
+            barRadius: const Radius.circular(16),
+            progressColor: Colors.red[200],
+          ),
           Flexible(
             flex: 1,
             child: Container(

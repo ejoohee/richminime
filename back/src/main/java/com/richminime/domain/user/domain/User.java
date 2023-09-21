@@ -1,6 +1,7 @@
 package com.richminime.domain.user.domain;
 
 
+import com.richminime.domain.gpt.domain.Prompt;
 import com.richminime.domain.user.dto.request.UpdateUserReqDto;
 import lombok.AccessLevel;
 import lombok.Builder;
