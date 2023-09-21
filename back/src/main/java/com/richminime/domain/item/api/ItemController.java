@@ -22,9 +22,13 @@ public class ItemController {
 
     @GetMapping
     // 테마 전체 목록 조회
-    public ResponseEntity<List<ItemResDto>> findAllItem(@RequestHeader(ACCESS_TOKEN) String token) {
+    public ResponseEntity<List<ItemResDto>> findAllItem() {
         return ResponseEntity.ok(itemService.findAllItem());
     }
+
+//    public ResponseEntity<List<ItemResDto>> findAllItem(@RequestHeader(ACCESS_TOKEN) String token) {
+//        return ResponseEntity.ok(itemService.findAllItem());
+//    }
     
     // 테마 상세 조회
     @GetMapping("/{itemId}")
