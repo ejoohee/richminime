@@ -38,6 +38,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -220,6 +221,32 @@ public class UserServiceImpl implements UserService {
         String email = getLoginId();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
         user.updateBalance(balance);
+    }
+
+    @Override
+    public List<FindUserResDto> findUserList() {
+        userRepository.findAll().stream().map((user) -> FindUserResDto.builder()
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .balance(user.getBalance())
+                .build())
+                .collect(Collectors.toList());
+        return null;
+    }
+
+    @Override
+    public void deleteUser(String email) {
+        deleteUser(email);
+    }
+
+    @Override
+    public void updatePassword(UpdatePasswordReqDto updatePasswordReqDto) {
+        // 패스워드 암호화
+        String encrypted = passwordEncoder.encode(updatePasswordReqDto.getPasswod());
+        // 현재 로그인 계정 가져오기
+        String email = getLoginId();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        user.updatePassowrd(encrypted);
     }
 
     @Override
