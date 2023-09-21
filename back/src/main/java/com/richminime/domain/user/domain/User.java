@@ -1,6 +1,7 @@
 package com.richminime.domain.user.domain;
 
 
+import com.richminime.domain.gpt.domain.Prompt;
 import com.richminime.domain.user.dto.request.UpdateUserReqDto;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -53,6 +54,7 @@ public class User {
 
     @OneToMany(mappedBy = "promptId")
     private List<Prompt> prompts = new ArrayList<>();
+
     @Builder
     public User(String email, String password, String nickname, String connectedId, String organizationCode, String cardNumber, String userType) {
         this.email = email;
