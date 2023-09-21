@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
-
+import com.richminime.domain.gpt.domain.Prompt;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
