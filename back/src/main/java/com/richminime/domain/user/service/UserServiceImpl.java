@@ -241,7 +241,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(UpdatePasswordReqDto updatePasswordReqDto) {
         // 패스워드 암호화
-        String encrypted = passwordEncoder.encode(updatePasswordReqDto.getPasswod());
+        String encrypted = passwordEncoder.encode(updatePasswordReqDto.getPassword());
         // 현재 로그인 계정 가져오기
         String email = getLoginId();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
