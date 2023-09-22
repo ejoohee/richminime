@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:richminime/screens/bankbook.dart';
 import 'package:richminime/screens/login.dart';
 
 void main() {
@@ -22,7 +23,7 @@ class App extends StatelessWidget {
           color: Color(0xFFEEb4a2),
         )),
       ),
-      home: const Login(),
+      home: const BankBook(),
     );
   }
 }
