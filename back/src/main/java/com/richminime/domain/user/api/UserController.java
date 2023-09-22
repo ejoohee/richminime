@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -96,8 +97,8 @@ public class UserController {
     }
 
     @PutMapping("/password")
-    public ResponseEntity<Void> updatePassword(@RequestParam(name = "email") String email) {
-
+    public ResponseEntity<Void> updatePassword(@RequestBody UpdatePasswordReqDto updatePasswordReqDto) {
+        userService.updatePassword(updatePasswordReqDto);
         return ResponseEntity.ok().build();
     }
 
@@ -135,14 +136,13 @@ public class UserController {
 
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUserByAdmin(@PathVariable(name = "email") String email) {
-
+        userService.deleteUser(email);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Void> findUserList(@PathVariable(name = "email") String email) {
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<FindUserResDto>> findUserList() {
+        return ResponseEntity.ok().body(userService.findUserList());
     }
 
 }

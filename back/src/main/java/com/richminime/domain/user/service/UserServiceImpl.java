@@ -38,6 +38,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -103,9 +104,9 @@ public class UserServiceImpl implements UserService {
         long remainMilliSeconds = jwtUtil.getRemainMilliSeconds((accessToken));
         refreshTokenRepository.deleteById(email);
         logoutAccessTokenRepository.save(LogoutAccessToken.builder()
-                        .email(email)
-                        .accessToken(accessToken)
-                        .expiration(remainMilliSeconds / 1000)
+                .email(email)
+                .accessToken(accessToken)
+                .expiration(remainMilliSeconds / 1000)
                 .build());
     }
 
@@ -223,9 +224,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<FindUserResDto> findUserList() {
+        return userRepository.findAll().stream().map((user) -> FindUserResDto.builder()
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .balance(user.getBalance())
+                .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteUser(String email) {
+        deleteUser(email);
+    }
+
+    @Override
+    public void updatePassword(UpdatePasswordReqDto updatePasswordReqDto) {
+        // 패스워드 암호화
+        String encrypted = passwordEncoder.encode(updatePasswordReqDto.getPassword());
+        // 현재 로그인 계정 가져오기
+        String email = getLoginId();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        user.updatePassowrd(encrypted);
+    }
+
+    @Override
     public void addUser(AddUserReqDto addUserRequest) {
         // uuid에 해당하는 커넥티드 아이디 가져오기
-        String connectedId = connectedIdMap.remove(addUserRequest.getUuid());
+//        String connectedId = connectedIdMap.remove(addUserRequest.getUuid());
+        String connectedId = "1234";
         if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
         String organizationCode = addUserRequest.getOrganization();
         // 패스워드 암호화
@@ -248,12 +275,12 @@ public class UserServiceImpl implements UserService {
         // Redis에 refresh 토큰 저장 필요
         // 회원의 이메일 아이디를 키로 저장
         refreshTokenRepository.save(RefreshToken.builder()
-                        .email(user.getEmail())
-                        .refreshToken(refreshToken)
-                        .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
+                .email(user.getEmail())
+                .refreshToken(refreshToken)
+                .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
                 .build());
         Map<String, Object> map = new HashMap<>();
-         map.put("accessToken", LoginResDto.builder()
+        map.put("accessToken", LoginResDto.builder()
                 .accessToken(accessToken)
                 .nickname(user.getNickname())
                 .balance(user.getBalance())

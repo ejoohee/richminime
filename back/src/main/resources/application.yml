@@ -9,7 +9,7 @@ management:
   servlet:
     context-path: /manage
 spa:
-  default-file: /dist/index.html
+  default-file: /dist/index.html5
 spring:
   web:
     resources:
@@ -23,14 +23,21 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create
+    # SQL스크립트는 Hibernate가 초기화되기 전에 실행되는데, 스크립트를 사용하여 hibernate에 의해
+    # 생성된 테이블에 데이터를 채우려면 아래의 설정을 true로 해야 한다.
+    defer-datasource-initialization: true
   database-platform: org.hibernate.dialect.H2Dialect
+  # data.sql 실행을 위한 추가
+  sql:
+    init:
+      mode: always
   datasource:
     driverClassName: org.h2.Driver
     password: ''
     username: sa
     hikari:
-      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
-#    url: jdbc:h2:mem:testdb
+      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime;NON_KEYWORDS=USER
+#    url: jdbc:h2:mem:testdb;NON_KEYWORDS=USER
   h2:
     console:
       path: /h2-console
