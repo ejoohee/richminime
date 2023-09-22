@@ -17,6 +17,7 @@ class SignUp4 extends StatefulWidget {
 }
 
 class _SignUp4State extends State<SignUp4> {
+  bool isEmailVerified = false;
   final _formKey = GlobalKey<FormState>(); // Form 위젯에 키를 할당하여 유효성 검사에 사용
 
   // 이메일 유효성 검사를 위한 정규식
@@ -25,44 +26,129 @@ class _SignUp4State extends State<SignUp4> {
   TextEditingController cardEmailController = TextEditingController();
   TextEditingController cardPasswordController = TextEditingController();
   TextEditingController cardNickNameController = TextEditingController();
-  Future<void> onNextButtonTap() async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const Login(),
-      ),
-    );
-    print("여기닷");
-    print(widget.cardNumber);
-    // final url = Uri.parse("http://10.0.2.2:8080/api/user");
+  String enteredCode = "";
 
-    // final response = await http.post(
-    //   url,
-    //   headers: {"Content-Type": "application/json"},
-    //   body: json.encode(
-    //     {
-    //       "id": cardEmailController.text,
-    //       "password": cardPasswordController.text,
-    //       "nickname": cardNickNameController.text,
-    //       "organiztion": widget.organization,
-    //       "cardNumber": widget.cardNumber,
-    //     },
+  Future<void> checkEmail() async {
+    final url = Uri.parse("http://10.0.2.2:8080/api/user/check-email-code");
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: {
+        "email": cardEmailController.text,
+        "code": enteredCode,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        isEmailVerified = true; // 인증 성공 시 변수를 true로 설정
+      });
+    } else {
+      AlertDialog(
+        title: Text(response.body.toString()),
+      );
+    }
+  }
+
+  Future<void> showVerificationDialog() async {
+    TextEditingController verificationController = TextEditingController();
+    await showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('이메일 인증'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('이메일로 발송된 인증번호를 입력하세요.'),
+              TextFormField(
+                controller: verificationController,
+                decoration: const InputDecoration(
+                  labelText: '인증번호',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                // 인증번호 검증 로직
+                enteredCode = verificationController.text;
+                checkEmail();
+                // 서버로 enteredCode를 보내어 검증하고, 결과에 따라 다음 단계로 진행
+                Navigator.of(dialogContext).pop(); // 대화상자 닫기
+              },
+              child: const Text('확인'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // 대화상자 닫기
+              },
+              child: const Text('취소'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> onExistButtonTap() async {
+    final url = Uri.parse("http://10.0.2.2:8080/api/user/check-login-email");
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+      body: {"email": cardEmailController.text},
+    );
+
+    if (response.statusCode == 200) {
+      await showVerificationDialog();
+    } else {
+      AlertDialog(
+        title: Text(response.body.toString()),
+      );
+    }
+  }
+
+  Future<void> onNextButtonTap() async {
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => const Login(),
     //   ),
     // );
+    print("여기닷");
+    print(widget.cardNumber);
+    final url = Uri.parse("http://10.0.2.2:8080/api/user");
 
-    // if (response.statusCode == 201) {
-    //   if (!context.mounted) return;
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => const Login(),
-    //     ),
-    //   );
-    // } else {
-    //   AlertDialog(
-    //     title: Text(response.body.toString()),
-    //   );
-    // }
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: json.encode(
+        {
+          "id": cardEmailController.text,
+          "password": cardPasswordController.text,
+          "nickname": cardNickNameController.text,
+          "organiztion": widget.organization,
+          "cardNumber": widget.cardNumber,
+        },
+      ),
+    );
+
+    if (response.statusCode == 201) {
+      if (!context.mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Login(),
+        ),
+      );
+    } else {
+      AlertDialog(
+        title: Text(response.body.toString()),
+      );
+    }
   }
 
   @override
@@ -105,24 +191,77 @@ class _SignUp4State extends State<SignUp4> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      TextFormField(
-                        controller: cardEmailController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return '이메일을 입력하세요.';
-                          } else if (!emailRegex.hasMatch(value)) {
-                            return '유효한 이메일을 입력하세요.';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 10),
-                          labelText: '이메일',
-                          fillColor: Color(0xFFFFFDFD),
-                          filled: true,
-                        ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: cardEmailController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '이메일을 입력하세요.';
+                                } else if (!emailRegex.hasMatch(value)) {
+                                  return '유효한 이메일을 입력하세요.';
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 10),
+                                labelText: '이메일',
+                                fillColor: Color(0xFFFFFDFD),
+                                filled: true,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              String email = cardEmailController.text;
+
+                              emailRegex.hasMatch(email)
+                                  ? onExistButtonTap()
+                                  : showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('알림'),
+                                          content:
+                                              const Text('유효한 이메일을 입력하세요.'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('확인'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: 80,
+                              height: 60,
+                              decoration:
+                                  const BoxDecoration(color: Colors.white),
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFFFBEBE),
+                                ),
+                                child: const Text(
+                                  "인증",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 10),
                       TextFormField(
