@@ -15,9 +15,9 @@ public interface ItemService {
     // 3. 테마 구매하기
     // 4. 테마 카테고리별 조회(확장)
     List<ItemResDto> findAllItem();
-    ItemResDto findItem(Long itemId, String token);
+    ItemResDto findItem(Long itemId);
 
-    List<ItemResDto> findAllItemByType(ItemType itemType, String token);
+    List<ItemResDto> findAllItemByType(ItemType itemType);
 
     List<ItemResDto> findAllItemByCondition(ItemSearchCondition condition);
 
