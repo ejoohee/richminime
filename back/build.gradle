@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '2.7.15'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+	id "org.sonarqube" version "4.3.1.3277"
 }
 
 group = 'com.richminime'
@@ -32,6 +33,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation group: 'org.glassfish', name: 'javax.json', version: '1.0.4'
 
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 //	runtimeOnly 'com.h2database:h2:1.4.200'
@@ -52,13 +54,16 @@ dependencies {
 	//querydsl
 	implementation "com.querydsl:querydsl-jpa:5.0.0"
 	implementation "com.querydsl:querydsl-apt:5.0.0"
+	// webflux
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
 
 querydsl {
 	jpa = true
-	querydslSourcesDir = querydslDir}
+	querydslSourcesDir = querydslDir
+}
 
 sourceSets {
 	main.java.srcDir querydslDir
@@ -79,5 +84,13 @@ configurations {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+sonar {
+	properties {
+		property "sonar.host.url", "http://sonarqube.richminime.site/"
+		property "sonar.login", "admin"
+		property "sonar.password", "richminime"		
+	}
 }
 

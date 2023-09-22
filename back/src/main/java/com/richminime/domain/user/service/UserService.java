@@ -1,12 +1,12 @@
 package com.richminime.domain.user.service;
 
-import com.richminime.domain.user.dto.request.AddUserReqDto;
-import com.richminime.domain.user.dto.request.CheckEmailCodeReqDto;
-import com.richminime.domain.user.dto.request.GenerateConnectedIdReqDto;
-import com.richminime.domain.user.dto.request.LoginReqDto;
+import com.richminime.domain.user.dto.request.*;
 import com.richminime.domain.user.dto.response.CheckEmailResDto;
+import com.richminime.domain.user.dto.response.FindBalanceResDto;
+import com.richminime.domain.user.dto.response.FindUserResDto;
 import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
 
+import java.util.List;
 import java.util.Map;
 
 public interface UserService {
@@ -26,5 +26,21 @@ public interface UserService {
     CheckEmailResDto checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto);
 
     Map<String, Object> reissueToken(String accessToken, String refreshToken);
+
+    void updateUser(UpdateUserReqDto updateUserReqDto);
+
+    void deleteUser();
+
+    FindUserResDto findUser();
+
+    FindBalanceResDto findBalance();
+
+    void updateBalance(Long balance);
+
+    List<FindUserResDto> findUserList();
+
+    void deleteUser(String email);
+
+    void updatePassword(UpdatePasswordReqDto updatePasswordReqDto);
 
 }

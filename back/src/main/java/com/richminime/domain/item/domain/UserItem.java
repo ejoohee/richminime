@@ -23,6 +23,7 @@ public class UserItem {
     @Column(name = "user_item_id")
     private Long userItemId;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;

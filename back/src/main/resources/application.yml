@@ -9,7 +9,7 @@ management:
   servlet:
     context-path: /manage
 spa:
-  default-file: /dist/index.html
+  default-file: /dist/index.html5
 spring:
   web:
     resources:
@@ -29,8 +29,8 @@ spring:
     password: ''
     username: sa
     hikari:
-      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
-#    url: jdbc:h2:mem:testdb
+      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime;NON_KEYWORDS=USER
+#    url: jdbc:h2:mem:testdb;NON_KEYWORDS=USER
   h2:
     console:
       path: /h2-console
@@ -95,3 +95,4 @@ springfox:
   documentation:
     swagger:
       use-model-v3: 'false'
+
