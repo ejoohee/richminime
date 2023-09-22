@@ -1,5 +1,8 @@
 package com.richminime.domain.clothing.service;
 
+import com.richminime.domain.bankBook.constant.TransactionType;
+import com.richminime.domain.bankBook.dao.BankBookRepository;
+import com.richminime.domain.bankBook.domain.BankBook;
 import com.richminime.domain.clothing.constant.ClothingType;
 import com.richminime.domain.clothing.dao.ClothingRepository;
 import com.richminime.domain.clothing.dao.UserClothingRepository;
@@ -12,10 +15,12 @@ import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.exception.InsufficientBalanceException;
+import com.richminime.global.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,13 +35,16 @@ public class UserClothingServiceImpl implements UserClothingService {
     private final UserClothingRepository userClothingRepository;
     private final ClothingRepository clothingRepository;
     private final UserRepository userRepository;
+    private final BankBookRepository bankBookRepository;
+
 
     @Transactional
     @Override
     public void addMyClothing(UserClothingReqDto userClothingReqDto) {
 
-        long userId = userClothingReqDto.getUserId();
-        User user = userRepository.findById(userId)
+        String loggedInUserEmail = SecurityUtils.getLoggedInUserEmail();
+
+        User user = userRepository.findByEmail(loggedInUserEmail)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         long clothingId = userClothingReqDto.getClothingId();
@@ -49,6 +57,16 @@ public class UserClothingServiceImpl implements UserClothingService {
         if (newBalance < 0)
             throw new InsufficientBalanceException(INSUFFICINET_BALANCE.getMessage());
 
+        BankBook bankBook = BankBook.builder()
+                .userId(user.getUserId())
+                .amount(clothing.getPrice())
+                .date(LocalDate.now())
+                .balance(newBalance)
+                .transactionType(TransactionType.구매)
+                .summary(clothing.getClothingInfo())
+                .build();
+
+        bankBookRepository.save(bankBook);
         user.updateBalance(newBalance);
 
         UserClothing userClothing = UserClothing.builder()
@@ -66,10 +84,20 @@ public class UserClothingServiceImpl implements UserClothingService {
                 .orElseThrow(() -> new ClothingNotFoundException(CLOTHING_NOT_FOUND.getMessage()));
 
         User user = userClothing.getUser();
-        long newBalance = user.getBalance() + Math.round(userClothing.getClothing().getPrice() * 0.4);
+        long saleAmount = Math.round(userClothing.getClothing().getPrice() * 0.4);
+        long newBalance = user.getBalance() + saleAmount;
         user.updateBalance(newBalance);
 
-        //TODO bank에도 판매 log 기록
+        BankBook bankBook = BankBook.builder()
+                .userId(user.getUserId())
+                .amount(saleAmount)
+                .date(LocalDate.now())
+                .balance(newBalance)
+                .transactionType(TransactionType.판매)
+                .summary(userClothing.getClothing().getClothingInfo())
+                .build();
+
+        bankBookRepository.save(bankBook);
 
         userClothingRepository.delete(userClothing);
     }

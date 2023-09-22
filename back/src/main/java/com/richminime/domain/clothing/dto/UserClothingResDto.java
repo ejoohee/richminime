@@ -15,7 +15,7 @@ public class UserClothingResDto {
     private final String clothingImg;
     private final String clothingInfo;
     private final String clothingName;
-    private final Long price;
+    private final long price;
 
     public static UserClothingResDto entityToDto(UserClothing userClothing) {
         return UserClothingResDto.builder()
