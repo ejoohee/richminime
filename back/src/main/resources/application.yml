@@ -30,7 +30,7 @@ spring:
     username: sa
     hikari:
       jdbc-url: jdbc:h2:tcp://localhost/~/richMinime;NON_KEYWORDS=USER
-#    url: jdbc:h2:mem:testdb; NON_KEYWORDS=USER
+#    url: jdbc:h2:mem:testdb;NON_KEYWORDS=USER
   h2:
     console:
       path: /h2-console
