@@ -7,6 +7,7 @@ import com.richminime.domain.item.dto.ItemResDto;
 import com.richminime.domain.item.dto.ItemUpdateReqDto;
 import com.richminime.domain.item.service.ItemService;
 import com.richminime.global.dto.MessageDto;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,23 +23,21 @@ public class ItemController {
     private final String ACCESS_TOKEN = "AccessToken";
     private final ItemService itemService;
 
+    @Operation(
+            summary = "테마 상점에 등록된 테마 전체 또는 카테고리별 조회",
+            description = "선택한 방법으로 테마 리스트를 조회합니다."
+    )
     @GetMapping
-    // 테마 전체 목록 조회
-    public ResponseEntity<List<ItemResDto>> findAllItem(@RequestHeader(ACCESS_TOKEN) String token) {
-        return ResponseEntity.ok(itemService.findAllItem());
+    // 테마 목록 조건별 조회
+    public ResponseEntity<List<ItemResDto>> findAllItemByCondition(@RequestParam(required = false) ItemType itemType) {
+        return ResponseEntity.ok(itemService.findAllItemByType(itemType));
     }
     
     // 테마 상세 조회
     @GetMapping("/{itemId}")
-    public ResponseEntity<ItemResDto> findItem(@PathVariable Long itemId, @RequestHeader(ACCESS_TOKEN) String token) {
-        return ResponseEntity.ok(itemService.findItem(itemId, token));
+    public ResponseEntity<ItemResDto> findItem(@PathVariable Long itemId) {
+        return ResponseEntity.ok(itemService.findItem(itemId));
     }
-    
-    // 테마 카테고리별 조회(확장)
-//    @GetMapping
-//    public ResponseEntity<List<ItemResDto>> findAllItemByType(@RequestParam(required = false) ItemType itemType, @RequestHeader(ACCESS_TOKEN) String token) {
-//        return ResponseEntity.ok(itemService.findAllItemByType(itemType, token));
-//    }
 
     // 관리자 기능
     // 테마 등록
@@ -51,10 +50,6 @@ public class ItemController {
     // 관리자 기능
     // 테마 삭제
     @DeleteMapping("/{itemId}")
-//    public ResponseEntity<ResponseDto<?>> deleteItem(@PathVariable Long itemId, @RequestHeader(ACCESS_TOKEN) String token){
-//        itemService.deleteItem(itemId, token);
-//        return ResponseEntity.ok(ResponseDto.create("DELETE SUCCESS"));
-//    }
     public ResponseEntity<MessageDto> deleteItem(@PathVariable Long itemId, @RequestHeader(ACCESS_TOKEN) String token) {
         itemService.deleteItem(itemId, token);
         return ResponseEntity.ok(MessageDto.msg("DELETE SUCCESS"));
