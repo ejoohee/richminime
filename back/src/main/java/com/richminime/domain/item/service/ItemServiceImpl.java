@@ -64,8 +64,9 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public List<ItemResDto> findAllItemByType(ItemType itemType) {
-        if(itemType == null)
-            findAllItem();
+        if(itemType == null){
+            return findAllItem();
+        }
 
         log.info("[테마 상점 카테고리별 조회] 테마 카테고리별 조회");
 
