@@ -1,5 +1,6 @@
 package com.richminime.domain.item.service;
 
+import com.richminime.domain.item.domain.ItemType;
 import com.richminime.domain.item.dto.ItemReqDto;
 import com.richminime.domain.item.dto.ItemResDto;
 import com.richminime.domain.item.dto.ItemSearchCondition;
@@ -14,7 +15,9 @@ public interface ItemService {
     // 3. 테마 구매하기
     // 4. 테마 카테고리별 조회(확장)
     List<ItemResDto> findAllItem();
-    ItemResDto findItem(Long itemId, String token);
+    ItemResDto findItem(Long itemId);
+
+    List<ItemResDto> findAllItemByType(ItemType itemType);
 
     List<ItemResDto> findAllItemByCondition(ItemSearchCondition condition);
 

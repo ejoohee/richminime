@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum OrganizationCode {
 
     KB_CARD("0301"),
-    HYNDAI_CARD("0302"),
+    HYUNDAI_CARD("0302"),
     SAMSUNG_CARD("0303"),
     NH_CARD("0304"),
     BC_CARD("0305"),

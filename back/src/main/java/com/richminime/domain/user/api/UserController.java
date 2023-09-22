@@ -1,13 +1,7 @@
 package com.richminime.domain.user.api;
 
-import com.richminime.domain.user.dto.request.AddUserReqDto;
-import com.richminime.domain.user.dto.request.CheckEmailCodeReqDto;
-import com.richminime.domain.user.dto.request.GenerateConnectedIdReqDto;
-import com.richminime.domain.user.dto.request.LoginReqDto;
-import com.richminime.domain.user.dto.response.CheckEmailResDto;
-import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
-import com.richminime.domain.user.dto.response.LoginResDto;
-import com.richminime.domain.user.dto.response.ReissueTokenResDto;
+import com.richminime.domain.user.dto.request.*;
+import com.richminime.domain.user.dto.response.*;
 import com.richminime.domain.user.service.UserService;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.dto.ResponseDto;
@@ -17,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -96,38 +91,36 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<Void> updateUser(@RequestParam(name = "email") String email) {
-
+    public ResponseEntity<Void> updateUser(@RequestBody UpdateUserReqDto updateUserReqDto) {
+        userService.updateUser(updateUserReqDto);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/password")
-    public ResponseEntity<Void> updatePassword(@RequestParam(name = "email") String email) {
-
+    public ResponseEntity<Void> updatePassword(@RequestBody UpdatePasswordReqDto updatePasswordReqDto) {
+        userService.updatePassword(updatePasswordReqDto);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteUser(@RequestParam(name = "email") String email) {
-
+    public ResponseEntity<Void> deleteUser() {
+        userService.deleteUser();
         return ResponseEntity.ok().build();
     }
 
     @GetMapping
-    public ResponseEntity<Void> findUser(@RequestParam(name = "email") String email) {
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<FindUserResDto> findUser() {
+        return ResponseEntity.ok().body(userService.findUser());
     }
 
     @GetMapping("/balance")
-    public ResponseEntity<Void> findBalance(@RequestParam(name = "email") String email) {
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<FindBalanceResDto> findBalance() {
+        return ResponseEntity.ok().body(userService.findBalance());
     }
 
     @PatchMapping("/balance")
-    public ResponseEntity<Void> updateBalance(@RequestParam(name = "email") String email) {
-
+    public ResponseEntity<Void> updateBalance(@RequestParam(name = "balance") Long balance) {
+        userService.updateBalance(balance);
         return ResponseEntity.ok().build();
     }
 
@@ -143,14 +136,13 @@ public class UserController {
 
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUserByAdmin(@PathVariable(name = "email") String email) {
-
+        userService.deleteUser(email);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Void> findUserList(@PathVariable(name = "email") String email) {
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<FindUserResDto>> findUserList() {
+        return ResponseEntity.ok().body(userService.findUserList());
     }
 
 }

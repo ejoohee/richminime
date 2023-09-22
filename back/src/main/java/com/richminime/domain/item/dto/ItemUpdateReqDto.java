@@ -1,9 +1,7 @@
 package com.richminime.domain.item.dto;
 
 import lombok.Data;
-import lombok.Getter;
 
-@Getter
 @Data
 public class ItemUpdateReqDto {
     
