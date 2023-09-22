@@ -1,6 +1,7 @@
 package com.richminime.domain.user.dto.request;
 
 import com.richminime.domain.user.domain.User;
+import com.richminime.domain.user.domain.UserType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,7 +37,7 @@ public class AddUserReqDto {
 //                .birthDate(this.birthDate)
                 // 관리자는 별도로 생성할 예정
                 // 기본값 ROLE_USER
-                .userType("ROLE_USER")
+                .userType(UserType.ROLE_USER.getValue())
                 .build();
     }
 
