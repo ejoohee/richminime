@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JWTUtil {
 
@@ -26,9 +28,15 @@ public class JWTUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
-
+ 
+    // 이메일(아이디) 가져오기
     public String getUsername(String token) {
         return extractAllClaims(token).get("id", String.class);
+    }
+
+    // userId(PK) 가져오기 추가 (유녕)
+    public Long getUserNo(String token) {
+        return (Long) Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().get("id");
     }
 
     private Key getSigningKey(String secretKey) {

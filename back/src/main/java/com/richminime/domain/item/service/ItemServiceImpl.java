@@ -7,6 +7,7 @@ import com.richminime.domain.item.dto.ItemResDto;
 import com.richminime.domain.item.dto.ItemSearchCondition;
 import com.richminime.domain.item.dto.ItemUpdateReqDto;
 import com.richminime.domain.item.repository.ItemRepository;
+import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,8 +32,8 @@ public class ItemServiceImpl implements ItemService {
     price
      */
 
-
     private final ItemRepository itemRepository;
+    private final JWTUtil jwtUtil;
 
     /**
      * 상점에 등록된 아이템 전체 조회
@@ -72,18 +73,34 @@ public class ItemServiceImpl implements ItemService {
     }
 
     /**
-     * 상점에 등록된 테마 조건별 조회(카테고리)
+     * 상점에 등록된 테마 카테고리별 조회
      * 사용자가 선택한 카테고리에 맞는 테마 리스트만 조회됩니다.
+     * @param itemType
+     * @param token
+     * @return
+     */
+    @Transactional
+    @Override
+    public List<ItemResDto> findAllItemByType(ItemType itemType, String token) {
+        log.info("[테마 상점 카테고리별 조회] 테마 카테고리별 조회");
+
+        return itemRepository.findAllByItemType(itemType).stream()
+                .map(item -> ItemResDto.entityToDto(item))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 상점에 등록된 테마 조건별 조회
+     * 사용자가 선택한 조건에 맞는 테마 리스트만 조회됩니다.
      *
-     * 확장 기능입니다. 구현 XXX
+     * 확장 기능입니다.
      * @param condition
      * @return
      */
     @Transactional
     @Override
     public List<ItemResDto> findAllItemByCondition(ItemSearchCondition condition) {
-
-        log.info("[테마 상점 카테고리별 조회] 기능 확장 예정입니다.");
+        log.info("[테마 상점 조건별 조회] 기능 확장 예정입니다.");
         return null;
     }
 
@@ -99,6 +116,9 @@ public class ItemServiceImpl implements ItemService {
     public ItemResDto addItem(ItemReqDto itemReqDto, String token) {
         log.info("[테마 상점 테마 등록] 테마 상점에 새로운 테마 등록 요청");
         // token => 관리자 유저인지 확인
+
+        Long userId = jwtUtil.getUserNo(token);
+        log.info("[테마 상점 테마 등록] 로그인 유저 userId : {}", userId);
 
         Item item = Item.builder()
                 .itemName(itemReqDto.getItemName())

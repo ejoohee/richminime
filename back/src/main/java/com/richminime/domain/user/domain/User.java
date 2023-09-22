@@ -46,14 +46,16 @@ public class User {
     @Column(length = 20, nullable = false)
     private String cardNumber;
 
-    @Column(nullable = false)
-    private String userType;
+    @Column(nullable = false, columnDefinition = "varchar(50)")
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
 
 //    @Column(nullable = false)
 //    private Date birthDate;
 
     @OneToMany(mappedBy = "promptId")
     private List<Prompt> prompts = new ArrayList<>();
+
     @Builder
     public User(String email, String password, String nickname, String connectedId, String organizationCode, String cardNumber, String userType) {
         this.email = email;
@@ -62,7 +64,7 @@ public class User {
         this.connectedId = connectedId;
         this.organizationCode = organizationCode;
         this.cardNumber = cardNumber;
-        this.userType = userType;
+        this.userType = UserType.getUserType(userType);
 //        this.birthDate = birthDate;
     }
 
