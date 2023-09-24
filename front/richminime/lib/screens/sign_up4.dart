@@ -20,9 +20,29 @@ class SignUp4 extends StatefulWidget {
   State<SignUp4> createState() => _SignUp4State();
 }
 
-class _SignUp4State extends State<SignUp4> {
+class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
   bool isEmailVerified = false;
   final _formKey = GlobalKey<FormState>(); // Form 위젯에 키를 할당하여 유효성 검사에 사용
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  double percent = 0.75;
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1), // 애니메이션의 지속시간
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: 0.75, end: 1).animate(_controller)
+      ..addListener(() {
+        setState(() {
+          percent = _animation.value;
+        });
+      });
+    _controller.forward();
+  }
 
   // 이메일 유효성 검사를 위한 정규식
   final emailRegex = RegExp(
@@ -170,10 +190,10 @@ class _SignUp4State extends State<SignUp4> {
             LinearPercentIndicator(
               alignment: MainAxisAlignment.center,
               width: MediaQuery.of(context).size.width,
-              animation: true,
+              animation: false,
               animationDuration: 1200,
               lineHeight: 30,
-              percent: 1.0,
+              percent: percent,
               center: const Text('4/4'),
               barRadius: const Radius.circular(16),
               progressColor: Colors.red[200],

@@ -12,12 +12,28 @@ class SignUp2 extends StatefulWidget {
   State<SignUp2> createState() => _SignUp2State();
 }
 
-class _SignUp2State extends State<SignUp2> {
+class _SignUp2State extends State<SignUp2> with SingleTickerProviderStateMixin {
   late String bankCode;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  double percent = 0.25;
 
   @override
   void initState() {
     super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1), // 애니메이션의 지속시간
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: 0.25, end: 0.5).animate(_controller)
+      ..addListener(() {
+        setState(() {
+          percent = _animation.value;
+        });
+      });
+
     switch (widget.bank) {
       case 'KB':
         bankCode = '0301';
@@ -50,6 +66,14 @@ class _SignUp2State extends State<SignUp2> {
         bankCode = '0313';
         break;
     }
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // 애니메이션을 사용한 경우 dispose 메서드를 호출해야 합니다.
+    super.dispose();
   }
 
   onNoButtonTap() async {
@@ -108,10 +132,10 @@ class _SignUp2State extends State<SignUp2> {
           LinearPercentIndicator(
             alignment: MainAxisAlignment.center,
             width: MediaQuery.of(context).size.width,
-            animation: true,
+            animation: false,
             animationDuration: 1200,
             lineHeight: 30,
-            percent: 0.5,
+            percent: percent,
             center: const Text('2/4'),
             barRadius: const Radius.circular(16),
             progressColor: Colors.red[200],

@@ -38,10 +38,32 @@ class CardNumberInputFormatter extends TextInputFormatter {
   }
 }
 
-class _SignUp3State extends State<SignUp3> {
+class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
   TextEditingController cardEmailController = TextEditingController();
   TextEditingController cardPasswordController = TextEditingController();
   TextEditingController cardNumController = TextEditingController();
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  double percent = 0.5;
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1), // 애니메이션의 지속시간
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: 0.5, end: 0.75).animate(_controller)
+      ..addListener(() {
+        setState(() {
+          percent = _animation.value;
+        });
+      });
+
+    _controller.forward();
+  }
+
   Future<void> onNextButtonTap() async {
     // Navigator.push(
     //   context,
@@ -101,10 +123,10 @@ class _SignUp3State extends State<SignUp3> {
             LinearPercentIndicator(
               alignment: MainAxisAlignment.center,
               width: MediaQuery.of(context).size.width,
-              animation: true,
+              animation: false,
               animationDuration: 1200,
               lineHeight: 30,
-              percent: 0.75,
+              percent: percent,
               center: const Text('3/4'),
               barRadius: const Radius.circular(16),
               progressColor: Colors.red[200],
