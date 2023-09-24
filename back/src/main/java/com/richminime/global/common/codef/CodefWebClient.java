@@ -11,10 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Component
 public class CodefWebClient {
 
     @Value("${codef.auth-header}")
@@ -47,8 +50,10 @@ public class CodefWebClient {
 
     private WebClient devWebClient;
 
-    public CodefWebClient() {
+    @PostConstruct
+    public void init() {
         // 서비스 시작 시 액세스 토큰 발급
+        log.info("authHeader -------------------------------------->{}", authHeader);
         generateAccessToken();
         // codef url로 초기화
         devWebClient = WebClient.builder()
