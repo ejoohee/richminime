@@ -9,8 +9,12 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 class SignUp4 extends StatefulWidget {
   final String organization;
   final String cardNumber;
+  final String uuid;
   const SignUp4(
-      {required this.organization, required this.cardNumber, Key? key})
+      {required this.organization,
+      required this.cardNumber,
+      required this.uuid,
+      Key? key})
       : super(key: key);
   @override
   State<SignUp4> createState() => _SignUp4State();
@@ -127,11 +131,12 @@ class _SignUp4State extends State<SignUp4> {
       headers: {"Content-Type": "application/json"},
       body: json.encode(
         {
-          "id": cardEmailController.text,
+          "email": cardEmailController.text,
           "password": cardPasswordController.text,
           "nickname": cardNickNameController.text,
-          "organiztion": widget.organization,
+          "organization": widget.organization,
           "cardNumber": widget.cardNumber,
+          "uuid": widget.uuid,
         },
       ),
     );

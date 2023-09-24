@@ -23,7 +23,7 @@ class App extends StatelessWidget {
           color: Color(0xFFEEb4a2),
         )),
       ),
-      home: const BankBook(),
+      home: const Login(),
     );
   }
 }

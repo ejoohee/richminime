@@ -43,47 +43,48 @@ class _SignUp3State extends State<SignUp3> {
   TextEditingController cardPasswordController = TextEditingController();
   TextEditingController cardNumController = TextEditingController();
   Future<void> onNextButtonTap() async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SignUp4(
-          organization: widget.code,
-          cardNumber: cardNumController.text,
-        ),
-      ),
-    );
-
-    // final url = Uri.parse("http://10.0.2.2:8080/api/user/connected-id");
-
-    // final response = await http.post(
-    //   url,
-    //   headers: {"Content-Type": "application/json"},
-    //   body: json.encode(
-    //     {
-    //       "id": cardEmailController.text,
-    //       "password": cardPasswordController.text,
-    //       "organiztion": widget.code,
-    //       "cardNumber": cardNumController.text,
-    //     },
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => SignUp4(
+    //       organization: widget.code,
+    //       cardNumber: cardNumController.text,
+    //     ),
     //   ),
     // );
 
-    // if (response.statusCode == 201) {
-    //   if (!context.mounted) return;
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => SignUp4(
-    //         organization: widget.code,
-    //         cardNumber: cardNumController.text,
-    //       ),
-    //     ),
-    //   );
-    // } else {
-    //   AlertDialog(
-    //     title: Text(response.body.toString()),
-    //   );
-    // }
+    final url = Uri.parse("http://10.0.2.2:8080/api/user/connected-id");
+    print(widget.code);
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(
+        {
+          "id": cardEmailController.text,
+          "password": cardPasswordController.text,
+          "organization": widget.code,
+          "cardNumber": cardNumController.text,
+        },
+      ),
+    );
+
+    if (response.statusCode == 201) {
+      if (!context.mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignUp4(
+            uuid: jsonDecode(response.body)['uuid'],
+            organization: widget.code,
+            cardNumber: cardNumController.text,
+          ),
+        ),
+      );
+    } else {
+      AlertDialog(
+        title: Text(response.body.toString()),
+      );
+    }
   }
 
   @override

@@ -6,6 +6,7 @@ import com.richminime.domain.user.service.UserService;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/user")
 public class UserController {
 
@@ -58,6 +60,10 @@ public class UserController {
 
     @PostMapping("/connected-id")
     public ResponseEntity<GenerateConnectedIdResDto> generateConnectedId(@RequestBody GenerateConnectedIdReqDto generateConnectedIdRequest) {
+        log.info("기관코드" + " " +generateConnectedIdRequest.getOrganization());
+        log.info("아이디" + " " + generateConnectedIdRequest.getId());
+        log.info("비밀번호" + " " + generateConnectedIdRequest.getPassword());
+        log.info("카드번호" + " " + generateConnectedIdRequest.getCardNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.generateConnectedId(generateConnectedIdRequest));
     }
 
