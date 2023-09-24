@@ -7,6 +7,7 @@ import com.richminime.global.common.codef.CodefWebClient;
 import com.richminime.global.common.codef.dto.request.FindSpendingListReqDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +25,11 @@ public class SpendingServiceImpl implements SpendingService {
     private final SpendingRepository spendingRepository;
     private final UserRepository userRepository;
     private final CodefWebClient codefWebClient;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Override
-    public void addMonthSpending(Date now, User user) throws UnsupportedEncodingException {
+    public void addMonthSpending(Date now, User user) {
         // codef로 전 달 소비내역 모두 불러오기
         // date로 캘린더 생성
         Calendar calendar = Calendar.getInstance();
@@ -50,7 +53,11 @@ public class SpendingServiceImpl implements SpendingService {
             endDate.append(year).append(month).append(lastDay);
         }
         // 리스트로 받아서 한꺼번에 저장
-        spendingRepository.saveAll(codefWebClient.findSpendingList(FindSpendingListReqDto.create(user, startDate.toString(), endDate.toString()), user.getUserId()));
+        try {
+            spendingRepository.saveAll(codefWebClient.findSpendingList(FindSpendingListReqDto.create(user, startDate.toString(), endDate.toString()), user.getUserId()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -60,7 +67,7 @@ public class SpendingServiceImpl implements SpendingService {
      */
     @Override
     @Scheduled(cron = "0 0 0 * * *")
-    public void addDaySpending() throws UnsupportedEncodingException {
+    public void addDaySpending() {
         // 오늘 날짜 확인
         // date로 캘린더 생성
         Date date = new Date();
@@ -98,7 +105,11 @@ public class SpendingServiceImpl implements SpendingService {
         for (User user : userList) {
             // codef api 호출
             // 리스트로 받아서 한꺼번에 저장
-            spendingRepository.saveAll(codefWebClient.findSpendingList(FindSpendingListReqDto.create(user, startDate.toString(), endDate.toString()), user.getUserId()));
+            try {
+                spendingRepository.saveAll(codefWebClient.findSpendingList(FindSpendingListReqDto.create(user, startDate.toString(), endDate.toString()), user.getUserId()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }

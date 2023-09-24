@@ -3,8 +3,10 @@ package com.richminime.global.common.codef.dto.request;
 import com.richminime.domain.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Builder
 public class FindSpendingListReqDto {
 

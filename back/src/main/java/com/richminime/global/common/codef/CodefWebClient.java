@@ -8,6 +8,7 @@ import com.richminime.global.common.codef.dto.response.CodefOAuthResDto;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.util.rsa.RSAUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -36,12 +37,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CodefWebClient {
 
-//    @Value("${codef.authHeader}")
-    String authHeader;
+    @Value("${codef.auth-header}")
+    private String authHeader;
 
-    String accessToken;
+    @Value("${rsa.private-key}")
+    private String privateKey;
 
-    WebClient devWebClient;
+    private String accessToken;
+
+    private WebClient devWebClient;
 
     public CodefWebClient() {
         // 서비스 시작 시 액세스 토큰 발급
@@ -60,7 +64,7 @@ public class CodefWebClient {
         // 헤더에 추가
         WebClient oAuthWebClient = WebClient.builder()
                 .baseUrl("https://oauth.codef.io")
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic MjFjZTRiYTgtNTUzNy00NTRmLTg3YmUtN2RhYWQyOGVjYjFmOjA0MTZmODdjLWI4YTYtNGJjMS05ZDM2LTJlYTgwOTVlMTNjNA==") // 예시: Authorization 헤더 추가
+                .defaultHeader(HttpHeaders.AUTHORIZATION, authHeader) // 예시: Authorization 헤더 추가
                 .build();
         // api 요청
         Mono<CodefOAuthResDto> response = oAuthWebClient.post()
@@ -104,7 +108,10 @@ public class CodefWebClient {
     }
 
     // 카드 승인내역 조회
-    public List<Spending> findSpendingList(FindSpendingListReqDto request, Long userId) throws UnsupportedEncodingException {
+    public List<Spending> findSpendingList(FindSpendingListReqDto request, Long userId) throws Exception {
+        // rsa로 암호화된 card 번호 개인키로 복호화
+        request.setCardNo(RSAUtil.decryptRSA(request.getCardNo(), RSAUtil.privateKeyFromString(privateKey)));
+
         List<Spending> spendingList = null;
         // api 요청
         Mono<String> response = devWebClient.post()
