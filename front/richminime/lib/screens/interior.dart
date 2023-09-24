@@ -12,54 +12,57 @@ class _InteriorState extends State<Interior> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: const Text(
-          "앱빠",
-          style: TextStyle(color: Colors.black),
-        ),
-      ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: const Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 130, horizontal: 70),
-                        child: Text(
+              Flexible(
+                fit: FlexFit.tight,
+                flex: 4,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      fit: FlexFit.tight,
+                      flex: 1,
+                      child: Container(
+                        clipBehavior: Clip.hardEdge,
+                        margin: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        child: const Center(
+                            child: Text(
                           '전',
                           style: TextStyle(
                             color: Colors.black,
                           ),
                         )),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(7),
+                      ),
                     ),
-                    child: const Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 130, horizontal: 70),
-                        child: Text(
+                    Flexible(
+                      fit: FlexFit.tight,
+                      flex: 1,
+                      child: Container(
+                        clipBehavior: Clip.hardEdge,
+                        margin: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        child: const Center(
+                            child: Text(
                           '후',
                           style: TextStyle(
                             color: Colors.black,
                           ),
                         )),
-                  ),
-                ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
 
               // 테마+아이템이 들어갈 시 주어질 버튼
@@ -72,14 +75,16 @@ class _InteriorState extends State<Interior> {
               //     ),
               //   ),
               // ),
-              Expanded(
-                child: ListView(
+              Flexible(
+                fit: FlexFit.tight,
+                flex: 3,
+                child: ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   scrollDirection: Axis.horizontal,
-
-                  // Generate 100 widgets that display their index in the List.
-                  children: <Widget>[
-                    Container(
+                  itemCount: 30,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      clipBehavior: Clip.hardEdge,
                       margin: const EdgeInsets.all(5),
                       //임시값
                       width: 150,
@@ -87,71 +92,15 @@ class _InteriorState extends State<Interior> {
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      child: const Text(
-                        'Themes',
+                      child: Center(
+                        child: Text(
+                          'Themes $index',
+                        ),
                       ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(5),
-                      //임시값
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: const Text(
-                        '테마들',
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(5),
-                      //임시값
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: const Text(
-                        '테마들',
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(5),
-                      //임시값
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: const Text(
-                        '테마들',
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(5),
-                      //임시값
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: const Text(
-                        '테마들',
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(5),
-                      //임시값
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: const Text(
-                        '테마들',
-                      ),
-                    ),
-                  ],
+                    );
+                  },
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 15),
                 ),
               ),
             ],

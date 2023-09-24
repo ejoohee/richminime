@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:richminime/miniroom/mini_room_widget.dart';
+import 'package:richminime/screens/closet.dart';
+import 'package:richminime/screens/interior.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,8 +13,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int currentPageIndex = 0;
   NavigationDestinationLabelBehavior labelBehavior =
-      NavigationDestinationLabelBehavior.alwaysShow;
+      NavigationDestinationLabelBehavior.onlyShowSelected;
 
+  final List<Widget> _widgetOptions = <Widget>[
+    const Closet(),
+    const MiniRoomWidget(),
+    const Interior(),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,10 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
       ),
-      body: const Center(
-        child: MiniRoomWidget(),
-      ),
+      body: _widgetOptions.elementAt(currentPageIndex),
       bottomNavigationBar: NavigationBar(
+        backgroundColor: Colors.transparent,
+        indicatorColor: Theme.of(context).cardColor,
+        animationDuration: const Duration(milliseconds: 500),
         labelBehavior: labelBehavior,
         selectedIndex: currentPageIndex,
         onDestinationSelected: (int index) {
@@ -46,16 +54,16 @@ class _HomeScreenState extends State<HomeScreen> {
         destinations: const <Widget>[
           NavigationDestination(
             icon: Icon(Icons.explore),
-            label: 'Explore',
+            label: '옷장',
           ),
           NavigationDestination(
-            icon: Icon(Icons.commute),
-            label: 'Commute',
+            icon: Icon(Icons.home),
+            label: '호옴',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.bookmark),
             icon: Icon(Icons.bookmark_border),
-            label: 'Saved',
+            label: '테마',
           ),
         ],
       ),
