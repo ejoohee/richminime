@@ -36,13 +36,13 @@ public class UserClothingServiceImpl implements UserClothingService {
     private final ClothingRepository clothingRepository;
     private final UserRepository userRepository;
     private final BankBookRepository bankBookRepository;
-
+    private final SecurityUtils securityUtils;
 
     @Transactional
     @Override
     public void addMyClothing(UserClothingReqDto userClothingReqDto) {
 
-        String loggedInUserEmail = SecurityUtils.getLoggedInUserEmail();
+        String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
 
         User user = userRepository.findByEmail(loggedInUserEmail)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
@@ -105,8 +105,13 @@ public class UserClothingServiceImpl implements UserClothingService {
     @Transactional
     @Override
     public List<UserClothingResDto> findAllMyClothingByType(ClothingType clothingType) {
+        String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
+
+        User user = userRepository.findByEmail(loggedInUserEmail)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
         if (clothingType == null) {
-            List<UserClothing> userClothingList = userClothingRepository.findAll();
+            List<UserClothing> userClothingList = userClothingRepository.findAllByUser_UserId(user.getUserId());
             List<UserClothingResDto> userClothingResDtoList = new ArrayList<>();
             for (UserClothing userClothing : userClothingList) {
                 UserClothingResDto dto = UserClothingResDto.entityToDto(userClothing);
@@ -114,7 +119,7 @@ public class UserClothingServiceImpl implements UserClothingService {
             }
             return userClothingResDtoList;
         } else {
-            List<UserClothing> userClothingListByType = userClothingRepository.findAllByClothing_ClothingType(clothingType);
+            List<UserClothing> userClothingListByType = userClothingRepository.findAllByUser_UserIdAndClothing_ClothingType(user.getUserId(), clothingType);
             List<UserClothingResDto> userClothingResDtoListByType = new ArrayList<>();
             for (UserClothing userClothing : userClothingListByType) {
                 UserClothingResDto dto = UserClothingResDto.entityToDto(userClothing);
