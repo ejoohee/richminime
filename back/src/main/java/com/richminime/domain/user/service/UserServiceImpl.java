@@ -254,7 +254,7 @@ public class UserServiceImpl implements UserService {
         // 현재 로그인 계정 가져오기
         String email = getLoginId();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
-        user.updatePassowrd(encrypted);
+        user.updatePassword(encrypted);
     }
 
     @Override
