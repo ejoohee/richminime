@@ -38,7 +38,7 @@ spring:
   #   hikari:
   #     jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
   datasource:
-    url: jdbc:mariadb://mariadb:3306/richminime
+    url: jdbc:mariadb://minimi-mariadb-1:3306/richminime
     username: root
     password: richminime
     driver-class-name: org.mariadb.jdbc.Driver
