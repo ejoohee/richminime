@@ -17,6 +17,7 @@ import java.util.List;
 @Getter
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "users")
 @Entity
 public class User {
 

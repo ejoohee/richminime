@@ -8,12 +8,12 @@ import java.util.List;
 
 @Getter
 @Setter
-public class CreateConnectedIdRequest {
+public class CreateConnectedIdReqDto {
 
     List<AccountDto> accountList;
 
 
-    public CreateConnectedIdRequest() {
+    public CreateConnectedIdReqDto() {
         this.accountList = new ArrayList<>();
     }
 
