@@ -127,7 +127,7 @@ public class CodefWebClient {
                 .bodyToMono(String.class);
         // URL 디코드
         String decodedResponse = URLDecoder.decode(response.block(), "UTF-8");
-        log.info("response------------------->{}", decodedResponse);
+        log.info("spending response------------------->{}", decodedResponse);
         // json 파싱
         return parseSpendingListFromJson(decodedResponse, userId);
     }

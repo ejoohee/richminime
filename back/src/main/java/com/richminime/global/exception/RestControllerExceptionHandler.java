@@ -34,6 +34,13 @@ public class RestControllerExceptionHandler {
         );
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<ResponseDto<String>> handleIllegalArgumentException(IllegalArgumentException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ResponseDto.create(exception.getMessage())
+        );
+    }
+
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ResponseDto<String>> handleForbiddenException(
             ForbiddenException exception) {
