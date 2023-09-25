@@ -9,9 +9,9 @@ import lombok.Data;
 public class ClothingReqDto {
 
     private String clothingName;
-    private ClothingType clothingType;
+    private String clothingType;
     private String clothingImg;
     private String clothingInfo;
-    private Long price;
+    private long price;
 
 }
