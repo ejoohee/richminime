@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:richminime/screens/bankbook.dart';
 import 'package:richminime/screens/login.dart';
 
 void main() {

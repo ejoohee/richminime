@@ -15,6 +15,12 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final _formKey = GlobalKey<FormState>(); // Form 위젯에 키를 할당하여 유효성 검사에 사용
+
+  // 이메일 유효성 검사를 위한 정규식
+  final emailRegex = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -73,81 +79,104 @@ class _LoginState extends State<Login> {
               alignment: Alignment.topCenter,
               child: SizedBox(
                 width: 300,
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        labelText: '이메일',
-                        fillColor: Color(0xFFFFFDFD),
-                        filled: true,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '이메일을 입력하세요.';
+                          } else if (!emailRegex.hasMatch(value)) {
+                            return '유효한 이메일을 입력하세요.';
+                          }
+                          return null;
+                        },
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          labelText: '이메일',
+                          fillColor: Color(0xFFFFFDFD),
+                          filled: true,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true, // 비밀번호 숨기기 옵션
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        labelText: '비밀번호',
-                        fillColor: Color(0xFFFFFDFD),
-                        filled: true,
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true, // 비밀번호 숨기기 옵션
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '비밀번호를 입력하세요.';
+                          } else if (value.length < 8 || value.length > 16) {
+                            return '비밀번호는 8~16자리 사이여야 합니다.';
+                          }
+                          return null;
+                        },
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          labelText: '비밀번호',
+                          fillColor: Color(0xFFFFFDFD),
+                          filled: true,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        GestureDetector(
-                          onTap: onLoginButtonTap,
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: 110,
-                            height: 50,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFFBEBE),
-                            ),
-                            child: const Text(
-                              "로그인",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              if (_formKey.currentState!.validate()) {
+                                await onLoginButtonTap();
+                              }
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: 110,
+                              height: 50,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFFBEBE),
+                              ),
+                              child: const Text(
+                                "로그인",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const SignUp()));
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: 110,
-                            height: 50,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFFBEBE),
-                              borderRadius: BorderRadius.zero,
-                            ),
-                            child: const Text(
-                              "회원가입",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const SignUp()));
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: 110,
+                              height: 50,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFFBEBE),
+                                borderRadius: BorderRadius.zero,
+                              ),
+                              child: const Text(
+                                "회원가입",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
