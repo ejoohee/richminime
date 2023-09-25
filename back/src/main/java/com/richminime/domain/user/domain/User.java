@@ -103,10 +103,7 @@ public class User {
         else
             this.itemCount--;
 
-        if(itemCount > 20) {
-//            System.out.println("테마는 20개를 초과하여 소유할 수 없습니다.");
-    // 서비스단에서 구현. (구매할 때)
-        }
+//        if(itemCount > 20) { 서비스단 구현 }
     }
 
     // 클로징 카운트 업데이트
@@ -115,11 +112,6 @@ public class User {
             this.clothingCount++;
         else
             this.clothingCount--;
-
-        if(clothingCount > 20) {
-//            System.out.println("옷은 20개를 초과하여 소유할 수 없습니다");
-//            throw new
-        }
     }
 
 }
