@@ -43,7 +43,7 @@ public class UserItemServiceImpl implements UserItemService {
      * 로그인 유저를 반환하는 메서드
      * @return
      */
-    public User getLoginUser() {
+    private User getLoginUser() {
         String loginUserEmail = securityUtils.getLoggedInUserEmail();
 
         User loginUser = userRepository.findByEmail(loginUserEmail)
@@ -59,7 +59,7 @@ public class UserItemServiceImpl implements UserItemService {
      * 로그인 유저가 관리자인지 확인하는 메서드
      * 관리자면 true 반환 / 일반회원이면 false 반환
      */
-    public boolean isAdmin() {
+    private boolean isAdmin() {
         User loginUser = getLoginUser();
 
         if(loginUser.getUserType().equals(UserType.ROLE_ADMIN))
@@ -74,7 +74,7 @@ public class UserItemServiceImpl implements UserItemService {
      * @param owmerUser
      * @return
      */
-    public boolean loginUserIsSameWithOwner(User owmerUser) {
+    private boolean loginUserIsSameWithOwner(User owmerUser) {
         Long loginUserId = getLoginUser().getUserId();
         Long ownerId = owmerUser.getUserId();
 
@@ -133,27 +133,33 @@ public class UserItemServiceImpl implements UserItemService {
     public List<UserItemResDto> findAllUserItemByType(ItemType itemType) {
         if(itemType == null)
             return findAllUserItem();
-        else {
-            Long loginUserId = getLoginUser().getUserId();
 
-            log.info("[소유한 테마 카테고리별 조회] 사용자가 소유한 테메 조건별 조회");
-            return userItemRepository.findAllByUserIdAndItemType(loginUserId, itemType).stream()
-                    .map(userItem -> UserItemResDto.entityToDto(userItem))
-                    .collect(Collectors.toList());
-        }
+        log.info("[소유한 테마 카테고리별 조회] 사용자가 소유한 테메 조건별 조회");
+        Long loginUserId = getLoginUser().getUserId();
+
+        return userItemRepository.findAllByUserIdAndItemType(loginUserId, itemType).stream()
+                .map(userItem -> UserItemResDto.entityToDto(userItem))
+                .collect(Collectors.toList());
     }
 
     /**
      * 소유한 테마 적용/해제하기
      * 로그인 사용자가 소유한 테마 중 선택한 테마를 적용/해제 합니다.
      * 기적용된 테마 번호(itemId)가 다를 경우 적용 / 같을 경우 해제
-     * @param itemId
+     * @param userItemId
      * @return
      */
     @Transactional
     @Override
-    public UserItemResDto updateUserItem(Long itemId) {
+    public UserItemResDto updateUserItem(Long userItemId) {
+        log.info("[소유한 테마 적용/해제 하기] 소유한 테마 적용/해제 요청");
 
+        User loginUser = getLoginUser();
+        Long loginUserId = loginUser.getUserId();
+        
+        // 1. 소유했는지 확인
+        // 마이룸, 캐릭터 구현완료되면 수정 예정
+        
 
         return null;
     }
