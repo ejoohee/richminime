@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:richminime/miniroom/mini_room_widget.dart';
+import 'package:richminime/screens/closet.dart';
+import 'package:richminime/screens/interior.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,15 +13,37 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int currentPageIndex = 0;
   NavigationDestinationLabelBehavior labelBehavior =
-      NavigationDestinationLabelBehavior.alwaysShow;
+      NavigationDestinationLabelBehavior.onlyShowSelected;
 
+  final List<Widget> _widgetOptions = <Widget>[
+    const Closet(),
+    const MiniRoomWidget(),
+    const Interior(),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Center(
-        child: MiniRoomWidget(),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        // title: const Text('Home Screen'),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.question_mark_rounded),
+              onPressed: () {
+                // 가진 코인 숫자 보여주기
+                Scaffold.of(context).openDrawer();
+              },
+              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+            );
+          },
+        ),
       ),
+      body: _widgetOptions.elementAt(currentPageIndex),
       bottomNavigationBar: NavigationBar(
+        backgroundColor: Colors.transparent,
+        indicatorColor: Theme.of(context).cardColor,
+        animationDuration: const Duration(milliseconds: 500),
         labelBehavior: labelBehavior,
         selectedIndex: currentPageIndex,
         onDestinationSelected: (int index) {
@@ -30,16 +54,16 @@ class _HomeScreenState extends State<HomeScreen> {
         destinations: const <Widget>[
           NavigationDestination(
             icon: Icon(Icons.explore),
-            label: 'Explore',
+            label: '옷장',
           ),
           NavigationDestination(
-            icon: Icon(Icons.commute),
-            label: 'Commute',
+            icon: Icon(Icons.home),
+            label: '호옴',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.bookmark),
             icon: Icon(Icons.bookmark_border),
-            label: 'Saved',
+            label: '테마',
           ),
         ],
       ),
