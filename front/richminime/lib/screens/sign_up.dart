@@ -18,7 +18,6 @@ class _SignUpState extends State<SignUp> {
     '비씨',
     '신한',
     '씨티',
-    '우리',
     '롯데',
     '하나',
   ];
