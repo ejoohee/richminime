@@ -14,14 +14,14 @@ public interface UserItemService {
     List<UserItemResDto> findAllUserItem();
 
     // 3. 소유한 테마 상세 조회
-    UserItemResDto findUserItem(Long itemId);
+    UserItemResDto findUserItem(Long userItemId);
 
     // 소유한 테마 카테고리별 조회
     List<UserItemResDto> findAllUserItemByType(ItemType itemType);
 
     // 5-1. 소유한 테마 적용하기
     // 5-2. 소유한 테마 벗기기
-    UserItemResDto updateUserItem(Long itemId);
+    UserItemResDto updateUserItem(Long userItemId);
 
     // 소유하지 않은 테마 구매하기
     UserItemResDto addUserItem(Long itemId);

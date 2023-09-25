@@ -27,18 +27,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    /*
-    itemId
-    itemName
-    itemType
-    itemImg
-    itemInfo
-    price
-     */
-
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
-    private final JWTUtil jwtUtil;
     private final SecurityUtils securityUtils;
 
     /**
@@ -68,7 +58,6 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemResDto> findAllItemByType(ItemType itemType) {
         if(itemType == null)
             return findAllItem();
-
 
         log.info("[테마 상점 카테고리별 조회] 테마 카테고리별 조회");
 
