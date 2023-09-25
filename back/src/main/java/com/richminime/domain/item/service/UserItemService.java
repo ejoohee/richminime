@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface UserItemService {
     // 1. 소유한 테마 전체 조회
 //    List<UserItemResDto> findAllUserItem(String token);
-    List<UserItemResDto> findAllUserItem(Long userId);
+    List<UserItemResDto> findAllUserItem();
 
     // 3. 소유한 테마 상세 조회
     UserItemResDto findUserItem(Long itemId);
@@ -21,7 +21,7 @@ public interface UserItemService {
 
     // 5-1. 소유한 테마 적용하기
     // 5-2. 소유한 테마 벗기기
-    Optional<UserItemResDto> updateUserItem(Long itemId);
+    UserItemResDto updateUserItem(Long itemId);
 
     // 소유하지 않은 테마 구매하기
     UserItemResDto addUserItem(Long itemId);
