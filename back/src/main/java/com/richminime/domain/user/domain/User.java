@@ -44,7 +44,7 @@ public class User {
     @Column(length = 4, nullable = false)
     private String organizationCode;
 
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private String cardNumber;
 
     @Column(nullable = false, columnDefinition = "varchar(50)")

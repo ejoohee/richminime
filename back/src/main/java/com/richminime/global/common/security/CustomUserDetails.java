@@ -1,6 +1,7 @@
 package com.richminime.global.common.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.richminime.domain.user.domain.UserType;
 import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,6 +36,12 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> auth = new ArrayList<>();
+        if(authority.equals(UserType.ROLE_USER.getValue())){
+            authority = "ROLE_USER";
+        }
+        if(authority.equals(UserType.ROLE_ADMIN.getValue())){
+            authority = "ROLE_ADMIN";
+        }
         auth.add(new SimpleGrantedAuthority(authority));
         return auth;
     }
