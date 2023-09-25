@@ -32,7 +32,7 @@ public class Clothing {
     private String clothingInfo;
 
     @Column(columnDefinition = "BIGINT DEFAULT 0")
-    private Long price;
+    private long price;
 
     @OneToMany(mappedBy = "clothing")
     private List<UserClothing> userClothings = new ArrayList<>();

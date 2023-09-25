@@ -11,16 +11,16 @@ public class ClothingResDto {
 
     private final Long clothingId;
     private final String clothingName;
-    private final ClothingType clothingType;
+    private final String clothingType;
     private final String clothingImg;
     private final String clothingInfo;
-    private final Long price;
+    private final long price;
 
     public static ClothingResDto entityToDto(Clothing clothing) {
         return ClothingResDto.builder()
                 .clothingId(clothing.getClothingId())
                 .clothingName(clothing.getClothingName())
-                .clothingType(clothing.getClothingType())
+                .clothingType(clothing.getClothingType().getValue())
                 .clothingImg(clothing.getClothingImg())
                 .clothingInfo(clothing.getClothingInfo())
                 .price(clothing.getPrice())
