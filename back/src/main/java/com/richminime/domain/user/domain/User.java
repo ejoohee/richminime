@@ -53,11 +53,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @Column(name = "clothing_count", columnDefinition = "default 0 check(<=20)")
+    @Column(name = "clothing_count", columnDefinition = "integer default 0")
     private Integer clothingCount;
 
-//    @Column(name = "item_count", columnDefinition = "default 0 check(<=20)")
-//    private Integer itemCount;
+    @Column(name = "item_count", columnDefinition = "integer default 0")
+    private Integer itemCount;
 
 //    @Column(nullable = false)
 //    private Date birthDate;
@@ -66,7 +66,7 @@ public class User {
     private List<Prompt> prompts = new ArrayList<>();
 
     @Builder
-    public User(String email, String password, String nickname, String connectedId, String organizationCode, String cardNumber, String userType, Integer clothingCount) {
+    public User(String email, String password, String nickname, String connectedId, String organizationCode, String cardNumber, String userType) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -74,7 +74,6 @@ public class User {
         this.organizationCode = organizationCode;
         this.cardNumber = cardNumber;
         this.userType = UserType.getUserType(userType);
-        this.clothingCount = clothingCount;
 //        this.birthDate = birthDate;
     }
 
@@ -97,30 +96,22 @@ public class User {
         this.password = encrypted;
     }
 
-//    // 아이템 카운트 업데이트
-//    public void updateItemCnt(boolean isBuy) {
-//        if(isBuy)
-//            this.itemCount++;
-//        else
-//            this.itemCount--;
-//
-//        if(itemCount > 20) {
-//            System.out.println("테마는 20개를 초과하여 소유할 수 없습니다.");
-////            throw new
-//        }
-//    }
-//
+    // 아이템 카운트 업데이트
+    public void updateItemCnt(boolean isBuy) {
+        if(isBuy)
+            this.itemCount++;
+        else
+            this.itemCount--;
+
+//        if(itemCount > 20) { 서비스단 구현 }
+    }
+
     // 클로징 카운트 업데이트
     public void updateClothingCnt(boolean isBuy) {
         if(isBuy)
             this.clothingCount++;
         else
             this.clothingCount--;
-
-//        if(clothingCount > 20) {
-//            System.out.println("옷은 20개를 초과하여 소유할 수 없습니다");
-////            throw new
-//        }
     }
 
 }
