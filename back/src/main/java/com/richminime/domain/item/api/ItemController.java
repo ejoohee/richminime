@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("/item")
 public class ItemController {
 
-    private final String ACCESS_TOKEN = "AccessToken";
     private final ItemService itemService;
 
     @Operation(
@@ -42,24 +41,24 @@ public class ItemController {
     // 관리자 기능
     // 테마 등록
     @PostMapping
-    public ResponseEntity<ItemResDto> addItem(@RequestBody ItemReqDto itemReqDto, @RequestHeader(ACCESS_TOKEN) String token) {
+    public ResponseEntity<ItemResDto> addItem(@RequestBody ItemReqDto itemReqDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(itemService.addItem(itemReqDto, token));
+                .body(itemService.addItem(itemReqDto));
     }
 
     // 관리자 기능
     // 테마 삭제
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<MessageDto> deleteItem(@PathVariable Long itemId, @RequestHeader(ACCESS_TOKEN) String token) {
-        itemService.deleteItem(itemId, token);
+    public ResponseEntity<MessageDto> deleteItem(@PathVariable Long itemId) {
+        itemService.deleteItem(itemId);
         return ResponseEntity.ok(MessageDto.msg("DELETE SUCCESS"));
     }
 
     // 관리자 기능
     // 테마 수정
     @PutMapping("/{itemId}")
-    public ResponseEntity<ItemResDto> updateItem(@PathVariable Long itemId, @RequestBody ItemUpdateReqDto itemUpdateReqDto, @RequestHeader(ACCESS_TOKEN) String token) {
-        return ResponseEntity.ok(itemService.updateItem(itemId, itemUpdateReqDto, token));
+    public ResponseEntity<ItemResDto> updateItem(@PathVariable Long itemId, @RequestBody ItemUpdateReqDto itemUpdateReqDto) {
+        return ResponseEntity.ok(itemService.updateItem(itemId, itemUpdateReqDto));
     }
 
 

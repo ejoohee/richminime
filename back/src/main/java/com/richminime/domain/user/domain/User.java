@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import com.richminime.domain.gpt.domain.Prompt;
 import javax.persistence.*;
@@ -48,8 +49,15 @@ public class User {
     private String cardNumber;
 
     @Column(nullable = false, columnDefinition = "varchar(50)")
+    @ColumnDefault("'ROLE_USER'")
     @Enumerated(EnumType.STRING)
     private UserType userType;
+
+//    @Column(name = "clothing_count", columnDefinition = "default 0 check(<=20)")
+//    private Integer clothingCount;
+//
+//    @Column(name = "item_count", columnDefinition = "default 0 check(<=20)")
+//    private Integer itemCount;
 
 //    @Column(nullable = false)
 //    private Date birthDate;
@@ -84,8 +92,34 @@ public class User {
     }
 
     // 비밀번호 업데이트
-    public void updatePassowrd(String encrypted) {
+    public void updatePassword(String encrypted) {
         this.password = encrypted;
     }
+
+//    // 아이템 카운트 업데이트
+//    public void updateItemCnt(boolean isBuy) {
+//        if(isBuy)
+//            this.itemCount++;
+//        else
+//            this.itemCount--;
+//
+//        if(itemCount > 20) {
+//            System.out.println("테마는 20개를 초과하여 소유할 수 없습니다.");
+////            throw new
+//        }
+//    }
+//
+//    // 클로징 카운트 업데이트
+//    public void updateClothingCnt(boolean isBuy) {
+//        if(isBuy)
+//            this.clothingCount++;
+//        else
+//            this.clothingCount--;
+//
+//        if(clothingCount > 20) {
+//            System.out.println("옷은 20개를 초과하여 소유할 수 없습니다");
+////            throw new
+//        }
+//    }
 
 }
