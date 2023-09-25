@@ -10,6 +10,7 @@ import com.richminime.domain.item.repository.ItemRepository;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.domain.UserType;
 import com.richminime.domain.user.repository.UserRepository;
+import com.richminime.global.util.SecurityUtils;
 import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
+    private final SecurityUtils securityUtils;
 
     /**
      * 상점에 등록된 아이템 전체 조회
@@ -115,11 +117,10 @@ public class ItemServiceImpl implements ItemService {
     /**
      * 로그인 유저가 관리자인지 확인하는 메서드
      * 관리자면 true 반환 / 일반회원이면 false 반환
-     * @param token
-     * @return
      */
-    public boolean loginUserIsAdmin(String token) {
-        User loginUser = userRepository.findByEmail(jwtUtil.getUsername(token))
+    public boolean isAdmin() {
+
+        User loginUser = userRepository.findByEmail(securityUtils.getLoggedInUserEmail())
                 .orElseThrow(() -> {
                     log.error("[테마 상점 테마 등록] 로그인 유저를 찾을 수 없습니다.");
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "로그인 유저를 찾을 수 없습니다.");
@@ -140,17 +141,14 @@ public class ItemServiceImpl implements ItemService {
      */
     @Transactional
     @Override
-    public ItemResDto addItem(ItemReqDto itemReqDto, String token) {
+    public ItemResDto addItem(ItemReqDto itemReqDto) {
         log.info("[테마 상점 테마 등록] 테마 상점에 새로운 테마 등록 요청");
 
         // 관리자 유저인지 확인
-        if(!loginUserIsAdmin(token)){
+        if(!isAdmin()){
             log.error("[테마 상점 테마 등록] 관리자 회원만 테마를 등록할 수 있습니다.");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "등록 권한이 없습니다.");
         }
-
-        Long userId = jwtUtil.getUserNo(token);
-        log.info("[테마 상점 테마 등록] 로그인 유저 userId : {}", userId);
 
         Item item = Item.builder()
                 .itemName(itemReqDto.getItemName())
@@ -172,15 +170,14 @@ public class ItemServiceImpl implements ItemService {
      * 테마 상점에 등록된 테마 삭제
      * 로그인 유저가 관리자일 경우에만 삭제 가능
      * @param itemId
-     * @param token
      */
     @Transactional
     @Override
-    public void deleteItem(Long itemId, String token) {
-        log.info("[테마 상점 테마 삭제] 테마 상점에 등록된 테마 삭제 요청. itemId : {}, token : []", itemId, token);
+    public void deleteItem(Long itemId) {
+        log.info("[테마 상점 테마 삭제] 테마 상점에 등록된 테마 삭제 요청. itemId : {}", itemId);
         
         // 관리자 유저인지 확인
-        if(!loginUserIsAdmin(token)){
+        if(!isAdmin()){
             log.error("[테마 상점 테마 삭제] 관리자 회원만 테마를 삭제할 수 있습니다.");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "삭제 권한이 없습니다.");
         }
@@ -200,16 +197,15 @@ public class ItemServiceImpl implements ItemService {
      * 로그인 유저가 관리자일 경우에만 수정 가능
      * itemName, itemImg, itemInfo, price만 변경 가능합니다.(itemId, itemType은 변경 불가)
      * @param itemReqDto
-     * @param token
      * @return
      */
     @Transactional
     @Override
-    public ItemResDto updateItem(Long itemId, ItemUpdateReqDto itemReqDto, String token) {
-        log.info("[테마 상점 테마 수정] 테마 상점에 등록된 테마 수정 요청. itemId : {}, token : {}", itemId, token);
+    public ItemResDto updateItem(Long itemId, ItemUpdateReqDto itemReqDto) {
+        log.info("[테마 상점 테마 수정] 테마 상점에 등록된 테마 수정 요청. itemId : {}", itemId);
 
         // 관리자 유저 확인
-        if(!loginUserIsAdmin(token)){
+        if(!isAdmin()){
             log.error("[테마 상점 테마 수정] 관리자 회원만 테마를 수정할 수 있습니다.");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다.");
         }

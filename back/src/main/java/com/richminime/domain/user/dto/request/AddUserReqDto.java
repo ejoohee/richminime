@@ -5,6 +5,7 @@ import com.richminime.domain.user.domain.UserType;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.UUID;
 

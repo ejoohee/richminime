@@ -21,7 +21,6 @@ public class BankBookServiceImpl implements BankBookService {
     private final UserRepository userRepository;
     private final SecurityUtils securityUtils;
 
-
     @Transactional
     @Override
     public List<BankBookResDto> findAllByUserIdAndType(TransactionType transactionType) {
