@@ -36,7 +36,7 @@ spring:
     password: ''
     username: sa
     hikari:
-      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime;NON_KEYWORDS=USER
+      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
 #    url: jdbc:h2:mem:testdb;NON_KEYWORDS=USER
   h2:
     console:
