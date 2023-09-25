@@ -12,6 +12,7 @@ public class ClothingUpdateReqDto {
     private String clothingName;
     private ClothingType clothingType;
     private String clothingImg;
+    private String clothingApplyImg;
     private String clothingInfo;
     private long price;
 
