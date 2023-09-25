@@ -2,7 +2,7 @@ package com.richminime.domain.gpt.service;
 
 import com.richminime.domain.gpt.dao.PromptRepository;
 import com.richminime.domain.gpt.domain.Prompt;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,30 +35,27 @@ public class PromptServiceImpl implements PromptService {
         httpheaders.set("Authorization","Bearer " + apikey);
         //추후 시큐리티 완료 되면 getUser()로 대체
         List<Prompt> prompts = promptRepository.findByUser_UserId(1L);
-        List<MultiValueMap<String,String>> message = new ArrayList<>();
-        MultiValueMap<String,String> systemMessage = new LinkedMultiValueMap<>();
-        systemMessage.add("role","system");
-        systemMessage.add("content","너는 은행 상담원이야");
-        MultiValueMap<String,String> userMessage;
-        MultiValueMap<String,String> assistantMessage;
+        List<Message> messages = new ArrayList<>();
+        Message systemMessage = new Message("system","너는 은행 상담원이야");
+        messages.add(systemMessage);
+        Message userMessage;
+        Message assistantMessage;
         if(prompts != null){
             for(Prompt prompt : prompts){
-                userMessage = new LinkedMultiValueMap<>();
-                userMessage.add("role","user");
-                userMessage.add("content",prompt.getRoleUser());
-                message.add(userMessage);
-                assistantMessage = new LinkedMultiValueMap<>();
-                assistantMessage.add("role","assistant");
-                assistantMessage.add("content",prompt.getRoleContent());
-                message.add(assistantMessage);
+                userMessage = new Message("user",prompt.getRoleUser());
+                messages.add(userMessage);
+                assistantMessage = new Message("assistant",prompt.getRoleContent());
+                messages.add(assistantMessage);
             }
         }
-        userMessage = new LinkedMultiValueMap<>();
-        userMessage.add("role","user");
-        userMessage.add("content",request);
+        userMessage = new Message("user","content");
+        System.out.println(request);
+        messages.add(userMessage);
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model","gpt-3.5-turbo");
-        requestBody.put("messages",message);
+        requestBody.put("messages",messages);
+
+        System.out.println(requestBody);
 
 /*        String reply = "";
         Mono mono = webClient.post()
@@ -87,5 +84,14 @@ public class PromptServiceImpl implements PromptService {
                             System.out.println("성공");
                             return result;
                         });
+    }
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    static class Message{
+        String role;
+        String content;
+
     }
 }
