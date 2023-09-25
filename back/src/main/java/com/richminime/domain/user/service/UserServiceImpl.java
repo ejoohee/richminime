@@ -15,7 +15,9 @@ import com.richminime.global.common.jwt.JwtExpirationEnums;
 import com.richminime.global.exception.NotFoundException;
 import com.richminime.global.exception.TokenException;
 import com.richminime.global.util.jwt.JWTUtil;
+import com.richminime.global.util.rsa.RSAUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -53,6 +55,10 @@ public class UserServiceImpl implements UserService {
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final JavaMailSender javaMailSender;
+
+    @Value("${rsa.public-key}")
+    private String publicKey;
+
 
     private Map<UUID, String> connectedIdMap = new HashMap<>();
 
@@ -196,6 +202,7 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteByEmail(email);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public FindUserResDto findUser() {
         String email = getLoginId();
@@ -207,6 +214,7 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public FindBalanceResDto findBalance() {
         String email = getLoginId();
@@ -223,6 +231,7 @@ public class UserServiceImpl implements UserService {
         user.updateBalance(balance);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<FindUserResDto> findUserList() {
         return userRepository.findAll().stream().map((user) -> FindUserResDto.builder()
@@ -251,12 +260,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUser(AddUserReqDto addUserRequest) {
         // uuid에 해당하는 커넥티드 아이디 가져오기
-//        String connectedId = connectedIdMap.remove(addUserRequest.getUuid());
-        String connectedId = "1234";
+        String connectedId = connectedIdMap.remove(addUserRequest.getUuid());
+//        String connectedId = "1234";
         if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
         String organizationCode = addUserRequest.getOrganization();
         // 패스워드 암호화
         addUserRequest.setPassword(passwordEncoder.encode(addUserRequest.getPassword()));
+        // 카드 번호 RSA 공개키로 암호화
+        try {
+            addUserRequest.setCardNumber(RSAUtil.encryptRSA(addUserRequest.getCardNumber(), RSAUtil.publicKeyFromString(publicKey)));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         userRepository.save(addUserRequest.toEntity(connectedId, organizationCode));
     }
 

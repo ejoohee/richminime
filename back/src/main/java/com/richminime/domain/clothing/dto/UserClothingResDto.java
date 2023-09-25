@@ -1,6 +1,5 @@
 package com.richminime.domain.clothing.dto;
 
-import com.richminime.domain.clothing.constant.ClothingType;
 import com.richminime.domain.clothing.domain.UserClothing;
 import lombok.Builder;
 import lombok.Data;
@@ -9,21 +8,22 @@ import lombok.Data;
 @Builder
 public class UserClothingResDto {
     private final Long userClothingId;
-    private final Long userId;
     private final Long clothingId;
-    private final ClothingType clothingType;
+    private final String clothingType;
     private final String clothingImg;
+    private final String clothingApplyImg;
     private final String clothingInfo;
     private final String clothingName;
-    private final Long price;
+    private final long price;
 
     public static UserClothingResDto entityToDto(UserClothing userClothing) {
         return UserClothingResDto.builder()
                 .userClothingId(userClothing.getUserClothingId())
-                .userId(userClothing.getUser().getUserId())
+                .clothingId(userClothing.getClothing().getClothingId())
                 .clothingName(userClothing.getClothing().getClothingName())
-                .clothingType(userClothing.getClothing().getClothingType())
+                .clothingType(userClothing.getClothing().getClothingType().getValue())
                 .clothingImg(userClothing.getClothing().getClothingImg())
+                .clothingApplyImg(userClothing.getClothing().getClothingApplyImg())
                 .clothingInfo(userClothing.getClothing().getClothingImg())
                 .price(userClothing.getClothing().getPrice())
                 .build();

@@ -1,4 +1,4 @@
-INSERT INTO USER
+INSERT INTO USERS
 (user_id, email, password, nickname, connected_id, organization_code, card_number, user_type)
 VALUES
 ('100001', 'test@naver.com', '$2a$10$KWa2GxJjM79nA7lDzr.8mectx6knAbmwjftSN2..MDN6j/oTCRTaK', '테스트1', 'abc123', '0301', '1234567890123456', 'ROLE_USER'),
