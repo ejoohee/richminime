@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:richminime/models/clothing_model.dart';
+import 'package:richminime/services/clothig_service.dart';
 import 'package:richminime/widgets/clothing_store_selected.dart';
 
 class ClothingStore extends StatefulWidget {
@@ -9,8 +11,14 @@ class ClothingStore extends StatefulWidget {
 }
 
 class _ClothingStoreState extends State<ClothingStore> {
-  final List<String> categories = ["전체", "상의", "하의", "드레스", "악세서리", "신발"];
+  final List<String> categories = ["일상", "파티", "직업"];
   bool isSelected = false;
+  String selectedType = "";
+  //먼저 clothingService만들어주고
+  final ClothingService clothingService = ClothingService();
+  // clothing불러오기
+  late Future<List<ClothingModel>> clothings =
+      clothingService.getAllClothings(selectedType);
 
   onSelect() {
     setState(() {
@@ -118,28 +126,60 @@ class _ClothingStoreState extends State<ClothingStore> {
                           ).createShader(bounds);
                         },
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: GridView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 4,
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: FutureBuilder<List<ClothingModel>>(
+                                future: clothings,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return GridView.builder(
+                                        itemCount: snapshot.data!.length,
+                                        gridDelegate:
+                                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 4,
+                                        ),
+                                        itemBuilder: (context, index) {
+                                          return Container(
+                                            margin: const EdgeInsets.all(5),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Theme.of(context).cardColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                            ),
+                                            child: const Center(
+                                                //이미지 url넣기
+                                                child: Text("테마")
+                                                // Image.network('url'),
+                                                ),
+                                          );
+                                        });
+                                  } else if (snapshot.hasError) {
+                                    return Text('${snapshot.hasError}');
+                                  }
+                                  return const CircularProgressIndicator();
+                                })
+
+                            // GridView.builder(
+                            //   padding: const EdgeInsets.symmetric(horizontal: 5),
+                            //   gridDelegate:
+                            //       const SliverGridDelegateWithFixedCrossAxisCount(
+                            //     crossAxisCount: 4,
+                            //   ),
+                            //   itemCount: 30,
+                            //   itemBuilder: (context, index) {
+                            //     return Container(
+                            //       margin: const EdgeInsets.all(5),
+                            //       decoration: BoxDecoration(
+                            //         color: Theme.of(context).cardColor,
+                            //         borderRadius: BorderRadius.circular(5),
+                            //       ),
+                            //       child: Center(
+                            //         child: Text('옷 사진들 $index'),
+                            //       ),
+                            //     );
+                            //   },
+                            // ),
                             ),
-                            itemCount: 30,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                margin: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).cardColor,
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: Center(
-                                  child: Text('옷 사진들 $index'),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
                       ),
               )
             ],
