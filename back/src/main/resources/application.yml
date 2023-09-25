@@ -31,12 +31,24 @@ spring:
   sql:
     init:
       mode: always
+  # datasource:
+  #   driverClassName: org.h2.Driver
+  #   password: ''
+  #   username: sa
+  #   hikari:
+  #     jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
   datasource:
-    driverClassName: org.h2.Driver
-    password: ''
-    username: sa
-    hikari:
-      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
+    url: jdbc:mariadb://mariadb:3306/richminime
+    username: root
+    password: richminime
+    driver-class-name: org.mariadb.jdbc.Driver
+  # datasource:
+  #   driverClassName: org.h2.Driver
+  #   password: ''
+  #   username: sa
+  #   hikari:
+  #     jdbc-url: jdbc:h2:tcp://localhost/~/richMinime;NON_KEYWORDS=USER
+
 #    url: jdbc:h2:mem:testdb;NON_KEYWORDS=USER
   h2:
     console:

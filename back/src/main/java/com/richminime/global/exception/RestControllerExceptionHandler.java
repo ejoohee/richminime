@@ -34,8 +34,9 @@ public class RestControllerExceptionHandler {
         );
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    protected ResponseEntity<ResponseDto<String>> handleIllegalArgumentException(IllegalArgumentException exception) {
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ResponseEntity<ResponseDto<String>> handleInsufficientBalanceException(
+            InsufficientBalanceException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ResponseDto.create(exception.getMessage())
         );
