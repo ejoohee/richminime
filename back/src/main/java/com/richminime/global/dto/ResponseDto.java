@@ -10,15 +10,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResponseDto<T> {
 
-    private String message;
+    private String msg;
     private T data;
 
-    public static <T> ResponseDto<T> create(String message) {
-        return new ResponseDto<>(message, null);
+    public static <T> ResponseDto<T> create(String msg) {
+        return new ResponseDto<>(msg, null);
     }
 
-    public static <T> ResponseDto<T> create(String message, T data) {
-        return new ResponseDto<>(message, data);
+    public static <T> ResponseDto<T> create(String msg, T data) {
+        return new ResponseDto<>(msg, data);
     }
 }
 

@@ -43,12 +43,13 @@ public class ClothingController {
 
     //관리자 수정
     @PutMapping("")
-    public ResponseEntity<MessageDto> updateClothing(@RequestBody @Valid ClothingUpdateReqDto clothingUpdateReqDto) {
-        clothingService.updateClothing(clothingUpdateReqDto);
-
-        return ResponseEntity.ok(MessageDto.msg(
-                ClothingResponseMessage.UPDATE_CLOTHING.getMessage()
-        ));
+    public ResponseEntity<ResponseDto<ClothingResDto>> updateClothing(@RequestBody @Valid ClothingUpdateReqDto clothingUpdateReqDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseDto.create(
+                        ClothingResponseMessage.UPDATE_CLOTHING.getMessage(),
+                        clothingService.updateClothing(clothingUpdateReqDto)
+                )
+        );
     }
 
     //관리자 삭제
