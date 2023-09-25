@@ -19,11 +19,12 @@ public class BankBookServiceImpl implements BankBookService {
 
     private final BankBookRepository bankBookRepository;
     private final UserRepository userRepository;
+    private final SecurityUtils securityUtils;
 
     @Transactional
     @Override
     public List<BankBookResDto> findAllByUserIdAndType(TransactionType transactionType) {
-        String loggedInUserEmail = SecurityUtils.getLoggedInUserEmail();
+        String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
         Long userId = userRepository.findByEmail(loggedInUserEmail).get().getUserId();
 
         if (transactionType == null) {
