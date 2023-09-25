@@ -60,9 +60,33 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  fonts:
+    - family: Dunggeunmo
+      fonts:
+        - asset: assets/fonts/NeoDunggeunmoPro-Regular.ttf
+    - family: DOSIyagiBoldface
+      fonts:
+        - asset: assets/fonts/DOSIyagiBoldface.ttf
+    - family: DOSMyungjo
+      fonts:
+        - asset: assets/fonts/DOSMyungjo.ttf
+    - family: 3KR
+      fonts:
+        - asset: assets/fonts/Sam3KRFont.ttf
+    - family: StarDust
+      fonts:
+        - asset: assets/fonts/PF스타더스트.ttf
+        - asset: assets/fonts/PF스타더스트 Bold.ttf
+          weight: 700
+    - family: StarDustS
+      fonts:
+        - asset: assets/fonts/PF스타더스트S.ttf
+        - asset: assets/fonts/PF스타더스트S Bold.ttf
+          weight: 700
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    # images
     - assets/images/minime/default.png
     - assets/images/miniroom/princess_theme.jpg
 
