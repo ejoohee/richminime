@@ -1,6 +1,5 @@
 package com.richminime.domain.item.repository;
 
-import com.richminime.domain.item.domain.Item;
 import com.richminime.domain.item.domain.ItemType;
 import com.richminime.domain.item.domain.UserItem;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserItemRepository extends JpaRepository<Item, Long> {
+public interface UserItemRepository extends JpaRepository<UserItem, Long> {
 
     // 유저별 기능
     // 소유한 테마 전체 조회
