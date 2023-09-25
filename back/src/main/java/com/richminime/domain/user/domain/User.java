@@ -1,6 +1,7 @@
 package com.richminime.domain.user.domain;
 
 
+import com.richminime.domain.character.domain.Character;
 import com.richminime.domain.gpt.domain.Prompt;
 import com.richminime.domain.user.dto.request.UpdateUserReqDto;
 import lombok.AccessLevel;
@@ -52,6 +53,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+    @OneToOne(mappedBy = "user")
+    private Character character;
 //    @Column(nullable = false)
 //    private Date birthDate;
 
