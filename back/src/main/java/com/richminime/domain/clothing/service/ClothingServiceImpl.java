@@ -28,7 +28,7 @@ public class ClothingServiceImpl implements ClothingService {
         //TODO 관리자 확인 필요
         Clothing clothing = Clothing.builder()
                 .clothingName(clothingReqDto.getClothingName())
-                .clothingType(ClothingType.getValue(clothingReqDto.getClothingType()))
+                .clothingType(ClothingType.getClothingType(clothingReqDto.getClothingType()))
                 .clothingImg(clothingReqDto.getClothingImg())
                 .clothingInfo(clothingReqDto.getClothingInfo())
                 .price(clothingReqDto.getPrice())

@@ -15,7 +15,7 @@ public class BankBookResDto {
     private final long amount;
     private final LocalDate date;
     private final long balance;
-    private final TransactionType transactionType;
+    private final String transactionType;
     private final String summary;
 
     public static BankBookResDto entityToDto(BankBook bankBook) {
@@ -24,7 +24,7 @@ public class BankBookResDto {
                 .amount(bankBook.getAmount())
                 .date(bankBook.getDate())
                 .balance(bankBook.getBalance())
-                .transactionType(bankBook.getTransactionType())
+                .transactionType(bankBook.getTransactionType().getValue())
                 .summary(bankBook.getSummary())
                 .build();
     }

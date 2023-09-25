@@ -11,7 +11,7 @@ public class ClothingResDto {
 
     private final Long clothingId;
     private final String clothingName;
-    private final ClothingType clothingType;
+    private final String clothingType;
     private final String clothingImg;
     private final String clothingInfo;
     private final long price;
@@ -20,7 +20,7 @@ public class ClothingResDto {
         return ClothingResDto.builder()
                 .clothingId(clothing.getClothingId())
                 .clothingName(clothing.getClothingName())
-                .clothingType(clothing.getClothingType())
+                .clothingType(clothing.getClothingType().getValue())
                 .clothingImg(clothing.getClothingImg())
                 .clothingInfo(clothing.getClothingInfo())
                 .price(clothing.getPrice())

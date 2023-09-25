@@ -17,7 +17,7 @@ public enum TransactionType {
         return value;
     }
 
-    public static TransactionType getValue(String value) {
+    public static TransactionType getTransactionType(String value) {
         for (TransactionType type : values()) {
             if (type.value.equalsIgnoreCase(value)) {
                 return type;

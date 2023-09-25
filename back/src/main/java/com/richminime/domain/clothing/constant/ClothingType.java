@@ -17,7 +17,7 @@ public enum ClothingType {
         return value;
     }
 
-    public static ClothingType getValue(String value) {
+    public static ClothingType getClothingType(String value) {
         for (ClothingType type : values()) {
             if (type.value.equalsIgnoreCase(value)) {
                 return type;
