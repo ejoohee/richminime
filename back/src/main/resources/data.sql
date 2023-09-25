@@ -1,3 +1,7 @@
+alter table users
+    add constraint ck_item_cnt check ( item_count <= 20 ),
+    add constraint ck_clothing_cnt check ( clothing_count <= 20);
+
 insert into users
 (user_id, email, password, nickname, connected_id, organization_code, card_number, user_type)
 values
@@ -7,9 +11,15 @@ values
 insert into item
 (item_id, item_name, item_type, item_img, item_info, price)
 values
-('100000', '기본테마', 'ITEM_THEME_SET', 'url', '가입시 기본으로 적용되는 개평범한 테마입니다. 옷장과 주전자가 있습니다.', '10'),
-('100001', '공주테마', 'ITEM_THEME_SET', 'url', '공주 컨셉의 테마입니다. 주희가 좋아하겠네요.', '9837000'),
-('200001', '알라딘 가구세트', 'ITEM_FURNITURE_SET', 'url', '알라딘 컨셉의 가구 세트입니다. 벽지, 장판은 제외입니다.', '50000');
+('100', '기본테마', 'ITEM_THEME_SET', 'url', '가입시 기본으로 적용되는 개평범한 테마입니다. 옷장과 주전자가 있습니다.', '10'),
+('101', '공주테마', 'ITEM_THEME_SET', 'url', '공주 컨셉의 테마입니다. 주희가 좋아하겠네요.', '9837000'),
+('201', '알라딘 가구세트', 'ITEM_FURNITURE_SET', 'url', '알라딘 컨셉의 가구 세트입니다. 벽지, 장판은 제외입니다.', '50000');
+
+insert into user_item
+(user_item_id, item_id, user_id)
+values
+('100000', '100', '100001'),
+('100001', '100', '100000');
 
 insert into feedback
 (feedback_id, feedback_type, content)
