@@ -30,6 +30,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final SecurityUtils securityUtils;
+    private boolean checkedUser = false;
+    private boolean isAdmin;
 
     /**
      * 상점에 등록된 아이템 전체 조회
@@ -108,14 +110,19 @@ public class ItemServiceImpl implements ItemService {
      * 관리자면 true 반환 / 일반회원이면 false 반환
      */
     public boolean isAdmin() {
-        Long userId = securityUtils.getUserNo();
-        log.info("[아이템 서비스] userId : {}", userId);
+        if(checkedUser)
+            return isAdmin;
 
-        User loginUser = userRepository.findById(userId)
+        String email = securityUtils.getLoggedInUserEmail();
+        log.info("[아이템 서비스] email : {}", email);
+
+        User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[아이템 서비스] 로그인 유저를 찾을 수 없습니다.");
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "로그인 유저를 찾을 수 없습니다.");
                 });
+
+        checkedUser = true;
 
         if(loginUser.getUserType().equals(UserType.ROLE_ADMIN))
             return true;
