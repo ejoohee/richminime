@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:richminime/screens/sign_up3.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class SignUp2 extends StatefulWidget {
   final String bank;
@@ -11,12 +12,28 @@ class SignUp2 extends StatefulWidget {
   State<SignUp2> createState() => _SignUp2State();
 }
 
-class _SignUp2State extends State<SignUp2> {
+class _SignUp2State extends State<SignUp2> with SingleTickerProviderStateMixin {
   late String bankCode;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  double percent = 0.25;
 
   @override
   void initState() {
     super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1), // 애니메이션의 지속시간
+      vsync: this,
+    );
+
+    _animation = Tween<double>(begin: 0.25, end: 0.5).animate(_controller)
+      ..addListener(() {
+        setState(() {
+          percent = _animation.value;
+        });
+      });
+
     switch (widget.bank) {
       case 'KB':
         bankCode = '0301';
@@ -39,9 +56,6 @@ class _SignUp2State extends State<SignUp2> {
       case '씨티':
         bankCode = '0307';
         break;
-      case '우리':
-        bankCode = '0309';
-        break;
       case '롯데':
         bankCode = '0311';
         break;
@@ -49,6 +63,14 @@ class _SignUp2State extends State<SignUp2> {
         bankCode = '0313';
         break;
     }
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // 애니메이션을 사용한 경우 dispose 메서드를 호출해야 합니다.
+    super.dispose();
   }
 
   onNoButtonTap() async {
@@ -80,10 +102,6 @@ class _SignUp2State extends State<SignUp2> {
         url = Uri.parse(
             "https://www.citibank.co.kr/temp/CusSecnCnts0100.act?P_name=DelfinoG3");
         break;
-      case '0309':
-        url = Uri.parse(
-            "https://pc.wooricard.com/dcpc/yh1/mmb/mmb02/H1MMB102S00.do");
-        break;
       case '0311':
         url = Uri.parse("https://www.lottecard.co.kr/app/LPMBRAA_V200.lc");
         break;
@@ -103,6 +121,18 @@ class _SignUp2State extends State<SignUp2> {
     return Scaffold(
       body: Column(
         children: [
+          const SizedBox(height: 50),
+          LinearPercentIndicator(
+            alignment: MainAxisAlignment.center,
+            width: MediaQuery.of(context).size.width,
+            animation: false,
+            animationDuration: 1200,
+            lineHeight: 30,
+            percent: percent,
+            center: const Text('2/4'),
+            barRadius: const Radius.circular(16),
+            progressColor: Colors.red[200],
+          ),
           Flexible(
             flex: 1,
             child: Container(

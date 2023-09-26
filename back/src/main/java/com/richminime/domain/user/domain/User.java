@@ -1,6 +1,7 @@
 package com.richminime.domain.user.domain;
 
 
+import com.richminime.domain.character.domain.Character;
 import com.richminime.domain.gpt.domain.Prompt;
 import com.richminime.domain.user.dto.request.UpdateUserReqDto;
 import lombok.AccessLevel;
@@ -45,6 +46,7 @@ public class User {
     @Column(length = 4, nullable = false)
     private String organizationCode;
 
+
     @Column(nullable = false)
     private String cardNumber;
 
@@ -53,16 +55,21 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+
+    @OneToOne(mappedBy = "user")
+    private Character character;
+
     @Column(name = "clothing_count", columnDefinition = "integer default 0")
     private Integer clothingCount;
 
     @Column(name = "item_count", columnDefinition = "integer default 0")
     private Integer itemCount;
 
+
 //    @Column(nullable = false)
 //    private Date birthDate;
 
-    @OneToMany(mappedBy = "promptId")
+    @OneToMany(mappedBy = "user")
     private List<Prompt> prompts = new ArrayList<>();
 
     @Builder

@@ -101,7 +101,7 @@ server:
       charset: UTF-8
     contextPath: /api
   address: 0.0.0.0
-  port: "8080"
+  port: "8083"
   compression:
     enabled: "true"
     mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
@@ -121,3 +121,5 @@ rsa:
 codef:
   auth-header: 'Basic MjFjZTRiYTgtNTUzNy00NTRmLTg3YmUtN2RhYWQyOGVjYjFmOjA0MTZmODdjLWI4YTYtNGJjMS05ZDM2LTJlYTgwOTVlMTNjNA=='
 
+gpt:
+  api-key: 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
