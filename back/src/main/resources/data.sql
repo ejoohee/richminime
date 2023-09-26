@@ -21,6 +21,7 @@ values
     ('100001', '101', '100001'),
     ('100002', '101', '100000');
 
+
 insert into item
 (item_id, item_name, item_type, item_img, item_info, price)
 values
@@ -46,3 +47,10 @@ values
 ('300', 'RANDOM', '랜덤 피드백 1'),
 ('301', 'RANDOM', '랜덤 피드백 2'),
 ('302', 'RANDOM', '랜덤 피드백 3');
+
+insert into bank_book
+(bank_book_id, amount, balance, date, summary, transaction_type, user_id)
+values
+    ('1000', '2000', '48000', '2023-09-26', '파티나 특별한 날에 어울리는 공주룩 원피스', '구매', '100001'),
+    ('1001', '2500', '45500', '2023-09-26', '일상 생활에서 편안하게 착용 가능한 싸피 바지', '구매', '100001'),
+    ('1002', '2500', '47500', '2023-09-26', '항공 승무원을 위한 전용 스튜어디스 유니폼', '구매', '100000');
