@@ -5,6 +5,7 @@ import 'package:richminime/screens/sign_up.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:richminime/services/user_service.dart';
 
 class SignUp4 extends StatefulWidget {
   final String organization;
@@ -50,32 +51,28 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
   TextEditingController cardEmailController = TextEditingController();
   TextEditingController cardPasswordController = TextEditingController();
   TextEditingController cardNickNameController = TextEditingController();
+  TextEditingController verificationController = TextEditingController();
+  final userService = UserService();
   String enteredCode = "";
 
-  Future<void> checkEmail() async {
-    final url = Uri.parse("http://10.0.2.2:8080/api/user/check-email-code");
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: {
-        "email": cardEmailController.text,
-        "code": enteredCode,
-      },
-    );
-
-    if (response.statusCode == 200) {
+  onCheckCodeTap() async {
+    enteredCode = verificationController.text;
+    final email = cardEmailController.text;
+    final response = await userService.checkCode(email, enteredCode);
+    if (response == "true") {
       setState(() {
         isEmailVerified = true; // 인증 성공 시 변수를 true로 설정
       });
     } else {
       AlertDialog(
-        title: Text(response.body.toString()),
+        title: Text(response),
       );
     }
+    if (!context.mounted) return;
+    Navigator.of(context).pop();
   }
 
-  Future<void> showVerificationDialog() async {
-    TextEditingController verificationController = TextEditingController();
+  showVerificationDialog() async {
     await showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -98,10 +95,7 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
             TextButton(
               onPressed: () {
                 // 인증번호 검증 로직
-                enteredCode = verificationController.text;
-                checkEmail();
-                // 서버로 enteredCode를 보내어 검증하고, 결과에 따라 다음 단계로 진행
-                Navigator.of(dialogContext).pop(); // 대화상자 닫기
+                // 대화상자 닫기
               },
               child: const Text('확인'),
             ),
@@ -117,62 +111,62 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
     );
   }
 
-  Future<void> onExistButtonTap() async {
-    final url = Uri.parse("http://10.0.2.2:8080/api/user/check-login-email");
-
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/x-www-form-urlencoded"},
-      body: {"email": cardEmailController.text},
-    );
-
-    if (response.statusCode == 200) {
-      await showVerificationDialog();
+  onVarificationButtonTap() async {
+    String email = cardEmailController.text;
+    if (emailRegex.hasMatch(email)) {
+      final response = await userService.sendCheckEmail(email);
+      if (response == "true") {
+        await showVerificationDialog();
+      } else {
+        AlertDialog(
+          title: Text(response),
+        );
+      }
     } else {
-      AlertDialog(
-        title: Text(response.body.toString()),
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('유효한 이메일을 입력하세요.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
       );
     }
   }
 
-  Future<void> onNextButtonTap() async {
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => const Login(),
-    //   ),
-    // );
-    print("여기닷");
-    print(widget.cardNumber);
-    final url = Uri.parse("http://10.0.2.2:8080/api/user");
+  onSignUpButtonTap() async {
+    String email = cardEmailController.text;
+    String password = cardPasswordController.text;
+    String nickname = cardNickNameController.text;
+    String organization = widget.organization;
+    String cardNumber = widget.cardNumber;
+    String uuid = widget.uuid;
 
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: json.encode(
-        {
-          "email": cardEmailController.text,
-          "password": cardPasswordController.text,
-          "nickname": cardNickNameController.text,
-          "organization": widget.organization,
-          "cardNumber": widget.cardNumber,
-          "uuid": widget.uuid,
-        },
-      ),
-    );
-
-    if (response.statusCode == 201) {
-      if (!context.mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const Login(),
-        ),
-      );
-    } else {
-      AlertDialog(
-        title: Text(response.body.toString()),
-      );
+    if (_formKey.currentState!.validate()) {
+      final response = await userService.signUp(
+          email, password, nickname, organization, cardNumber, uuid);
+      if (response == "true") {
+        if (!context.mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Login(),
+          ),
+        );
+      } else {
+        AlertDialog(
+          title: Text(response),
+        );
+      }
     }
   }
 
@@ -241,30 +235,7 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {
-                              String email = cardEmailController.text;
-
-                              emailRegex.hasMatch(email)
-                                  ? onExistButtonTap()
-                                  : showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: const Text('알림'),
-                                          content:
-                                              const Text('유효한 이메일을 입력하세요.'),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text('확인'),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                            },
+                            onTap: onVarificationButtonTap,
                             child: Container(
                               alignment: Alignment.center,
                               width: 80,
@@ -335,11 +306,7 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           GestureDetector(
-                            onTap: () async {
-                              if (_formKey.currentState!.validate()) {
-                                await onNextButtonTap();
-                              }
-                            },
+                            onTap: onSignUpButtonTap,
                             child: Container(
                               alignment: Alignment.center,
                               width: 110,

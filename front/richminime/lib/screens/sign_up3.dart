@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:richminime/services/user_service.dart';
 
 class SignUp3 extends StatefulWidget {
   final String code;
@@ -65,44 +66,32 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
     _controller.forward();
   }
 
-  Future<void> onNextButtonTap() async {
+  onNextButtonTap() async {
     setState(() {
       isLoading = true; // 로딩 시작
     });
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => SignUp4(
-    //       organization: widget.code,
-    //       cardNumber: cardNumController.text,
-    //     ),
-    //   ),
-    // );
-
-    final url = Uri.parse("http://10.0.2.2:8080/api/user/connected-id");
-    print(widget.code);
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(
-        {
-          "id": cardEmailController.text,
-          "password": cardPasswordController.text,
-          "organization": widget.code,
-          "cardNumber": cardNumController.text,
-        },
-      ),
-    );
+    String id = cardEmailController.text;
+    String password = cardPasswordController.text;
+    String cardNumber = cardNumController.text;
+    String organization = widget.code;
+    print(id);
+    print(password);
+    print(cardNumber);
+    print(organization);
+    final userService = UserService();
+    final response = await userService.getConnectedId(
+        id, password, organization, cardNumber);
+    print(response);
     setState(() {
       isLoading = false; // 로딩 완료
     });
-    if (response.statusCode == 201) {
+    if (response.split(" ")[0] == "uuid") {
       if (!context.mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => SignUp4(
-            uuid: jsonDecode(response.body)['uuid'],
+            uuid: response.split(" ")[1],
             organization: widget.code,
             cardNumber: cardNumController.text,
           ),
@@ -110,7 +99,7 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
       );
     } else {
       AlertDialog(
-        title: Text(response.body.toString()),
+        title: Text(response),
       );
     }
   }

@@ -1,3 +1,4 @@
 class Api {
-  static const _BASE_URL = "http://richminime.site/api/";
+  static const BASE_URL = "http://richminime.site/api";
+  // static const BASE_URL = "http://10.0.2.2:8080/api";
 }

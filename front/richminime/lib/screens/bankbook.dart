@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:richminime/models/bankbook_model.dart';
+import 'package:richminime/services/bankbook_service.dart';
 import 'dart:convert';
 
 class BankBook extends StatefulWidget {
@@ -10,55 +12,13 @@ class BankBook extends StatefulWidget {
   State<BankBook> createState() => _BankBookState();
 }
 
-class Transaction {
-  final int amount;
-  final String date;
-  final int balance;
-  final String transactionType;
-  final String summary;
-
-  Transaction({
-    required this.amount,
-    required this.date,
-    required this.balance,
-    required this.transactionType,
-    required this.summary,
-  });
-
-  factory Transaction.fromJson(Map<String, dynamic> json) {
-    return Transaction(
-      amount: json['amount'],
-      date: json['date'],
-      balance: json['balance'],
-      transactionType: json['transactionType'],
-      summary: json['summary'],
-    );
-  }
-}
-
 class _BankBookState extends State<BankBook> {
-  Future<List<Transaction>> transactions =
-      Future.value([]); // Transaction은 나중에 정의할 모델 클래스입니다.
+  late Future<List<BankbookModel>> transactions;
 
   @override
   void initState() {
     super.initState();
-    transactions = getBankList();
-  }
-
-  Future<List<Transaction>> getBankList() async {
-    final url = Uri.parse("http://10.0.2.2:8080/api/bankbook");
-    final response = await http.get(
-      url,
-      headers: {}, // Access token 넣어야 함
-    );
-
-    if (response.statusCode == 200) {
-      Iterable list = json.decode(response.body);
-      return list.map((e) => Transaction.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to load transactions');
-    }
+    transactions = BankbookService().getAllTransactions();
   }
 
   @override
@@ -77,7 +37,7 @@ class _BankBookState extends State<BankBook> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<Transaction>>(
+            child: FutureBuilder<List<BankbookModel>>(
               future: transactions,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -90,11 +50,11 @@ class _BankBookState extends State<BankBook> {
                   return ListView.separated(
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
-                      Transaction transaction = snapshot.data![index];
+                      BankbookModel transaction = snapshot.data![index];
                       return Container(
                         color: Colors.white,
                         child: ListTile(
-                          title: Text(transaction.summary),
+                          title: Text({transaction.summary}.toString()),
                           subtitle: Text(
                               'Date: ${transaction.date}, Amount: ${transaction.amount}, Balance: ${transaction.balance}, Type: ${transaction.transactionType}'),
                         ),

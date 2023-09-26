@@ -56,9 +56,6 @@ class _SignUp2State extends State<SignUp2> with SingleTickerProviderStateMixin {
       case '씨티':
         bankCode = '0307';
         break;
-      case '우리':
-        bankCode = '0309';
-        break;
       case '롯데':
         bankCode = '0311';
         break;
@@ -104,10 +101,6 @@ class _SignUp2State extends State<SignUp2> with SingleTickerProviderStateMixin {
       case '0307':
         url = Uri.parse(
             "https://www.citibank.co.kr/temp/CusSecnCnts0100.act?P_name=DelfinoG3");
-        break;
-      case '0309':
-        url = Uri.parse(
-            "https://pc.wooricard.com/dcpc/yh1/mmb/mmb02/H1MMB102S00.do");
         break;
       case '0311':
         url = Uri.parse("https://www.lottecard.co.kr/app/LPMBRAA_V200.lc");
