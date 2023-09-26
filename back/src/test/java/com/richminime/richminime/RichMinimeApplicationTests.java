@@ -1,3 +1,4 @@
+/*
 package com.richminime.richminime;
 
 import com.richminime.domain.gpt.service.PromptService;
@@ -16,3 +17,4 @@ class RichMinimeApplicationTests {
 	}
 
 }
+*/

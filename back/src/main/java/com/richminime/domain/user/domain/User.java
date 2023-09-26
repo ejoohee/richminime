@@ -58,7 +58,7 @@ public class User {
 //    @Column(nullable = false)
 //    private Date birthDate;
 
-    @OneToMany(mappedBy = "promptId")
+    @OneToMany(mappedBy = "user")
     private List<Prompt> prompts = new ArrayList<>();
 
     @Builder

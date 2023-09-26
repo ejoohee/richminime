@@ -1,5 +1,7 @@
 package com.richminime.domain.character.domain;
 
+import com.richminime.domain.clothing.domain.Clothing;
+import com.richminime.domain.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,11 +19,14 @@ public class Character {
     @Column(name = "character_id")
     private Long characterId;
 
-    @JoinColumn(name = "user_id")
-    private Long userId;
+    @OneToOne(fetch = FetchType.LAZY)
 
-    @Column(name = "character", columnDefinition = "VARCHAR(255) DEFAULT '' ")
-    private String character;
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "clothing_id")
+    private Clothing clothing;
 
 
 }
