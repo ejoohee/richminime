@@ -30,5 +30,5 @@ public class BankBookController {
                         bankBookService.findAllByUserIdAndType(transactionType))
         );
     
-
+    }
 }
