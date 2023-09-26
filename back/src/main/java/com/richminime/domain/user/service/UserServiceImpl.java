@@ -13,6 +13,7 @@ import com.richminime.domain.user.repository.RefreshTokenRedisRepository;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
 import com.richminime.global.common.jwt.JwtExpirationEnums;
+import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.exception.NotFoundException;
 import com.richminime.global.exception.TokenException;
 import com.richminime.global.util.jwt.JWTUtil;
@@ -31,12 +32,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -304,9 +307,18 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    /**
+     * Bearer 떼고 액세스 토큰 가져옴
+     * @return
+     */
+    private String parsingAccessToken(String accessToken) {
+        return accessToken.substring(JwtHeaderUtilEnums.GRANT_TYPE.getValue().length());
+    }
+
     @Override
     public Map<String, Object> reissueToken(String accessToken, String refreshToken) {
         // accessToken에서 email 가져오기
+        accessToken = parsingAccessToken(accessToken);
         String email = jwtUtil.getUsername(accessToken);
         // refresh 토큰 redis 레포지토리에서 가져와서 일치 여부 검사
         String originRefreshToken = refreshTokenRepository.findById(email).orElseThrow(() -> new NotFoundException("해당 이메일에 대한 토큰이 존재하지 않습니다.")).getRefreshToken();

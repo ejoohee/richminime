@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SpendingCategoryEnums {
 
-    INTERNET_PG("전자상거래PG", "기타");
+    INTERNET_PG("전자상거래", "기타");
 
     private String category;
     private String value;

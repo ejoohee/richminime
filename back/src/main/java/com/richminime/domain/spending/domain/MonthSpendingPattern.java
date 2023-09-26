@@ -11,6 +11,7 @@ import java.util.Map;
 
 @Getter
 @RedisHash("monthSpendingPattern")
+@Builder
 public class MonthSpendingPattern {
 
     @Id
@@ -32,14 +33,5 @@ public class MonthSpendingPattern {
 
     @TimeToLive
     private Long expiration;
-
-    @Builder
-    public MonthSpendingPattern(String email, Integer month, Long expiration, Map<String, Long> spendingAmountMap, Long totalAmount) {
-        this.email = email;
-        this.month = month;
-        this.expiration = expiration;
-        this.spendingAmountMap = spendingAmountMap;
-        this.totalAmount = totalAmount;
-    }
 
 }

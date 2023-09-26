@@ -2,10 +2,13 @@ package com.richminime.domain.spending.service;
 
 import com.richminime.domain.spending.constatnt.SpendingCategoryEnums;
 import com.richminime.domain.spending.constatnt.TimeEnums;
+import com.richminime.domain.spending.domain.DaySpendingPattern;
 import com.richminime.domain.spending.domain.MonthSpendingPattern;
 import com.richminime.domain.spending.domain.Spending;
+import com.richminime.domain.spending.dto.response.FindDaySpendingResDto;
 import com.richminime.domain.spending.dto.response.FindMonthSpendingResDto;
 import com.richminime.domain.spending.dto.response.SpendingDto;
+import com.richminime.domain.spending.repository.DaySpendingPatternRedisRepository;
 import com.richminime.domain.spending.repository.MonthSpendingPatternRedisRepository;
 import com.richminime.domain.spending.repository.SpendingRepository;
 import com.richminime.domain.user.domain.User;
@@ -38,6 +41,7 @@ public class SpendingServiceImpl implements SpendingService {
 
     // redis에 각 회원의 월별 소비패턴 정보를 저장함
     private final MonthSpendingPatternRedisRepository monthSpendingPatternRedisRepository;
+    private final DaySpendingPatternRedisRepository daySpendingPatternRedisRepository;
 
     /**
      * 회원들의 소비내역을 불러와 spending에 저장
@@ -47,12 +51,16 @@ public class SpendingServiceImpl implements SpendingService {
     public void addSpending(User user, String startDate, String endDate) {
         // codef api 호출
         // 리스트로 받아서 한꺼번에 저장
+        List<Spending> spendingList;
         try {
-            spendingRepository.saveAll(codefWebClient.findSpendingList(FindSpendingListReqDto.create(user, startDate.toString(), endDate.toString()), user.getUserId()));
+            spendingList = codefWebClient.findSpendingList(FindSpendingListReqDto.create(user, startDate.toString(), endDate.toString()), user.getUserId());
+            spendingRepository.saveAll(spendingList);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
+
 
     /**
      * 월별 소비패턴 분석한 값을 반환
@@ -107,8 +115,6 @@ public class SpendingServiceImpl implements SpendingService {
         // 카테고리 별 합계 정보를 DTO 형태로 변환
         for(Map.Entry<String, Long> entry : entrySet) {
             key = entry.getKey();
-            if(key.equals(SpendingCategoryEnums.INTERNET_PG.getCategory()))
-                key = SpendingCategoryEnums.INTERNET_PG.getValue();
             spendingAmountList.add(SpendingDto.builder()
                     .category(key)
                     .amount(entry.getValue())
@@ -119,6 +125,40 @@ public class SpendingServiceImpl implements SpendingService {
                 .month(month)
                 .spendingAmountList(spendingAmountList)
                 .totalAmount(monthSpendingPattern.get().getTotalAmount())
+                .build();
+    }
+
+    /**
+     * 일일 소비패턴 분석 데이터 redis에서 반환
+     * @return
+     */
+    @Override
+    public FindDaySpendingResDto findDaySpending() {
+        String email = getLoginId();
+        Map<String, Long> spendingAmountMap;
+        Optional<DaySpendingPattern> daySpendingPattern = daySpendingPatternRedisRepository.findById(email);
+        spendingAmountMap = daySpendingPattern.get().getSpendingAmountMap();
+
+        // 모든 키-값 쌍 가져오기
+        Set<Map.Entry<String, Long>> entrySet = spendingAmountMap.entrySet();
+        List<SpendingDto> spendingAmountList = new ArrayList<>();
+        String key;
+        // 카테고리 별 합계 정보를 DTO 형태로 변환
+        for(Map.Entry<String, Long> entry : entrySet) {
+            key = entry.getKey();
+            spendingAmountList.add(SpendingDto.builder()
+                    .category(key)
+                    .amount(entry.getValue())
+                    .build());
+        }
+        return FindDaySpendingResDto.builder()
+                .month(daySpendingPattern.get().getMonth())
+                .day(daySpendingPattern.get().getDay())
+                .spendingAmountList(spendingAmountList)
+                .totalAmount(daySpendingPattern.get().getTotalAmount())
+                .lessSpent(daySpendingPattern.get().getLessSpent())
+                .maxSpentCategoryList(daySpendingPattern.get().getMaxSpentCategoryList())
+                .maxAmount(daySpendingPattern.get().getMaxAmount())
                 .build();
     }
 
@@ -135,6 +175,8 @@ public class SpendingServiceImpl implements SpendingService {
         Long amount;
         for (Spending spending : spendingList) {
             category = spending.getCategory();
+            if(category.contains(SpendingCategoryEnums.INTERNET_PG.getCategory()))
+                category = SpendingCategoryEnums.INTERNET_PG.getValue();
             amount = map.get(category);
             // map에 저장되어 있지 않은 카테고리인 경우 초기값 0으로 초기화
             if(amount == null) amount = 0L;
@@ -151,9 +193,67 @@ public class SpendingServiceImpl implements SpendingService {
                 .build();
     }
 
-    @Override
-    public void analyzeDaySpending() {
 
+    @Override
+    public DaySpendingPattern analyzeDaySpending(List<Spending> todaySpendingList, String email, int month, int day) {
+        // balance 업데이트 필요..
+        // 어제
+        // 카테고리 별 합계 저장
+        Map<String, Long> todaySpendingMap = new HashMap<>();
+        List<String> categoryList = new ArrayList<>();
+
+        String category; // 소비 유형
+        Long totalAmount = 0L;
+        Long maxAmount = 0L;
+        Long amount;
+        List<String> maxSpentCategoryList = new ArrayList<>();
+
+        for (Spending spending : todaySpendingList) {
+            category = spending.getCategory();
+            if(category.contains(SpendingCategoryEnums.INTERNET_PG.getCategory()))
+                category = SpendingCategoryEnums.INTERNET_PG.getValue();
+            amount = todaySpendingMap.get(category);
+            // map에 저장되어 있지 않은 카테고리인 경우 초기값 0으로 초기화
+            if(amount == null) {
+                amount = 0L;
+                categoryList.add(category);
+            }
+            amount += spending.getCost();
+            totalAmount += spending.getCost();
+            todaySpendingMap.put(category, amount);
+        }
+
+        // 최댓값 확인
+        for (String cat : categoryList) {
+            maxAmount = Math.max(maxAmount, todaySpendingMap.get(cat));
+        }
+
+        // 가장 많이 소비한 유형을 저장
+        for (String cat : categoryList) {
+            if(maxAmount == todaySpendingMap.get(cat))
+                maxSpentCategoryList.add(cat);
+        }
+
+        // 그저께
+        // redis에 저장되어있는 값이 그저께 분석한 일일 소비배턴 분석 데이터
+        Optional<DaySpendingPattern> yesterday = daySpendingPatternRedisRepository.findById(email);
+
+        Boolean lessSpent = null;
+
+        if(totalAmount > yesterday.get().getTotalAmount()) lessSpent = false;
+        if(totalAmount < yesterday.get().getTotalAmount()) lessSpent = true;
+
+        return DaySpendingPattern.builder()
+                .email(email)
+                .month(month)
+                .day(day)
+                .spendingAmountMap(todaySpendingMap)
+                .totalAmount(totalAmount)
+                .lessSpent(lessSpent)
+                .maxSpentCategoryList(maxSpentCategoryList)
+                .maxAmount(maxAmount)
+                .expiration(TimeEnums.DAY_TIME_VALUE.getValue() + TimeEnums.HOUR_TIME_VALUE.getValue())
+                .build();
     }
 
     /**
@@ -167,6 +267,13 @@ public class SpendingServiceImpl implements SpendingService {
         List<Spending> spendingList = spendingRepository.findSpendingByUserIdAndSpentDateBetween(user.getUserId(), startDate, endDate);
         MonthSpendingPattern monthSpendingPattern = analyzeMonthSpending(spendingList, user.getEmail(), month);
         monthSpendingPatternRedisRepository.save(monthSpendingPattern);
+    }
+
+    @Override
+    public void updateDaySpending(User user, int month, int day, Date startDate, Date endDate) {
+        List<Spending> todaySpendingList = spendingRepository.findSpendingByUserIdAndSpentDateBetween(user.getUserId(), startDate, endDate);
+        DaySpendingPattern daySpendingPattern = analyzeDaySpending(todaySpendingList, user.getEmail(), month, day);
+        daySpendingPatternRedisRepository.save(daySpendingPattern);
     }
 
     /**
