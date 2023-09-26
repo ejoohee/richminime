@@ -66,7 +66,7 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
     _controller.forward();
   }
 
-  onNextButtonTap() async {
+  Future onNextButtonTap() async {
     setState(() {
       isLoading = true; // 로딩 시작
     });
@@ -114,7 +114,7 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
             scrollDirection: Axis.vertical,
             child: Column(
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 50),
                 LinearPercentIndicator(
                   alignment: MainAxisAlignment.center,
                   width: MediaQuery.of(context).size.width,
