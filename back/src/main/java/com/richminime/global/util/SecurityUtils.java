@@ -1,6 +1,5 @@
 package com.richminime.global.util;
 
-import com.richminime.domain.user.auth.UserDetailsImpl;
 import com.richminime.global.common.security.CustomUserDetails;
 import com.richminime.global.exception.ForbiddenException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
