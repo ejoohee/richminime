@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/item")
+@RequestMapping("/item")
 public class ItemController {
 
     private final ItemService itemService;
