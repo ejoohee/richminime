@@ -25,8 +25,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.richminime.domain.clothing.constant.ClothingExceptionMessage.CLOTHING_DUPLICATED;
-import static com.richminime.domain.clothing.constant.ClothingExceptionMessage.CLOTHING_NOT_FOUND;
+import static com.richminime.domain.clothing.constant.ClothingExceptionMessage.*;
 import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
 import static com.richminime.global.constant.ExceptionMessage.INSUFFICINET_BALANCE;
 
@@ -55,6 +54,12 @@ public class UserClothingServiceImpl implements UserClothingService {
 
         boolean alreadyOwned = userClothingRepository.existsByUser_UserIdAndClothing_ClothingId(user.getUserId(), clothing.getClothingId());
 
+        //만약 보유 옷 20개 넘으면 못사게 예외
+        if (user.getClothingCount() >= 20) {
+            throw new ClothingDuplicatedException(CLOTHING_COUNT_OVER.getMessage());
+        }
+
+        //구매한 적 있으면 못사게 예외
         if (alreadyOwned) {
             throw new ClothingDuplicatedException(CLOTHING_DUPLICATED.getMessage());
         }
