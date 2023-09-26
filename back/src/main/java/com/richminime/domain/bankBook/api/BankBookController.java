@@ -18,7 +18,7 @@ import java.util.List;
 import static com.richminime.domain.bankBook.constant.BankBookResponseMessage.FIND_ALL_BANKBOOK;
 
 @RequiredArgsConstructor
-@RequestMapping("/bankbook")
+@RequestMapping("/api/bankbook")
 @RestController
 public class BankBookController {
     private final BankBookService bankBookService;
@@ -34,5 +34,9 @@ public class BankBookController {
                 ResponseDto.create(FIND_ALL_BANKBOOK.getMessage(),
                         bankBookService.findAllByUserIdAndType(transactionType))
         );
+    }*/
+    @GetMapping("")
+    public ResponseEntity<String> get(){
+        return ResponseEntity.ok("ok");
     }
 }

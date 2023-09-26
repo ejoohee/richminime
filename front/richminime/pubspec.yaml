@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_secure_storage: ^9.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -37,6 +38,8 @@ dependencies:
   http: ^1.1.0
   url_launcher: ^6.1.14
   flame: ^1.8.2
+  percent_indicator: ^4.2.3
+  # credit_card_input_form: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -58,9 +61,33 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  fonts:
+    - family: Dunggeunmo
+      fonts:
+        - asset: assets/fonts/NeoDunggeunmoPro-Regular.ttf
+    - family: DOSIyagiBoldface
+      fonts:
+        - asset: assets/fonts/DOSIyagiBoldface.ttf
+    - family: DOSMyungjo
+      fonts:
+        - asset: assets/fonts/DOSMyungjo.ttf
+    - family: 3KR
+      fonts:
+        - asset: assets/fonts/Sam3KRFont.ttf
+    - family: StarDust
+      fonts:
+        - asset: assets/fonts/PF스타더스트.ttf
+        - asset: assets/fonts/PF스타더스트 Bold.ttf
+          weight: 700
+    - family: StarDustS
+      fonts:
+        - asset: assets/fonts/PF스타더스트S.ttf
+        - asset: assets/fonts/PF스타더스트S Bold.ttf
+          weight: 700
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    # images
     - assets/images/minime/default.png
     - assets/images/miniroom/princess_theme.jpg
 
