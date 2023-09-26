@@ -23,8 +23,6 @@ public class SecurityUtils {
                 authentication = null;
             }
 
-            System.out.println(authentication);
-
             //이메일정보
             return authentication.getName();
         } catch (NullPointerException e) {
@@ -43,6 +41,8 @@ public class SecurityUtils {
             }
 
             CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
+
+            // userId(번호)
             return userPrincipal.getUserId();
         } catch (NullPointerException e) {
             throw new ForbiddenException();

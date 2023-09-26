@@ -108,12 +108,10 @@ public class ItemServiceImpl implements ItemService {
      * 관리자면 true 반환 / 일반회원이면 false 반환
      */
     public boolean isAdmin() {
-        String email = securityUtils.getLoggedInUserEmail();
         Long userId = securityUtils.getUserNo();
-        log.info("[아이템 서비스] email : {}", email);
         log.info("[아이템 서비스] userId : {}", userId);
 
-        User loginUser = userRepository.findByEmail(email)
+        User loginUser = userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.error("[아이템 서비스] 로그인 유저를 찾을 수 없습니다.");
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "로그인 유저를 찾을 수 없습니다.");
@@ -129,7 +127,6 @@ public class ItemServiceImpl implements ItemService {
      * 테마 상점에 테마 등록
      * 로그인 유저가 관리자일 경우에만 등록이 가능
      * @param itemReqDto
-     * @param token
      * @return
      */
     @Transactional
