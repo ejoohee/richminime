@@ -17,17 +17,21 @@ import java.util.List;
 import static com.richminime.domain.bankBook.constant.BankBookResponseMessage.FIND_ALL_BANKBOOK;
 
 @RequiredArgsConstructor
-@RequestMapping("/bankbook")
+@RequestMapping("/api/bankbook")
 @RestController
 public class BankBookController {
     private final BankBookService bankBookService;
 
     //내역별전체보기
-    @GetMapping("")
+/*    @GetMapping("")
     public ResponseEntity<ResponseDto<List<BankBookResDto>>> findAllByUserIdByType(@RequestParam(required = false) TransactionType transactionType) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseDto.create(FIND_ALL_BANKBOOK.getMessage(),
                         bankBookService.findAllByUserIdAndType(transactionType))
         );
+    }*/
+    @GetMapping("")
+    public ResponseEntity<String> get(){
+        return ResponseEntity.ok("ok");
     }
 }
