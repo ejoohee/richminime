@@ -34,5 +34,6 @@ public class BankBookController {
                 ResponseDto.create(FIND_ALL_BANKBOOK.getMessage(),
                         bankBookService.findAllByUserIdAndType(transactionType))
         );
+    
     }
 }
