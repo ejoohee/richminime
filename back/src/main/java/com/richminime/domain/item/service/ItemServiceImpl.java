@@ -109,7 +109,9 @@ public class ItemServiceImpl implements ItemService {
      */
     public boolean isAdmin() {
         String email = securityUtils.getLoggedInUserEmail();
+        Long userId = securityUtils.getUserNo();
         log.info("[아이템 서비스] email : {}", email);
+        log.info("[아이템 서비스] userId : {}", userId);
 
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {

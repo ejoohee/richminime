@@ -14,6 +14,8 @@ import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
 
+    Long userId;
+
     String email;
 
     String password;
@@ -25,7 +27,8 @@ public class CustomUserDetails implements UserDetails {
     Long balance;
 
     @Builder
-    public CustomUserDetails(String email, String password, String nickname, String userType, Long balance) {
+    public CustomUserDetails(Long userId, String email, String password, String nickname, String userType, Long balance) {
+        this.userId = userId;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -44,6 +47,10 @@ public class CustomUserDetails implements UserDetails {
         }
         auth.add(new SimpleGrantedAuthority(authority));
         return auth;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 
     @JsonIgnore
