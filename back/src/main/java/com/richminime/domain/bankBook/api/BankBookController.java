@@ -34,9 +34,6 @@ public class BankBookController {
                 ResponseDto.create(FIND_ALL_BANKBOOK.getMessage(),
                         bankBookService.findAllByUserIdAndType(transactionType))
         );
-    }*/
-    @GetMapping("")
-    public ResponseEntity<String> get(){
-        return ResponseEntity.ok("ok");
+    
     }
 }
