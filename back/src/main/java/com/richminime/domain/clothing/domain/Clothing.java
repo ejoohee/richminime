@@ -28,6 +28,9 @@ public class Clothing {
     @Column(nullable = false)
     private String clothingImg;
 
+    @Column(nullable = false)
+    private String clothingApplyImg;
+
     @Column(length = 40)
     private String clothingInfo;
 
@@ -38,19 +41,21 @@ public class Clothing {
     private List<UserClothing> userClothings = new ArrayList<>();
 
     @Builder
-    public Clothing(Long clothingId, String clothingName, ClothingType clothingType, String clothingImg, String clothingInfo, Long price) {
+    public Clothing(Long clothingId, String clothingName, ClothingType clothingType, String clothingImg, String clothingApplyImg, String clothingInfo, Long price) {
         this.clothingId = clothingId;
         this.clothingName = clothingName;
         this.clothingType = clothingType;
         this.clothingImg = clothingImg;
+        this.clothingApplyImg = clothingApplyImg;
         this.clothingInfo = clothingInfo;
         this.price = price;
     }
 
-    public void update(String clothingName, ClothingType clothingType, String clothingImg, String clothingInfo, Long price) {
+    public void update(String clothingName, ClothingType clothingType, String clothingImg, String clothingApplyImg, String clothingInfo, Long price) {
         this.clothingName = clothingName;
         this.clothingType = clothingType;
         this.clothingImg = clothingImg;
+        this.clothingApplyImg = clothingApplyImg;
         this.clothingInfo = clothingInfo;
         this.price = price;
     }

@@ -13,6 +13,7 @@ public class ClothingResDto {
     private final String clothingName;
     private final String clothingType;
     private final String clothingImg;
+    private final String clothingApplyImg;
     private final String clothingInfo;
     private final long price;
 
@@ -22,6 +23,7 @@ public class ClothingResDto {
                 .clothingName(clothing.getClothingName())
                 .clothingType(clothing.getClothingType().getValue())
                 .clothingImg(clothing.getClothingImg())
+                .clothingApplyImg(clothing.getClothingApplyImg())
                 .clothingInfo(clothing.getClothingInfo())
                 .price(clothing.getPrice())
                 .build();

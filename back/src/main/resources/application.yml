@@ -20,17 +20,23 @@ spring:
       hibernate:
         format_sql: 'true'
         show_sql: 'true'
-        dialect: org.hibernate.dialect.H2Dialect
+    #        dialect: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create
     # SQL스크립트는 Hibernate가 초기화되기 전에 실행되는데, 스크립트를 사용하여 hibernate에 의해
     # 생성된 테이블에 데이터를 채우려면 아래의 설정을 true로 해야 한다.
     defer-datasource-initialization: true
-  database-platform: org.hibernate.dialect.H2Dialect
+  #  database-platform: org.hibernate.dialect.H2Dialect
   # data.sql 실행을 위한 추가
   sql:
     init:
       mode: always
+  # datasource:
+  #   driverClassName: org.h2.Driver
+  #   password: ''
+  #   username: sa
+  #   hikari:
+  #     jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
   datasource:
 #    url: jdbc:mariadb://mariadb:3306/richminime
 #    username: root
@@ -49,6 +55,7 @@ spring:
     console:
       path: /h2-console
       enabled: true
+
   profiles:
     include: secure
   data:
@@ -69,7 +76,7 @@ spring:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
   redis:
-    host: localhost
+    host: j9A704.p.ssafy.io
     port: 6379
 logging:
   level:
@@ -94,7 +101,11 @@ server:
       force: "true"
       charset: UTF-8
     contextPath: /api
+<<<<<<< HEAD
   address: localhost
+=======
+  address: 0.0.0.0
+>>>>>>> 153665398a6714653033f50247e84f8f76ee7ea7
   port: "8083"
   compression:
     enabled: "true"
@@ -115,5 +126,9 @@ rsa:
 codef:
   auth-header: 'Basic MjFjZTRiYTgtNTUzNy00NTRmLTg3YmUtN2RhYWQyOGVjYjFmOjA0MTZmODdjLWI4YTYtNGJjMS05ZDM2LTJlYTgwOTVlMTNjNA=='
 
+<<<<<<< HEAD
 gpt:
   api-key: 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
+=======
+
+>>>>>>> 153665398a6714653033f50247e84f8f76ee7ea7

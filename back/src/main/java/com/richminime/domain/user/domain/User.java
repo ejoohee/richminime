@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import com.richminime.domain.gpt.domain.Prompt;
 import javax.persistence.*;
@@ -50,11 +51,21 @@ public class User {
     private String cardNumber;
 
     @Column(nullable = false, columnDefinition = "varchar(50)")
+    @ColumnDefault("'ROLE_USER'")
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+
     @OneToOne(mappedBy = "user")
     private Character character;
+
+    @Column(name = "clothing_count", columnDefinition = "integer default 0")
+    private Integer clothingCount;
+
+    @Column(name = "item_count", columnDefinition = "integer default 0")
+    private Integer itemCount;
+
+
 //    @Column(nullable = false)
 //    private Date birthDate;
 
@@ -88,8 +99,26 @@ public class User {
     }
 
     // 비밀번호 업데이트
-    public void updatePassowrd(String encrypted) {
+    public void updatePassword(String encrypted) {
         this.password = encrypted;
+    }
+
+    // 아이템 카운트 업데이트
+    public void updateItemCnt(boolean isBuy) {
+        if(isBuy)
+            this.itemCount++;
+        else
+            this.itemCount--;
+
+//        if(itemCount > 20) { 서비스단 구현 }
+    }
+
+    // 클로징 카운트 업데이트
+    public void updateClothingCnt(boolean isBuy) {
+        if(isBuy)
+            this.clothingCount++;
+        else
+            this.clothingCount--;
     }
 
 }

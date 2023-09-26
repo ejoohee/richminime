@@ -10,6 +10,7 @@ import com.richminime.domain.clothing.domain.Clothing;
 import com.richminime.domain.clothing.domain.UserClothing;
 import com.richminime.domain.clothing.dto.UserClothingReqDto;
 import com.richminime.domain.clothing.dto.UserClothingResDto;
+import com.richminime.domain.clothing.exception.ClothingDuplicatedException;
 import com.richminime.domain.clothing.exception.ClothingNotFoundException;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.exception.UserNotFoundException;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.richminime.domain.clothing.constant.ClothingExceptionMessage.CLOTHING_DUPLICATED;
 import static com.richminime.domain.clothing.constant.ClothingExceptionMessage.CLOTHING_NOT_FOUND;
 import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
 import static com.richminime.global.constant.ExceptionMessage.INSUFFICINET_BALANCE;
@@ -36,13 +38,13 @@ public class UserClothingServiceImpl implements UserClothingService {
     private final ClothingRepository clothingRepository;
     private final UserRepository userRepository;
     private final BankBookRepository bankBookRepository;
-
+    private final SecurityUtils securityUtils;
 
     @Transactional
     @Override
     public void addMyClothing(UserClothingReqDto userClothingReqDto) {
 
-        String loggedInUserEmail = SecurityUtils.getLoggedInUserEmail();
+        String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
 
         User user = userRepository.findByEmail(loggedInUserEmail)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
@@ -50,6 +52,12 @@ public class UserClothingServiceImpl implements UserClothingService {
         long clothingId = userClothingReqDto.getClothingId();
         Clothing clothing = clothingRepository.findById(clothingId)
                 .orElseThrow(() -> new ClothingNotFoundException(CLOTHING_NOT_FOUND.getMessage()));
+
+        boolean alreadyOwned = userClothingRepository.existsByUser_UserIdAndClothing_ClothingId(user.getUserId(), clothing.getClothingId());
+
+        if (alreadyOwned) {
+            throw new ClothingDuplicatedException(CLOTHING_DUPLICATED.getMessage());
+        }
 
         long newBalance = user.getBalance() - clothing.getPrice();
 
@@ -69,12 +77,17 @@ public class UserClothingServiceImpl implements UserClothingService {
         bankBookRepository.save(bankBook);
         user.updateBalance(newBalance);
 
+        //ture면 사는거
+        boolean buy = true;
+        user.updateClothingCnt(buy);
+
         UserClothing userClothing = UserClothing.builder()
                 .clothing(clothing)
                 .user(user)
                 .build();
 
         userClothingRepository.save(userClothing);
+        userRepository.save(user);
     }
 
     @Transactional
@@ -86,7 +99,6 @@ public class UserClothingServiceImpl implements UserClothingService {
         User user = userClothing.getUser();
         long saleAmount = Math.round(userClothing.getClothing().getPrice() * 0.4);
         long newBalance = user.getBalance() + saleAmount;
-        user.updateBalance(newBalance);
 
         BankBook bankBook = BankBook.builder()
                 .userId(user.getUserId())
@@ -98,15 +110,26 @@ public class UserClothingServiceImpl implements UserClothingService {
                 .build();
 
         bankBookRepository.save(bankBook);
+        user.updateBalance(newBalance);
+
+        //false면 파는거
+        boolean sell = false;
+        user.updateClothingCnt(sell);
 
         userClothingRepository.delete(userClothing);
+        userRepository.save(user);
     }
 
     @Transactional
     @Override
     public List<UserClothingResDto> findAllMyClothingByType(ClothingType clothingType) {
+        String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
+
+        User user = userRepository.findByEmail(loggedInUserEmail)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
         if (clothingType == null) {
-            List<UserClothing> userClothingList = userClothingRepository.findAll();
+            List<UserClothing> userClothingList = userClothingRepository.findAllByUser_UserId(user.getUserId());
             List<UserClothingResDto> userClothingResDtoList = new ArrayList<>();
             for (UserClothing userClothing : userClothingList) {
                 UserClothingResDto dto = UserClothingResDto.entityToDto(userClothing);
@@ -114,7 +137,7 @@ public class UserClothingServiceImpl implements UserClothingService {
             }
             return userClothingResDtoList;
         } else {
-            List<UserClothing> userClothingListByType = userClothingRepository.findAllByClothing_ClothingType(clothingType);
+            List<UserClothing> userClothingListByType = userClothingRepository.findAllByUser_UserIdAndClothing_ClothingType(user.getUserId(), clothingType);
             List<UserClothingResDto> userClothingResDtoListByType = new ArrayList<>();
             for (UserClothing userClothing : userClothingListByType) {
                 UserClothingResDto dto = UserClothingResDto.entityToDto(userClothing);

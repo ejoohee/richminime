@@ -6,10 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -23,14 +20,18 @@ public class BankBook {
 
     private Long userId;
 
+    @Column(columnDefinition = "BIGINT DEFAULT 0")
     private long amount;
 
     private LocalDate date;
 
+    @Column(columnDefinition = "BIGINT DEFAULT 0")
     private long balance;
 
+    @Enumerated(value = EnumType.STRING)
     private TransactionType transactionType;
 
+    @Column(length = 40)
     private String summary;
 
 

@@ -21,7 +21,7 @@ public class CharacterServiceImpl implements CharacterService{
 
     @Override
     public CharacterResDto find() {
-        jwtUtil.getUserNo();
+        jwtUtil.
         return ;
     }
 
