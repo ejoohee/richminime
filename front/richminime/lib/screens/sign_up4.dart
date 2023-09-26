@@ -180,7 +180,7 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
         child: Column(
           // Column 위젯을 사용하여 위젯을 세로로 배치
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             LinearPercentIndicator(
               alignment: MainAxisAlignment.center,
               width: MediaQuery.of(context).size.width,
