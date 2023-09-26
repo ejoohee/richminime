@@ -156,12 +156,12 @@ public class CodefWebClient {
                     }
                     // 한국 원 단위가 아닌 경우 소수점이 들어오는 경우가 발생할 수 있음 (ex : USD)
                     Long amount = null;
-                    if(CountryCode.USD.code.equals(jsonObject1.getString("resAccountCurrency"))) {
+                    if(CountryCode.USD.getCode().equals(jsonObject1.getString("resAccountCurrency"))) {
                         // 달러 단위
                         Double tmp = Double.valueOf(jsonObject1.getString("resUsedAmount"));
                         amount = (long) (tmp * 1000);
                     }
-                    if(CountryCode.KRW.code.equals(jsonObject1.getString("resAccountCurrency"))){
+                    if(CountryCode.KRW.getCode().equals(jsonObject1.getString("resAccountCurrency"))){
                         // 원 단위
                         amount = Long.valueOf(jsonObject1.getString("resUsedAmount"));
                     }
