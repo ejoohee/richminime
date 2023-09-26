@@ -31,12 +31,6 @@ spring:
   sql:
     init:
       mode: always
-  # datasource:
-  #   driverClassName: org.h2.Driver
-  #   password: ''
-  #   username: sa
-  #   hikari:
-  #     jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
   datasource:
 #    url: jdbc:mariadb://mariadb:3306/richminime
 #    username: root
@@ -101,11 +95,8 @@ server:
       force: "true"
       charset: UTF-8
     contextPath: /api
-<<<<<<< HEAD
-  address: localhost
-=======
+
   address: 0.0.0.0
->>>>>>> 153665398a6714653033f50247e84f8f76ee7ea7
   port: "8083"
   compression:
     enabled: "true"
@@ -126,9 +117,7 @@ rsa:
 codef:
   auth-header: 'Basic MjFjZTRiYTgtNTUzNy00NTRmLTg3YmUtN2RhYWQyOGVjYjFmOjA0MTZmODdjLWI4YTYtNGJjMS05ZDM2LTJlYTgwOTVlMTNjNA=='
 
-<<<<<<< HEAD
+
 gpt:
   api-key: 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
-=======
 
->>>>>>> 153665398a6714653033f50247e84f8f76ee7ea7

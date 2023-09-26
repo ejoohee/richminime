@@ -20,7 +20,6 @@ public class Character {
     private Long characterId;
 
     @OneToOne(fetch = FetchType.LAZY)
-
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -28,5 +27,8 @@ public class Character {
     @JoinColumn(name = "clothing_id")
     private Clothing clothing;
 
+    public void chageClothing(Clothing clothing){
+        this.clothing = clothing;
+    }
 
 }
