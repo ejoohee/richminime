@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:richminime/screens/sign_up2.dart';
 
 class SignUp extends StatefulWidget {
@@ -17,7 +18,6 @@ class _SignUpState extends State<SignUp> {
     '비씨',
     '신한',
     '씨티',
-    '우리',
     '롯데',
     '하나',
   ];
@@ -30,6 +30,18 @@ class _SignUpState extends State<SignUp> {
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Column(
         children: [
+          const SizedBox(height: 20),
+          LinearPercentIndicator(
+            alignment: MainAxisAlignment.center,
+            width: MediaQuery.of(context).size.width,
+            animation: true,
+            animationDuration: 1200,
+            lineHeight: 30,
+            percent: 0.25,
+            center: const Text('1/4'),
+            barRadius: const Radius.circular(16),
+            progressColor: Colors.red[200],
+          ),
           const SizedBox(
             height: 50,
           ),

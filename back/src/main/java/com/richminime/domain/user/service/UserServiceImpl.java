@@ -12,7 +12,6 @@ import com.richminime.domain.user.repository.LogoutAccessTokenRedisRepository;
 import com.richminime.domain.user.repository.RefreshTokenRedisRepository;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
-import com.richminime.global.common.codef.dto.request.FindSpendingListReqDto;
 import com.richminime.global.common.jwt.JwtExpirationEnums;
 import com.richminime.global.exception.NotFoundException;
 import com.richminime.global.exception.TokenException;
@@ -113,7 +112,7 @@ public class UserServiceImpl implements UserService {
      * 회원 목록을 순회하면서 각 회원의 전날 소비내역을 불러옴
      */
     @Scheduled(cron = "0 0 0 * * *")
-    public void addUsersDaySpending(){
+    public void addUsersDaySpending() {
         // 오늘 날짜 확인
         // date로 캘린더 생성
         Date date = new Date();
@@ -125,10 +124,12 @@ public class UserServiceImpl implements UserService {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
+
         StringBuilder startDate = new StringBuilder();
         StringBuilder endDate = new StringBuilder();
         startDate.append(year);
         endDate.append(year);
+
         // 달이 10 미만이라면 앞에 0을 붙여줘야 함
         if(month < 10) {
             startDate.append(0).append(month);
@@ -155,6 +156,12 @@ public class UserServiceImpl implements UserService {
     /**
      * 회원이 회원가입 할 때에는 저장된 소비내역 데이터가 존재하지 않으므로
      * 회원가입 날짜 기준 전달의 소비내역을 모두 불러와 DB에 저장
+     * 매 달의 첫날인 경우
+     *   위에 addUserMonthSpending 코드 실행으로 인해 DB에 이미 들어간 상황
+     *   전 날의 금액 총합을 가져와서 balance 갱신
+     * 첫날이 아닌 경우
+     *    1일부터 오늘의 전날까지 spending을 저장해주고
+     *    전 날의 금액 총합을 가져와서 balance 갱신
      */
     public void addUserMonthSpending(User user){
         // codef로 전 달 소비내역 모두 불러오기
@@ -162,23 +169,38 @@ public class UserServiceImpl implements UserService {
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
+        // 전날을 기준으로 함
+        calendar.add(Calendar.DATE, -1);
 
-        // 년, 월 값 가져오기
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-
-        // 해당 년 월의 마지막 날을 가져오기
-        YearMonth yearMonth = YearMonth.of(year, month);
-        int lastDay = yearMonth.lengthOfMonth();
         StringBuilder startDate = new StringBuilder();
         StringBuilder endDate = new StringBuilder();
-        // 달이 10 미만이라면 앞에 0을 붙여줘야 함
-        if(month < 10) {
-            startDate.append(year).append(0).append(month).append("01");
-            endDate.append(year).append(0).append(month).append(lastDay);
+        // 년, 월, 일 값 가져오기
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int sy = year, ey = year, sm = month - 1, em = month, sd = 1, ed = day; // 시작 년월일, 끝 년월일
+        if(month == 1) {
+            // month가 1월이면 그 전달은 12월, 즉 year도 작년이 되어야 함
+            sy = year - 1;
+            sm = 12;
+        }
+        if(sm < 10) {
+            // 전 달이 10 미만이라면 앞에 0을 붙여줘야 함
+            startDate.append(year).append(0).append(sm).append(0).append(sd);
         }else {
-            startDate.append(year).append(month).append("01");
-            endDate.append(year).append(month).append(lastDay);
+            startDate.append(year).append(sm).append(0).append(sd);
+        }
+        // 달이 10 미만이라면 앞에 0을 붙여줘야 함
+        if(em < 10) {
+            endDate.append(year).append(0).append(em);
+        }else {
+            endDate.append(year).append(em);
+        }
+        // 일이 10 미만이라면 앞에 0을 붙여줘야 함
+        if(ed < 10) {
+            endDate.append(0).append(ed);
+        }else {
+            endDate.append(ed);
         }
         log.info("startDate-------------------------->{}", startDate.toString());
         log.info("endDate-------------------------->{}", endDate.toString());
@@ -389,8 +411,10 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException(UserExceptionMessage.SIGN_UP_NOT_VALID.getMessage());
         // uuid에 해당하는 커넥티드 아이디 가져오기
 
+
 //        String connectedId = connectedIdMap.remove(addUserRequest.getUuid());
         String connectedId = "1234";
+
         if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
         String organizationCode = addUserRequest.getOrganization();
         // 패스워드 암호화
@@ -405,7 +429,7 @@ public class UserServiceImpl implements UserService {
 
         // 회원가입 성공하면 월 소비내역 초기값 저장하는 메서드 호출
         addUserMonthSpending(user);
-        // 월 소비내역 분석해서 redis에 저장하는 메서드 호출
+        // balance 갱신
     }
 
     @Override

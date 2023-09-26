@@ -204,11 +204,10 @@ public class UserItemServiceImpl implements UserItemService {
         }
 
         // 소유물건이 20개인지 확인
-        // 유저카운트 ++
-//        if(loginUser.getItemCount >= 20) {
-//            log.error("[테마 구매하기] 주머니가 가득차 구매할 수 없습니다.");
-//            return null;
-//        }
+        if(loginUser.getItemCount() >= 20) {
+            log.error("[테마 구매하기] 주머니가 가득차 구매할 수 없습니다.");
+            return null;
+        }
 
         log.info("[테마 구매하기] 테마 구매 가능. itemId : {}", item.getItemId());
 
@@ -223,7 +222,7 @@ public class UserItemServiceImpl implements UserItemService {
 
         bankBookRepository.save(bankBook);
         loginUser.updateBalance(newBalance);
-//        loginUser.updateItemCnt(true);
+        loginUser.updateItemCnt(true);
 
         userRepository.save(loginUser); // 이거 하는게 맞지않나
 
@@ -256,7 +255,9 @@ public class UserItemServiceImpl implements UserItemService {
 
         Long saleAmount = Math.round(userItem.getItem().getPrice() * 0.4);
         Long newBalance = loginUser.getBalance() + saleAmount;
+
         loginUser.updateBalance(newBalance);
+        loginUser.updateItemCnt(false);
 
         BankBook bankBook = BankBook.builder()
                 .userId(loginUserId)
