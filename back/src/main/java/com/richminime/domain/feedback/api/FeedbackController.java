@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/feedback")
+@RequestMapping("/api/feedback")
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
