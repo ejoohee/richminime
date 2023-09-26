@@ -159,7 +159,7 @@ public class CodefWebClient {
                             .category(jsonObject1.getString("resMemberStoreType"))
                             .cost(Long.valueOf(jsonObject1.getString("resUsedAmount")))
                             .spentDate(date)
-                            .storeNo(Integer.valueOf(jsonObject1.getString("resMemberStoreNo")))
+                            .storeNo(Long.valueOf(jsonObject1.getString("resMemberStoreNo")))
                             .build();
                 })
                 .collect(Collectors.toList());
