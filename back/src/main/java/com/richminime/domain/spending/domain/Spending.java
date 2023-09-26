@@ -29,10 +29,10 @@ public class Spending {
 
     private Long cost;
 
-    private Integer storeNo;
+    private Long storeNo;
 
     @Builder
-    public Spending(Long userId, String category, Date spentDate, Long cost, Integer storeNo) {
+    public Spending(Long userId, String category, Date spentDate, Long cost, Long storeNo) {
         this.userId = userId;
         this.category = category;
         this.spentDate = spentDate;
