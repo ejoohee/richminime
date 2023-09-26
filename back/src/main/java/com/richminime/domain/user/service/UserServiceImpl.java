@@ -428,7 +428,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.save(addUserRequest.toEntity(connectedId, organizationCode));
 
         // 회원가입 성공하면 월 소비내역 초기값 저장하는 메서드 호출
-        addUserMonthSpending(user);
+//        addUserMonthSpending(user);           //로컬에서 테스트하려면 주석처리해야함
         // balance 갱신
     }
 

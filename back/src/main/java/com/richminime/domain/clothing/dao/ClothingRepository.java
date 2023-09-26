@@ -14,8 +14,8 @@ import java.util.Optional;
 public interface ClothingRepository extends JpaRepository<Clothing, Long> {
     List<Clothing> findAllByClothingType(ClothingType clothingType);
 
-    @Query("select c from Clothing c where c.clothingId = :clothingid")
-    Optional<Clothing> findByUserId (@Param("clothingid") Long userId);
+    @Query("select c from Clothing c where c.clothingId = :clothingId")
+    Optional<Clothing> findByclothingId (@Param("clothingId") Long clothingId);
 
 
 }

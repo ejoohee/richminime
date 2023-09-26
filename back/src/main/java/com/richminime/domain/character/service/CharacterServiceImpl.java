@@ -39,9 +39,9 @@ public class CharacterServiceImpl implements CharacterService{
         Long loginUserId = findLoginUserId();
         Character character = characterRepository
                 .findByUserId(loginUserId)
-                .orElseThrow(() -> new NotFoundException("캐릭터를 찾을 수 없음"));
+                .orElseThrow(() -> new NotFoundException("캐릭터를 찾을 수 없음"));  //로그인 정보 기반으로 캐릭터 찾음
         Clothing clothing = clothingRepository
-                .findByUserId(loginUserId)
+                .findByclothingId(character.getCharacterId())         //찾은 캐릭터 정보 기반으로 clothing에서 이미지 서치
                 .orElseThrow(() -> new NotFoundException("옷을 찾을 수 없음"));
 
         return CharacterResDto.builder()
@@ -57,9 +57,11 @@ public class CharacterServiceImpl implements CharacterService{
         Character character = characterRepository
                 .findByUserId(loginUserId)
                 .orElseThrow(() -> new NotFoundException("캐릭터를 찾을 수 없음"));
+
         character.chageClothing(Clothing.builder().clothingId(clothingId).build());   //dirty checking
-        Clothing clothing = clothingRepository
-                .findByUserId(loginUserId)
+
+        Clothing clothing = clothingRepository       //바뀐 clothingId를 기반으로 이미지 서치
+                .findByclothingId(clothingId)
                 .orElseThrow(() -> new NotFoundException("옷을 찾을 수 없음"));
         return CharacterResDto.builder()
                 .characterId(character.getCharacterId())
