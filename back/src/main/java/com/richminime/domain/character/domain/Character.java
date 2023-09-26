@@ -14,6 +14,7 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "charactets")
 public class Character {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "character_id")
