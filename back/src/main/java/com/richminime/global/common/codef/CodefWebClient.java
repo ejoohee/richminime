@@ -154,12 +154,23 @@ public class CodefWebClient {
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
+                    // 한국 원 단위가 아닌 경우 소수점이 들어오는 경우가 발생할 수 있음 (ex : USD)
+                    Long amount = null;
+                    if(CountryCode.USD.getCode().equals(jsonObject1.getString("resAccountCurrency"))) {
+                        // 달러 단위
+                        Double tmp = Double.valueOf(jsonObject1.getString("resUsedAmount"));
+                        amount = (long) (tmp * 1000);
+                    }
+                    if(CountryCode.KRW.getCode().equals(jsonObject1.getString("resAccountCurrency"))){
+                        // 원 단위
+                        amount = Long.valueOf(jsonObject1.getString("resUsedAmount"));
+                    }
                     return Spending.builder()
                             .userId(userId)
                             .category(jsonObject1.getString("resMemberStoreType"))
-                            .cost(Long.valueOf(jsonObject1.getString("resUsedAmount")))
+                            .cost(amount)
                             .spentDate(date)
-                            .storeNo(Integer.valueOf(jsonObject1.getString("resMemberStoreNo")))
+                            .storeNo(Long.valueOf(jsonObject1.getString("resMemberStoreNo")))
                             .build();
                 })
                 .collect(Collectors.toList());
