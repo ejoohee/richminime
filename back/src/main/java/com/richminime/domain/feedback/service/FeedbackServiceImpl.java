@@ -31,8 +31,12 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final SpendingRepository spendingRepository;
     private final SpendingService spendingService;
     private final SecurityUtils securityUtils;
-//    private String email = securityUtils.getLoggedInUserEmail();
 
+    /**
+     * 피드백 1일1회 랜덤 추천
+     * 로그인 사용자의 소비패턴에 따라 피드백을 1일1회 랜덤으로 추천합니다.
+     * @return
+     */
     @Override
     public FeedbackResDto findFeedback() {
         String email = securityUtils.getLoggedInUserEmail();
@@ -52,6 +56,10 @@ public class FeedbackServiceImpl implements FeedbackService {
         return null;
     }
 
+    /**
+     * 로그인 유저가 관리자인지 체크합니다.
+     * @return
+     */
     private boolean isAdmin() {
 
         String email = securityUtils.getLoggedInUserEmail();
@@ -68,6 +76,12 @@ public class FeedbackServiceImpl implements FeedbackService {
         return false;
     }
 
+    /**
+     * 피드백 등록
+     * 관리자 회원만 피드백 등록이 가능합니다.
+     * @param feedbackReqDto
+     * @return
+     */
     @Transactional
     @Override
     public FeedbackResDto addFeedback(FeedbackReqDto feedbackReqDto) {
@@ -91,6 +105,11 @@ public class FeedbackServiceImpl implements FeedbackService {
         return FeedbackResDto.entityToDto(feedback);
     }
 
+    /**
+     * 피드백 수정
+     * 관리자 회원만 피드백 수정이 가능합니다.
+     * @return
+     */
     @Transactional
     @Override
     public FeedbackResDto updateFeedback(Long feedbackId, FeedbackReqDto feedbackReqDto) {
@@ -115,6 +134,11 @@ public class FeedbackServiceImpl implements FeedbackService {
         return FeedbackResDto.entityToDto(feedback);
     }
 
+    /**
+     * 피드백 삭제
+     * 관리자 회원만 피드백 삭제가 가능합니다.
+     * @return
+     */
     @Transactional
     @Override
     public void deleteFeedback(Long feedbackId) {
