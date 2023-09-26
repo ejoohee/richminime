@@ -68,7 +68,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.PUT, "/clothing").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/clothing/*").hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST, "/item").hasRole("ADMIN")
-                .antMatchers(HttpMethod.PUT, "/item").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/item/*").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/item/*").hasRole("ADMIN")
                 .antMatchers("/**").hasRole("USER")
                 .and()
