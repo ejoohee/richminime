@@ -63,6 +63,9 @@ public class SecurityConfig {
                         "/v3/api-docs/**").permitAll()
                 .antMatchers("/user/all").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/user/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/clothing").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/clothing").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/clothing/*").hasRole("ADMIN")
                 .antMatchers("/**").hasRole("USER")
                 .and()
                 // HTTP 기본 인증을 사용하지 않도록 설정
