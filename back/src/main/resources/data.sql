@@ -1,6 +1,6 @@
-alter table users
+/*alter table users
     add constraint ck_item_cnt check ( item_count <= 20 ),
-    add constraint ck_clothing_cnt check ( clothing_count <= 20);
+    add constraint ck_clothing_cnt;*/
 
 insert into users
 (user_id, email, password, nickname, connected_id, organization_code, card_number, user_type)

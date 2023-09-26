@@ -31,30 +31,25 @@ spring:
   sql:
     init:
       mode: always
-  # datasource:
-  #   driverClassName: org.h2.Driver
-  #   password: ''
-  #   username: sa
-  #   hikari:
-  #     jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
   datasource:
-    # url: jdbc:mariadb://j9A704.p.ssafy.io:3306/richminime
-    url: jdbc:mariadb://mariadb:3306/richminime
-    username: root
-    password: richminime
-    driver-class-name: org.mariadb.jdbc.Driver
-  # datasource:
-  #   driverClassName: org.h2.Driver
-  #   password: ''
-  #   username: sa
-  #   hikari:
-  #     jdbc-url: jdbc:h2:tcp://localhost/~/richMinime;NON_KEYWORDS=USER
+#    url: jdbc:mariadb://mariadb:3306/richminime
+#    username: root
+#    password: richminime
+#    driver-class-name: org.mariadb.jdbc.Driver
 
-  #    url: jdbc:h2:mem:testdb;NON_KEYWORDS=USER
-  #  h2:
-  #    console:
-  #      path: /h2-console
-  #      enabled: true
+    driverClassName: org.h2.Driver
+    password: ''
+    username: sa
+    hikari:
+      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
+
+
+#    url: jdbc:h2:mem:testdb;NON_KEYWORDS=USER
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+
   profiles:
     include: secure
   data:
@@ -100,6 +95,7 @@ server:
       force: "true"
       charset: UTF-8
     contextPath: /api
+
   address: 0.0.0.0
   port: "8083"
   compression:
@@ -121,4 +117,7 @@ rsa:
 codef:
   auth-header: 'Basic MjFjZTRiYTgtNTUzNy00NTRmLTg3YmUtN2RhYWQyOGVjYjFmOjA0MTZmODdjLWI4YTYtNGJjMS05ZDM2LTJlYTgwOTVlMTNjNA=='
 
+
+gpt:
+  api-key: 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
 
