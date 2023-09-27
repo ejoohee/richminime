@@ -142,10 +142,16 @@ public class UserServiceImpl implements UserService {
             startDate.append(day);
             endDate.append(day);
         }
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         List<User> userList = userRepository.findAll();
+
         for (User user : userList) {
             spendingService.addSpending(user, startDate.toString(), endDate.toString());
+            try {
+                spendingService.updateDaySpending(user, month, day, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
