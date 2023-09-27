@@ -427,7 +427,6 @@ public class UserServiceImpl implements UserService {
 
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = connectedIdMap.remove(UUID.fromString(addUserRequest.getUuid()));
-//        String connectedId = "1234";
         if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
         String organizationCode = addUserRequest.getOrganization();
         // 패스워드 암호화
