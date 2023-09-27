@@ -1,12 +1,16 @@
 package com.richminime.domain.room.service;
 
+import com.richminime.domain.clothing.exception.ClothingNotFoundException;
 import com.richminime.domain.item.domain.Item;
+import com.richminime.domain.item.exception.ItemNotFoundException;
 import com.richminime.domain.item.repository.ItemRepository;
 import com.richminime.domain.room.domain.Room;
+import com.richminime.domain.room.dto.RoomReqDto;
 import com.richminime.domain.room.dto.RoomResDto;
+import com.richminime.domain.room.exception.RoomNotFoundException;
 import com.richminime.domain.room.repository.RoomRepository;
+import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
-import com.richminime.global.exception.NotFoundException;
 import com.richminime.global.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,18 +29,18 @@ public class RoomServiceImpl implements RoomService {
 
     public Long findLoginUserId(){
         return userRepository.findByEmail(securityUtils.getLoggedInUserEmail())
-                        .orElseThrow(() -> new NotFoundException("유저 찾을 수 없음"))
+                        .orElseThrow(() -> new UserNotFoundException("유저 찾을 수 없음"))
                 .getUserId();
     }
     @Override
-    public RoomResDto find() {
+    public RoomResDto findRoom() {
         Long loginUserId = findLoginUserId();
         Room room = roomRepository
                 .findByUserId(loginUserId)
-                .orElseThrow(() -> new NotFoundException("룸을 찾을 수 없음"));
+                .orElseThrow(() -> new RoomNotFoundException("룸을 찾을 수 없음"));
         Item item = itemRepository
                 .findByItemId(room.getItem().getItemId())
-                .orElseThrow(() -> new NotFoundException("옷을 찾을 수 없음"));
+                .orElseThrow(() -> new ItemNotFoundException("아이템을 찾을 수 없음"));
 
         return RoomResDto.builder()
                 .roomId(room.getRoomId())
@@ -46,16 +50,16 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public RoomResDto update(Long itemId) {
+    public RoomResDto updateRoom(RoomReqDto dto) {
 
         Long loginUserId = findLoginUserId();
         Room room = roomRepository
                 .findByUserId(loginUserId)
-                .orElseThrow(() -> new NotFoundException("룸을 찾을 수 없음"));
-        room.chageItem(Item.builder().itemId(itemId).build());   //dirty checking
+                .orElseThrow(() -> new RoomNotFoundException("룸을 찾을 수 없음"));
         Item item = itemRepository
-                .findByItemId(room.getItem().getItemId())
-                .orElseThrow(() -> new NotFoundException("옷을 찾을 수 없음"));
+                .findByItemId(dto.getItemId())
+                .orElseThrow(() -> new ItemNotFoundException("아이템을 찾을 수 없음"));
+        room.chageItem(item);   //dirty checking
 
         return RoomResDto.builder()
                 .roomId(room.getRoomId())

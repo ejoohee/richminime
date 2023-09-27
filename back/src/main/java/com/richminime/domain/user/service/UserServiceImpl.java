@@ -1,5 +1,9 @@
 package com.richminime.domain.user.service;
 
+import com.richminime.domain.character.domain.Character;
+import com.richminime.domain.character.repository.CharacterRepository;
+import com.richminime.domain.room.domain.Room;
+import com.richminime.domain.room.repository.RoomRepository;
 import com.richminime.domain.spending.service.SpendingService;
 import com.richminime.domain.user.domain.LogoutAccessToken;
 import com.richminime.domain.user.domain.RefreshToken;
@@ -37,6 +41,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.persistence.EntityManager;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -63,10 +68,13 @@ public class UserServiceImpl implements UserService {
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final JavaMailSender javaMailSender;
+    private final CharacterRepository characterRepository;
+    private final RoomRepository roomRepository;
 
     @Value("${rsa.public-key}")
     private String publicKey;
 
+    private final EntityManager em;
 
     private Map<UUID, String> connectedIdMap = new HashMap<>();
 
@@ -403,6 +411,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void addUser(AddUserReqDto addUserRequest) {
         // 회원가입 정보 유효성 확인
         if(addUserRequest.getEmail() == null || addUserRequest.getEmail().equals("") ||
@@ -425,7 +434,16 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         User user = userRepository.save(addUserRequest.toEntity(connectedId, organizationCode));
+
+        System.out.println(user.getUserId());
+        //회원가입 시 그에 맞는 캐릭터 기본정보 생성
+        Character character = Character.builder().user(user).build();
+        characterRepository.save(character);
+        //회원가입 시 그에 맞는 테마 기본정보 생성
+        roomRepository.save(Room.builder().user(user).build());
+
 
         // 회원가입 성공하면 월 소비내역 초기값 저장하는 메서드 호출
 //        addUserMonthSpending(user);           //로컬에서 테스트하려면 주석처리해야함

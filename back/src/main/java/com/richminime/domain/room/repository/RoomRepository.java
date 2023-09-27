@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface RoomRepository extends JpaRepository<Character,Long> {
+public interface RoomRepository extends JpaRepository<Room,Long> {
 
     @Query("select r from Room r where r.user.userId = :userId")
     Optional<Room> findByUserId(@Param("userId") Long userId);
