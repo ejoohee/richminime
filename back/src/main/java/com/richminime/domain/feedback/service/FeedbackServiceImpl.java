@@ -31,7 +31,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final SpendingRepository spendingRepository;
     private final SpendingService spendingService;
     private final SecurityUtils securityUtils;
-    private String email = securityUtils.getLoggedInUserEmail();
+    private String email;
 
     @Override
     public FeedbackResDto findFeedback() {

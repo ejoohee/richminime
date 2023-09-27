@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
 
@@ -101,29 +102,15 @@ public class SpendingServiceImpl implements SpendingService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             try {
                 updateMonthSpending(user, month, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
-                monthSpendingPattern = monthSpendingPatternRedisRepository.findById(email);
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
         }
-        spendingAmountMap = monthSpendingPattern.get().getSpendingAmountMap();
-
-        // 모든 키-값 쌍 가져오기
-        Set<Map.Entry<String, Long>> entrySet = spendingAmountMap.entrySet();
-        List<SpendingDto> spendingAmountList = new ArrayList<>();
-        String key;
-        // 카테고리 별 합계 정보를 DTO 형태로 변환
-        for(Map.Entry<String, Long> entry : entrySet) {
-            key = entry.getKey();
-            spendingAmountList.add(SpendingDto.builder()
-                    .category(key)
-                    .amount(entry.getValue())
-                    .build());
-        }
+        monthSpendingPattern = monthSpendingPatternRedisRepository.findById(email);
         // 응답 객체 반환
         return FindMonthSpendingResDto.builder()
                 .month(month)
-                .spendingAmountList(spendingAmountList)
+                .spendingAmountList(monthSpendingPattern.get().getSpendingAmountList())
                 .totalAmount(monthSpendingPattern.get().getTotalAmount())
                 .build();
     }
@@ -135,22 +122,10 @@ public class SpendingServiceImpl implements SpendingService {
     @Override
     public FindDaySpendingResDto findDaySpending() {
         String email = getLoginId();
-        Map<String, Long> spendingAmountMap;
+        List<SpendingDto> spendingAmountList;
         Optional<DaySpendingPattern> daySpendingPattern = daySpendingPatternRedisRepository.findById(email);
-        spendingAmountMap = daySpendingPattern.get().getSpendingAmountMap();
+        spendingAmountList = daySpendingPattern.get().getSpendingAmountList();
 
-        // 모든 키-값 쌍 가져오기
-        Set<Map.Entry<String, Long>> entrySet = spendingAmountMap.entrySet();
-        List<SpendingDto> spendingAmountList = new ArrayList<>();
-        String key;
-        // 카테고리 별 합계 정보를 DTO 형태로 변환
-        for(Map.Entry<String, Long> entry : entrySet) {
-            key = entry.getKey();
-            spendingAmountList.add(SpendingDto.builder()
-                    .category(key)
-                    .amount(entry.getValue())
-                    .build());
-        }
         return FindDaySpendingResDto.builder()
                 .month(daySpendingPattern.get().getMonth())
                 .day(daySpendingPattern.get().getDay())
@@ -169,25 +144,35 @@ public class SpendingServiceImpl implements SpendingService {
     @Override
     public MonthSpendingPattern analyzeMonthSpending(List<Spending> spendingList, String email, int month) {
         // 카테고리 별 합계 저장
-        Map<String, Long> map = new HashMap<>();
+        List<SpendingDto> spendingAmountList = new ArrayList<>();
+        // 카테고리의 index 지정
+        Map<String, Integer> map = new HashMap<>();
         String category; // 소비 유형
         Long totalAmount = 0L;
         Long amount;
+        SpendingDto spendingDto;
+        // 리스트에서의 index
+        Integer idx;
+        // 중복이 아닌 카테고리 개수
+        int cnt = 0;
         for (Spending spending : spendingList) {
             category = spending.getCategory();
-            if(category.contains(SpendingCategoryEnums.INTERNET_PG.getCategory()))
-                category = SpendingCategoryEnums.INTERNET_PG.getValue();
-            amount = map.get(category);
-            // map에 저장되어 있지 않은 카테고리인 경우 초기값 0으로 초기화
-            if(amount == null) amount = 0L;
-            amount += spending.getCost();
+            idx = map.get(category);
+            if(idx == null) {
+                // 처음 등장한 유형인 경우
+                idx = cnt;
+                map.put(category, cnt++);
+            }
+            spendingDto = spendingAmountList.get(idx);
+            amount = spending.getCost();
             totalAmount += spending.getCost();
-            map.put(category, amount);
+            spendingDto.addAmount(amount);
         }
+
         return MonthSpendingPattern.builder()
                 .email(email)
                 .month(month)
-                .spendingAmountMap(map)
+                .spendingAmountList(spendingAmountList)
                 .totalAmount(totalAmount)
                 .expiration(getMonthExpritation())
                 .build();
@@ -199,39 +184,42 @@ public class SpendingServiceImpl implements SpendingService {
         // balance 업데이트 필요..
         // 어제
         // 카테고리 별 합계 저장
-        Map<String, Long> todaySpendingMap = new HashMap<>();
-        List<String> categoryList = new ArrayList<>();
-
+        List<SpendingDto> spendingAmountList = new ArrayList<>();
+        List<String> maxSpentCategoryList = new ArrayList<>();
+        // 카테고리의 index 지정
+        Map<String, Integer> map = new HashMap<>();
         String category; // 소비 유형
         Long totalAmount = 0L;
         Long maxAmount = 0L;
         Long amount;
-        List<String> maxSpentCategoryList = new ArrayList<>();
-
+        SpendingDto spendingDto;
+        // 리스트에서의 index
+        Integer idx;
+        // 중복이 아닌 카테고리 개수
+        int cnt = 0;
         for (Spending spending : todaySpendingList) {
             category = spending.getCategory();
-            if(category.contains(SpendingCategoryEnums.INTERNET_PG.getCategory()))
-                category = SpendingCategoryEnums.INTERNET_PG.getValue();
-            amount = todaySpendingMap.get(category);
-            // map에 저장되어 있지 않은 카테고리인 경우 초기값 0으로 초기화
-            if(amount == null) {
-                amount = 0L;
-                categoryList.add(category);
+            idx = map.get(category);
+            if(idx == null) {
+                // 처음 등장한 유형인 경우
+                idx = cnt;
+                map.put(category, cnt++);
             }
-            amount += spending.getCost();
+            spendingDto = spendingAmountList.get(idx);
+            amount = spending.getCost();
             totalAmount += spending.getCost();
-            todaySpendingMap.put(category, amount);
+            spendingDto.addAmount(amount);
         }
 
         // 최댓값 확인
-        for (String cat : categoryList) {
-            maxAmount = Math.max(maxAmount, todaySpendingMap.get(cat));
+        for (SpendingDto dto : spendingAmountList) {
+            maxAmount = Math.max(maxAmount, dto.getAmount());
         }
 
         // 가장 많이 소비한 유형을 저장
-        for (String cat : categoryList) {
-            if(maxAmount == todaySpendingMap.get(cat))
-                maxSpentCategoryList.add(cat);
+        for (SpendingDto dto : spendingAmountList) {
+            if(maxAmount == dto.getAmount())
+                maxSpentCategoryList.add(dto.getCategory());
         }
 
         // 그저께
@@ -247,7 +235,7 @@ public class SpendingServiceImpl implements SpendingService {
                 .email(email)
                 .month(month)
                 .day(day)
-                .spendingAmountMap(todaySpendingMap)
+                .spendingAmountList(spendingAmountList)
                 .totalAmount(totalAmount)
                 .lessSpent(lessSpent)
                 .maxSpentCategoryList(maxSpentCategoryList)
@@ -282,14 +270,12 @@ public class SpendingServiceImpl implements SpendingService {
      * @return
      */
     private Long getMonthExpritation(){
-        // date로 캘린더 생성
-        Date now = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(now);
+        // 어제 날짜 구하기 (시스템 시계, 시스템 타임존)
+        LocalDate yesterday = LocalDate.now().minusDays(1);
 
-        // 년, 월 값 가져오기
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
+        // 연도, 월, 일
+        int year = yesterday.getYear();
+        int month = yesterday.getMonthValue();
 
         // 해당 년 월의 마지막 날을 가져오기
         YearMonth yearMonth = YearMonth.of(year, month);
