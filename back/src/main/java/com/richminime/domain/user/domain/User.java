@@ -1,7 +1,9 @@
 package com.richminime.domain.user.domain;
 
 
+import com.richminime.domain.character.domain.Character;
 import com.richminime.domain.gpt.domain.Prompt;
+import com.richminime.domain.room.domain.Room;
 import com.richminime.domain.user.dto.request.UpdateUserReqDto;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,6 +47,7 @@ public class User {
     @Column(length = 4, nullable = false)
     private String organizationCode;
 
+
     @Column(nullable = false)
     private String cardNumber;
 
@@ -53,16 +56,27 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+
+    //user 엔티티가 삭제 즉 회원탈퇴하면 그에 상응하는 character 엔티티도 삭제됨
+    @OneToOne(mappedBy = "user",cascade = CascadeType.REMOVE)
+//    @OneToOne(mappedBy = "user")
+    private Character character;
+    //user 엔티티가 삭제 즉 회원탈퇴하면 그에 상응하는 room 엔티티도 삭제됨
+    @OneToOne(mappedBy = "user",cascade = CascadeType.REMOVE)
+//    @OneToOne(mappedBy = "user")
+    private Room room;
+
     @Column(name = "clothing_count", columnDefinition = "integer default 0")
     private Integer clothingCount;
 
     @Column(name = "item_count", columnDefinition = "integer default 0")
     private Integer itemCount;
 
+
 //    @Column(nullable = false)
 //    private Date birthDate;
 
-    @OneToMany(mappedBy = "promptId")
+    @OneToMany(mappedBy = "user")
     private List<Prompt> prompts = new ArrayList<>();
 
     @Builder
