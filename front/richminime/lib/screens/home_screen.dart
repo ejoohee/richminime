@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:richminime/miniroom/mini_room.dart';
 import 'package:richminime/miniroom/mini_room_widget.dart';
 import 'package:richminime/screens/closet.dart';
 import 'package:richminime/screens/interior.dart';
@@ -18,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _widgetOptions = <Widget>[
     const Closet(),
-    const MiniRoomWidget(),
+    const MiniRoom(),
     const Interior(),
   ];
 
