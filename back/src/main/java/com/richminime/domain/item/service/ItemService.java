@@ -24,8 +24,8 @@ public interface ItemService {
     // 5. 테마 등록
     // 6. 테마 삭제
     // 7. 테마 수정
-    ItemResDto addItem(ItemReqDto itemReqDto);
-    void deleteItem(Long itemId);
-    ItemResDto updateItem(Long itemId, ItemUpdateReqDto itemReqDto);
+    ItemResDto addItem(String token, ItemReqDto itemReqDto);
+    void deleteItem(String token, Long itemId);
+    ItemResDto updateItem(String token, Long itemId, ItemUpdateReqDto itemReqDto);
 
 }
