@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CodefOAuthResponse {
+public class CodefOAuthResDto {
 
     private String access_token;
 

@@ -121,7 +121,7 @@ class _SignUp2State extends State<SignUp2> with SingleTickerProviderStateMixin {
     return Scaffold(
       body: Column(
         children: [
-          const SizedBox(height: 20),
+          const SizedBox(height: 50),
           LinearPercentIndicator(
             alignment: MainAxisAlignment.center,
             width: MediaQuery.of(context).size.width,

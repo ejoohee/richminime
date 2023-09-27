@@ -27,7 +27,7 @@ class App extends StatelessWidget {
           color: Color(0xFFEEb4a2),
         )),
       ),
-      home: const Login(),
+      home: const HomeScreen(),
       // home: FutureBuilder<String?>(
       //   // FutureBuilder를 사용하여 SecureStorage에서 토큰을 읽어옵니다.
       //   future: storage.read(key: "accessToken"),

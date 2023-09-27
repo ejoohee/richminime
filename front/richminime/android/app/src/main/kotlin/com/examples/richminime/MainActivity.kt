@@ -1,4 +1,4 @@
-package com.example.richminime
+package com.examples.richminime
 
 import io.flutter.embedding.android.FlutterActivity
 

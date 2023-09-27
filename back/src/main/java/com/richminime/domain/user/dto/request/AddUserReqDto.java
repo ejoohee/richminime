@@ -1,9 +1,11 @@
 package com.richminime.domain.user.dto.request;
 
 import com.richminime.domain.user.domain.User;
+import com.richminime.domain.user.domain.UserType;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.UUID;
 
@@ -23,7 +25,7 @@ public class AddUserReqDto {
 
 //    private Date birthDate;
 
-    private UUID uuid;
+    private String uuid;
 
     public User toEntity(String connectedId, String organizationCode){
         return User.builder()
@@ -36,7 +38,7 @@ public class AddUserReqDto {
 //                .birthDate(this.birthDate)
                 // 관리자는 별도로 생성할 예정
                 // 기본값 ROLE_USER
-                .userType("ROLE_USER")
+                .userType(UserType.ROLE_USER.getValue())
                 .build();
     }
 

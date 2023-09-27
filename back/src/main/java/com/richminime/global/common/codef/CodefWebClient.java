@@ -1,21 +1,27 @@
 package com.richminime.global.common.codef;
 
+import com.richminime.domain.spending.domain.Spending;
 import com.richminime.global.common.codef.dto.request.AccountDto;
-import com.richminime.global.common.codef.dto.request.CreateConnectedIdRequest;
-import com.richminime.global.common.codef.dto.response.CodefOAuthResponse;
+import com.richminime.global.common.codef.dto.request.CreateConnectedIdReqDto;
+import com.richminime.global.common.codef.dto.request.FindSpendingListReqDto;
+import com.richminime.global.common.codef.dto.response.CodefOAuthResDto;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.util.rsa.RSAUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -23,19 +29,31 @@ import java.net.URLDecoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
+@Component
 public class CodefWebClient {
 
-//    @Value("${codef.authHeader}")
-    String authHeader;
+    @Value("${codef.auth-header}")
+    private String authHeader;
 
-    String accessToken;
+    @Value("${rsa.private-key}")
+    private String privateKey;
 
-    WebClient devWebClient;
+    private String accessToken;
 
-    public CodefWebClient() {
+    private WebClient devWebClient;
+
+    @PostConstruct
+    public void init() {
         // 서비스 시작 시 액세스 토큰 발급
+        log.info("authHeader -------------------------------------->{}", authHeader);
         generateAccessToken();
         // codef url로 초기화
         devWebClient = WebClient.builder()
@@ -51,21 +69,21 @@ public class CodefWebClient {
         // 헤더에 추가
         WebClient oAuthWebClient = WebClient.builder()
                 .baseUrl("https://oauth.codef.io")
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic MjFjZTRiYTgtNTUzNy00NTRmLTg3YmUtN2RhYWQyOGVjYjFmOjA0MTZmODdjLWI4YTYtNGJjMS05ZDM2LTJlYTgwOTVlMTNjNA==") // 예시: Authorization 헤더 추가
+                .defaultHeader(HttpHeaders.AUTHORIZATION, authHeader) // 예시: Authorization 헤더 추가
                 .build();
         // api 요청
-        Mono<CodefOAuthResponse> response = oAuthWebClient.post()
+        Mono<CodefOAuthResDto> response = oAuthWebClient.post()
                 .uri("/oauth/token")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)  // Content-Type 설정
                 .body(BodyInserters.fromValue("grant_type=client_credentials&scope=read"))  // 폼 데이터 전송
                 .retrieve()
-                .bodyToMono(CodefOAuthResponse.class);
+                .bodyToMono(CodefOAuthResDto.class);
         accessToken = response.block().getAccess_token();
     }
 
-    // 호출하는 api를 메서드로 설정
+    // 커넥티드 아이디 생성
     public String createConnectedId(String organization, String id, String password) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException, UnsupportedEncodingException {
-        CreateConnectedIdRequest request = new CreateConnectedIdRequest();
+        CreateConnectedIdReqDto request = new CreateConnectedIdReqDto();
         // 등록할 계정 정보
         AccountDto account = AccountDto.builder()
                 .organization(organization)
@@ -91,8 +109,72 @@ public class CodefWebClient {
 
     public String parseConnectedIdFromJson(String jsonResponse) {
         JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
-//        JSONObject jsonObject = new JSONObject(jsonResponse);
         return jsonObject.getJsonObject("data").getString("connectedId");
     }
+
+    // 카드 승인내역 조회
+    public List<Spending> findSpendingList(FindSpendingListReqDto request, Long userId) throws Exception {
+        // rsa로 암호화된 card 번호 개인키로 복호화
+        request.setCardNo(RSAUtil.decryptRSA(request.getCardNo(), RSAUtil.privateKeyFromString(privateKey)));
+
+        List<Spending> spendingList = null;
+        // api 요청
+        Mono<String> response = devWebClient.post()
+                .uri("/kr/card/p/account/approval-list")
+                .contentType(MediaType.APPLICATION_JSON)  // Content-Type 설정
+                .body(BodyInserters.fromValue(request))  // 폼 데이터 전송
+                .retrieve()
+                .bodyToMono(String.class);
+        // URL 디코드
+        String decodedResponse = URLDecoder.decode(response.block(), "UTF-8");
+        log.info("spending response------------------->{}", decodedResponse);
+        // json 파싱
+        return parseSpendingListFromJson(decodedResponse, userId);
+    }
+
+    /**
+     * response에서 소비내역 목록을 추출
+     * @param jsonResponse
+     * @param userId
+     * @return
+     */
+    public List<Spending> parseSpendingListFromJson(String jsonResponse, Long userId) {
+        JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
+        JsonArray jsonArray = jsonObject.getJsonArray("data");
+        List<Spending> spendingList = new ArrayList<>();
+        return jsonArray.stream().map(json -> {
+                    JsonObject jsonObject1 = Json.createObjectBuilder()
+                            .add("index", json)
+                            .build();
+                    jsonObject1 = jsonObject1.getJsonObject("index");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                    Date date;
+                    try {
+                        date = sdf.parse(jsonObject1.getString("resUsedDate"));
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    // 한국 원 단위가 아닌 경우 소수점이 들어오는 경우가 발생할 수 있음 (ex : USD)
+                    Long amount = null;
+                    if(CountryCode.USD.getCode().equals(jsonObject1.getString("resAccountCurrency"))) {
+                        // 달러 단위
+                        Double tmp = Double.valueOf(jsonObject1.getString("resUsedAmount"));
+                        amount = (long) (tmp * 1000);
+                    }
+                    if(CountryCode.KRW.getCode().equals(jsonObject1.getString("resAccountCurrency"))){
+                        // 원 단위
+                        amount = Long.valueOf(jsonObject1.getString("resUsedAmount"));
+                    }
+                    return Spending.builder()
+                            .userId(userId)
+                            .category(jsonObject1.getString("resMemberStoreType"))
+                            .cost(amount)
+                            .spentDate(date)
+                            .storeNo(Long.valueOf(jsonObject1.getString("resMemberStoreNo")))
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
 
 }

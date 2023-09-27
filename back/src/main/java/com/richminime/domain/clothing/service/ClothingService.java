@@ -10,7 +10,7 @@ import java.util.List;
 public interface ClothingService {
     void addClothing(ClothingReqDto clothingReqDto);
 
-    void updateClothing(ClothingUpdateReqDto clothingUpdateReqDto);
+    ClothingResDto updateClothing(ClothingUpdateReqDto clothingUpdateReqDto);
 
     List<ClothingResDto> findAllClothingByType(ClothingType clothingType);
 

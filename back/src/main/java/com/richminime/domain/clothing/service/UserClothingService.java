@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface UserClothingService {
     void addMyClothing(UserClothingReqDto userClothingReqDto);
-    //TODO 내가 입고 있는 옷 정보 Character 갱신 -> 갈아입기 (Character도메인 ?)
-    //void updateMyClothing(UserClothingUpdateReqDto userClothingUpdateRequestDto);
     void deleteMyClothing(Long userClothingId);
     List<UserClothingResDto> findAllMyClothingByType(ClothingType clothingType);
 }
