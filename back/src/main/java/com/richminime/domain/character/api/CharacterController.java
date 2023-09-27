@@ -1,5 +1,6 @@
 package com.richminime.domain.character.api;
 
+import com.richminime.domain.character.dto.CharacterReqDto;
 import com.richminime.domain.character.dto.CharacterResDto;
 import com.richminime.domain.character.service.CharacterService;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,11 @@ public class CharacterController {
     private final CharacterService characterService;
     @GetMapping
     public ResponseEntity<CharacterResDto> find(){
-        return ResponseEntity.ok(characterService.find());
+        return ResponseEntity.ok(characterService.findCharacter());
     }
     @PutMapping
-    public ResponseEntity<CharacterResDto> update(@RequestBody Long clothingId){
-        return ResponseEntity.ok((characterService.update(clothingId)));
+    public ResponseEntity<CharacterResDto> update(@RequestBody CharacterReqDto dto){
+        return ResponseEntity.ok((characterService.updateCharacter(dto)));
     }
 
 }
