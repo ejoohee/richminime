@@ -1,5 +1,6 @@
 package com.richminime.domain.feedback.domain;
 
+import com.richminime.domain.feedback.dto.FeedbackReqDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,4 +27,9 @@ public class Feedback {
 
     @Column(name = "content", nullable = false)
     private String content;
+
+    public void updateFeedback(FeedbackReqDto feedbackReqDto) {
+        this.feedbackType = feedbackReqDto.getFeedbackType() == null ? this.feedbackType : FeedbackType.getFeedbackType(feedbackReqDto.getFeedbackType());
+        this.content = feedbackReqDto.getContent() == null ? this.content : feedbackReqDto.getContent();
+    }
 }

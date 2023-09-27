@@ -25,7 +25,7 @@ public class AddUserReqDto {
 
 //    private Date birthDate;
 
-    private UUID uuid;
+    private String uuid;
 
     public User toEntity(String connectedId, String organizationCode){
         return User.builder()
