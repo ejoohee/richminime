@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +24,7 @@ public class ItemController {
 
     private final ItemService itemService;
     private final UserItemService userItemService;
+    private final String ACCESS_TOKEN = "AccessToken";
 
     @Operation(
             summary = "테마 상점에 등록된 테마 전체 또는 카테고리별 조회",
@@ -50,9 +50,9 @@ public class ItemController {
             description = "관리자 사용자가 테마 상점에 새로운 테마를 등록합니다."
     )
     @PostMapping
-    public ResponseEntity<ItemResDto> addItem(@RequestBody ItemReqDto itemReqDto) {
+    public ResponseEntity<ItemResDto> addItem(@RequestHeader(ACCESS_TOKEN) String token, @RequestBody ItemReqDto itemReqDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(itemService.addItem(itemReqDto));
+                .body(itemService.addItem(token, itemReqDto));
     }
 
     @Operation(
@@ -60,8 +60,8 @@ public class ItemController {
             description = "관리자 사용자가 테마 상점에 등록된 테마를 삭제합니다."
     )
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<MessageDto> deleteItem(@PathVariable Long itemId) {
-        itemService.deleteItem(itemId);
+    public ResponseEntity<MessageDto> deleteItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long itemId) {
+        itemService.deleteItem(token, itemId);
         return ResponseEntity.ok(MessageDto.msg("DELETE SUCCESS"));
     }
 
@@ -70,8 +70,8 @@ public class ItemController {
             description = "관리자 사용자가 테마 상점에 등록된 테마를 수정합니다."
     )
     @PutMapping("/{itemId}")
-    public ResponseEntity<ItemResDto> updateItem(@PathVariable Long itemId, @RequestBody ItemUpdateReqDto itemUpdateReqDto) {
-        return ResponseEntity.ok(itemService.updateItem(itemId, itemUpdateReqDto));
+    public ResponseEntity<ItemResDto> updateItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long itemId, @RequestBody ItemUpdateReqDto itemUpdateReqDto) {
+        return ResponseEntity.ok(itemService.updateItem(token, itemId, itemUpdateReqDto));
     }
 
     // 유저별 기능
@@ -80,8 +80,8 @@ public class ItemController {
             description = "선택한 방법으로 테마 리스트를 조회합니다."
     )
     @GetMapping("/my")
-    public ResponseEntity<List<UserItemResDto>> findAllUserItemByCondition(@RequestParam(required = false) ItemType itemType) {
-        return ResponseEntity.ok(userItemService.findAllUserItemByType(itemType));
+    public ResponseEntity<List<UserItemResDto>> findAllUserItemByCondition(@RequestHeader(ACCESS_TOKEN) String token, @RequestParam(required = false) ItemType itemType) {
+        return ResponseEntity.ok(userItemService.findAllUserItemByType(token, itemType));
     }
 
     @Operation(
@@ -89,17 +89,8 @@ public class ItemController {
             description = "소유한 테마 중 선택한 테마를 상세 조회합니다."
     )
     @GetMapping("/my/{userItemId}")
-    public ResponseEntity<UserItemResDto> findUserItem(@PathVariable Long userItemId) {
-        return ResponseEntity.ok(userItemService.findUserItem(userItemId));
-    }
-
-    @Operation(
-            summary = "로그인 사용자가 소유한 테마 적용/해제 하기",
-            description = "소유한 테마 중 선택한 테마를 적용/해제합니다."
-    )
-    @PutMapping("/my/{userItemId}")
-    public ResponseEntity<UserItemResDto> updateUserItem(@PathVariable Long userItemId) {
-        return ResponseEntity.ok(userItemService.updateUserItem(userItemId));
+    public ResponseEntity<UserItemResDto> findUserItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long userItemId) {
+        return ResponseEntity.ok(userItemService.findUserItem(token, userItemId));
     }
 
     @Operation(
@@ -107,8 +98,8 @@ public class ItemController {
             description = "테마 상점에서 선택한 테마를 구매합니다.(미소유 시)"
     )
     @PostMapping("/my/{itemId}")
-    public ResponseEntity<UserItemResDto> addUserItem(@PathVariable Long itemId) {
-        return ResponseEntity.ok(userItemService.addUserItem(itemId));
+    public ResponseEntity<UserItemResDto> addUserItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long itemId) {
+        return ResponseEntity.ok(userItemService.addUserItem(token, itemId));
     }
 
     @Operation(
@@ -116,9 +107,18 @@ public class ItemController {
             description = "소유한 테마 중 선택한 테마를 판매합니다."
     )
     @DeleteMapping("/my/{userItemId}")
-    public ResponseEntity<MessageDto> deleteUserItem(@PathVariable Long userItemId) {
-        userItemService.deleteUserItem(userItemId);
+    public ResponseEntity<MessageDto> deleteUserItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long userItemId) {
+        userItemService.deleteUserItem(token, userItemId);
         return ResponseEntity.ok(MessageDto.msg("DELETE SUCCESS"));
     }
 
+
+//    @Operation(
+//            summary = "로그인 사용자가 소유한 테마 적용/해제 하기",
+//            description = "소유한 테마 중 선택한 테마를 적용/해제합니다."
+//    )
+//    @PutMapping("/my/{userItemId}")
+//    public ResponseEntity<UserItemResDto> updateUserItem(@PathVariable Long userItemId) {
+//        return ResponseEntity.ok(userItemService.updateUserItem(userItemId));
+//    }
 }
