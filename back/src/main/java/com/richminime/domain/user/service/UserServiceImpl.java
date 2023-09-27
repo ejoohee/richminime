@@ -419,8 +419,8 @@ public class UserServiceImpl implements UserService {
             addUserRequest.getNickname() == null || addUserRequest.getNickname().equals(""))
             throw new IllegalArgumentException(UserExceptionMessage.SIGN_UP_NOT_VALID.getMessage());
         // uuid에 해당하는 커넥티드 아이디 가져오기
-//        String connectedId = connectedIdMap.remove(UUID.fromString(addUserRequest.getUuid()));
-        String connectedId = "1234";
+        String connectedId = connectedIdMap.remove(UUID.fromString(addUserRequest.getUuid()));
+//        String connectedId = "1234";
         if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
         String organizationCode = addUserRequest.getOrganization();
         // 패스워드 암호화
@@ -434,7 +434,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.save(addUserRequest.toEntity(connectedId, organizationCode));
 
         // 회원가입 성공하면 월 소비내역 초기값 저장하는 메서드 호출
-//        addUserMonthSpending(user);
+        addUserMonthSpending(user);
         // balance 갱신
     }
 
