@@ -31,10 +31,12 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final SpendingRepository spendingRepository;
     private final SpendingService spendingService;
     private final SecurityUtils securityUtils;
-    private String email;
+//    private String email = securityUtils.getLoggedInUserEmail();
 
     @Override
     public FeedbackResDto findFeedback() {
+        String email = securityUtils.getLoggedInUserEmail();
+
         log.info("[피드백 추천] 로그인 유저 반환. email : {}", email);
 
         User loginUser = userRepository.findByEmail(email)
@@ -51,6 +53,9 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     private boolean isAdmin() {
+
+        String email = securityUtils.getLoggedInUserEmail();
+
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[피드백 서비스] 로그인 유저를 찾을 수 없습니다.");

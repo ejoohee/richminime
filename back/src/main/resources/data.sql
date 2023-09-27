@@ -1,6 +1,6 @@
-alter table users
+/*alter table users
     add constraint ck_item_cnt check ( item_count <= 20 ),
-    add constraint ck_clothing_cnt check ( clothing_count <= 20);
+    add constraint ck_clothing_cnt;
 
 insert into users
 (user_id, email, password, nickname, connected_id, organization_code, card_number, user_type)
@@ -54,3 +54,6 @@ values
     ('1000', '2000', '48000', '2023-09-26', '파티나 특별한 날에 어울리는 공주룩 원피스', '구매', '100001'),
     ('1001', '2500', '45500', '2023-09-26', '일상 생활에서 편안하게 착용 가능한 싸피 바지', '구매', '100001'),
     ('1002', '2500', '47500', '2023-09-26', '항공 승무원을 위한 전용 스튜어디스 유니폼', '구매', '100000');
+
+
+ */

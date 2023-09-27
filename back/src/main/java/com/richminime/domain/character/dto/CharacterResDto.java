@@ -1,4 +1,4 @@
-package com.richminime.domain.gpt.dto;
+package com.richminime.domain.character.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PromptReqDto {
+public class CharacterResDto {
 
-    String request;
+    private Long characterId;
+
+    private String imgURL;
+
+
 }
