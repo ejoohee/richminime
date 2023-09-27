@@ -155,6 +155,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
     /**
      * 회원이 회원가입 할 때에는 저장된 소비내역 데이터가 존재하지 않으므로
      * 회원가입 날짜 기준 전달의 소비내역을 모두 불러와 DB에 저장
@@ -297,6 +298,7 @@ public class UserServiceImpl implements UserService {
             result = true;
             // 코드를 확인했으므로 redis 에서 삭제
             valueOperations.getOperations().delete(checkEmailCodeReqDto.getEmail());
+            valueOperations.set(checkEmailCodeReqDto.getEmail(), "이메일 인증 완료", 60 * 5L, TimeUnit.SECONDS);
         }
         return CheckEmailResDto.builder()
                 // 존재하면 false, 존재하지 않으면 true 반환
@@ -306,7 +308,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Bearer 떼고 액세스 토큰 가져옴
-     * @return
+     * @return 액세스 토큰
      */
     private String parsingAccessToken(String accessToken) {
         return accessToken.substring(JwtHeaderUtilEnums.GRANT_TYPE.getValue().length());
@@ -418,6 +420,11 @@ public class UserServiceImpl implements UserService {
             addUserRequest.getPassword() == null || addUserRequest.getPassword().equals("") ||
             addUserRequest.getNickname() == null || addUserRequest.getNickname().equals(""))
             throw new IllegalArgumentException(UserExceptionMessage.SIGN_UP_NOT_VALID.getMessage());
+        ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
+        String checkResult = (String) valueOperations.get(addUserRequest.getEmail());
+        if(!checkResult.equals("이메일 인증 완료"))
+            throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
+
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = connectedIdMap.remove(UUID.fromString(addUserRequest.getUuid()));
 //        String connectedId = "1234";
@@ -435,7 +442,7 @@ public class UserServiceImpl implements UserService {
 
         // 회원가입 성공하면 월 소비내역 초기값 저장하는 메서드 호출
         addUserMonthSpending(user);
-        // balance 갱신
+        // 일일 소비패턴 분석(초기값)
     }
 
     @Override
