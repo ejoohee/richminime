@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_button/flutter_animated_button.dart';
 
 class Closet extends StatefulWidget {
   const Closet({super.key});
@@ -9,6 +10,8 @@ class Closet extends StatefulWidget {
 
 class _ClosetState extends State<Closet> {
   final List<String> categories = ["전체", "상의", "하의", "드레스", "악세서리", "신발"];
+  int selectedIndex = 0; // 선택된 카테고리 인덱스
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,13 +30,8 @@ class _ClosetState extends State<Closet> {
                     color: Colors.grey.shade400.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: const Center(
-                      child: Text(
-                    '여기 미니미',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  )),
+                  child: Center(
+                      child: Image.asset("assets/images/minime/default.png")),
                 ),
               ),
               Flexible(
@@ -45,7 +43,7 @@ class _ClosetState extends State<Closet> {
                       //아래 속성들을 조절하여 원하는 값을 얻을 수 있다.
                       begin: Alignment.topCenter,
                       end: Alignment.topRight,
-                      colors: [Colors.white, Colors.white.withOpacity(0.02)],
+                      colors: [Colors.white, Colors.white.withOpacity(0.08)],
                       stops: const [0.9, 1],
                       tileMode: TileMode.mirror,
                     ).createShader(bounds);
@@ -85,14 +83,24 @@ class _ClosetState extends State<Closet> {
                       ),
                       itemCount: 30,
                       itemBuilder: (context, index) {
-                        return Container(
-                          margin: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Center(
-                            child: Text('옷 사진들 $index'),
+                        return GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            margin: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(5),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 3,
+                                  offset: const Offset(3, 3),
+                                  color: Colors.black.withOpacity(0.3),
+                                )
+                              ],
+                            ),
+                            child: Center(
+                              child: Text('옷 사진들 $index'),
+                            ),
                           ),
                         );
                       },
@@ -110,15 +118,34 @@ class _ClosetState extends State<Closet> {
   List<Widget> makeButtons(List<String> categories) {
     List<Widget> buttons = [];
 
-    for (String category in categories) {
+    for (int index = 0; index < categories.length; index++) {
       buttons.add(
         Container(
           margin: const EdgeInsets.all(8), // 버튼 간격 조정
-          child: ElevatedButton(
-            onPressed: () {
-              // 버튼을 눌렀을 때 실행될 코드
+          child: AnimatedButton(
+            textAlignment: Alignment.center,
+            height: 70,
+            width: 70,
+            text: categories[index],
+            isReverse: false,
+            isSelected: selectedIndex == index ? true : false,
+            selectedBackgroundColor: Theme.of(context).cardColor,
+            selectedTextColor: Colors.black,
+            transitionType: TransitionType.LEFT_TO_RIGHT,
+            textStyle: const TextStyle(
+                color: Colors.black54,
+                fontFamily: 'StarDustS',
+                fontWeight: FontWeight.w700,
+                fontSize: 18),
+            backgroundColor: const Color(0xFFFFBEBE).withOpacity(0.2),
+            borderColor: Colors.white38,
+            borderRadius: 5,
+            borderWidth: 2,
+            onPress: () {
+              setState(() {
+                selectedIndex = index; // 카테고리 선택 시 인덱스 업데이트
+              });
             },
-            child: Text(category), // 각 버튼에 카테고리 텍스트 표시
           ),
         ),
       );

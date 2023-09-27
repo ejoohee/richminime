@@ -39,6 +39,7 @@ dependencies:
   url_launcher: ^6.1.14
   flame: ^1.8.2
   percent_indicator: ^4.2.3
+  flutter_animated_button: ^2.0.3
   # credit_card_input_form: ^2.3.0
 
 dev_dependencies:

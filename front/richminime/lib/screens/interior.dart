@@ -19,7 +19,7 @@ class _InteriorState extends State<Interior> {
             children: [
               Flexible(
                 fit: FlexFit.tight,
-                flex: 4,
+                flex: 5,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -28,7 +28,8 @@ class _InteriorState extends State<Interior> {
                       flex: 1,
                       child: Container(
                         clipBehavior: Clip.hardEdge,
-                        margin: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 7, vertical: 10),
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(7),
@@ -47,7 +48,8 @@ class _InteriorState extends State<Interior> {
                       flex: 1,
                       child: Container(
                         clipBehavior: Clip.hardEdge,
-                        margin: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 7, vertical: 10),
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(7),
@@ -77,30 +79,57 @@ class _InteriorState extends State<Interior> {
               // ),
               Flexible(
                 fit: FlexFit.tight,
-                flex: 3,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 30,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      clipBehavior: Clip.hardEdge,
-                      margin: const EdgeInsets.all(5),
-                      //임시값
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Themes $index',
-                        ),
-                      ),
-                    );
+                flex: 4,
+                child: ShaderMask(
+                  shaderCallback: (Rect bounds) {
+                    return LinearGradient(
+                      //아래 속성들을 조절하여 원하는 값을 얻을 수 있다.
+                      begin: Alignment.topCenter,
+                      end: Alignment.topRight,
+                      colors: [Colors.white, Colors.white.withOpacity(0.02)],
+                      stops: const [0.8, 1],
+                      tileMode: TileMode.mirror,
+                    ).createShader(bounds);
                   },
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(width: 15),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 5),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 30,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            clipBehavior: Clip.hardEdge,
+                            margin: const EdgeInsets.all(3),
+                            //임시값
+                            width: 150,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(5),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 5,
+                                  offset: const Offset(10, 3),
+                                  color: Colors.black.withOpacity(0.3),
+                                )
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Themes $index',
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 15),
+                    ),
+                  ),
                 ),
               ),
             ],
