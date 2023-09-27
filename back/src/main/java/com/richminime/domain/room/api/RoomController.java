@@ -2,6 +2,7 @@ package com.richminime.domain.room.api;
 
 import com.richminime.domain.character.dto.CharacterResDto;
 import com.richminime.domain.character.service.CharacterService;
+import com.richminime.domain.room.dto.RoomReqDto;
 import com.richminime.domain.room.dto.RoomResDto;
 import com.richminime.domain.room.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +16,12 @@ public class RoomController {
 
     private final RoomService roomService;
     @GetMapping
-    public ResponseEntity<RoomResDto> find(){
-        return ResponseEntity.ok(roomService.find());
+    public ResponseEntity<RoomResDto> findRoom(){
+        return ResponseEntity.ok(roomService.findRoom());
     }
     @PutMapping
-    public ResponseEntity<RoomResDto> update(@RequestBody Long itemId){
-        return ResponseEntity.ok((roomService.update(itemId)));
+    public ResponseEntity<RoomResDto> updateRoom(@RequestBody RoomReqDto dto){
+        return ResponseEntity.ok((roomService.updateRoom(dto)));
     }
 
 }
