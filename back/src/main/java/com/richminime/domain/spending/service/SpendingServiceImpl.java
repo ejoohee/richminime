@@ -263,7 +263,7 @@ public class SpendingServiceImpl implements SpendingService {
         DaySpendingPattern daySpendingPattern = analyzeDaySpending(todaySpendingList, user.getEmail(), month, day);
         // 회원의 balance 업데이트
         // 100원당 1 코인
-        user.updateBalance(daySpendingPattern.getTotalAmount() / 100);
+        user.updateBalance(user.getBalance() + (daySpendingPattern.getTotalAmount() / 100));
         daySpendingPatternRedisRepository.save(daySpendingPattern);
     }
 
