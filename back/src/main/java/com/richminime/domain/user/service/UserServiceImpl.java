@@ -13,6 +13,7 @@ import com.richminime.domain.user.repository.RefreshTokenRedisRepository;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
 import com.richminime.global.common.jwt.JwtExpirationEnums;
+import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.exception.NotFoundException;
 import com.richminime.global.exception.TokenException;
 import com.richminime.global.util.jwt.JWTUtil;
@@ -43,6 +44,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -73,15 +75,12 @@ public class UserServiceImpl implements UserService {
     @Scheduled(cron = "0 0 1 * * *") // 매달 1일 자정에 실행
     public void updateUsersMonthSpending() {
         // codef로 전 달 소비내역 모두 불러오기
-        // date로 캘린더 생성
-        Date now = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(now);
+        // 어제 날짜 구하기 (시스템 시계, 시스템 타임존)
+        LocalDate yesterday = LocalDate.now().minusDays(1);
 
-        // 년, 월 값 가져오기
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-
+        // 연도, 월, 일
+        int year = yesterday.getYear();
+        int month = yesterday.getMonthValue();
         // 해당 년 월의 마지막 날을 가져오기
         YearMonth yearMonth = YearMonth.of(year, month);
         int lastDay = yearMonth.lengthOfMonth();
@@ -114,16 +113,13 @@ public class UserServiceImpl implements UserService {
     @Scheduled(cron = "0 0 0 * * *")
     public void addUsersDaySpending() {
         // 오늘 날짜 확인
-        // date로 캘린더 생성
-        Date date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.DATE, -1);
+        // 어제 날짜 구하기 (시스템 시계, 시스템 타임존)
+        LocalDate yesterday = LocalDate.now().minusDays(1);
 
-        // 년, 월 값 가져오기
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        // 연도, 월, 일
+        int year = yesterday.getYear();
+        int month = yesterday.getMonthValue();
+        int day = yesterday.getDayOfMonth();
 
         StringBuilder startDate = new StringBuilder();
         StringBuilder endDate = new StringBuilder();
@@ -146,10 +142,16 @@ public class UserServiceImpl implements UserService {
             startDate.append(day);
             endDate.append(day);
         }
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         List<User> userList = userRepository.findAll();
+
         for (User user : userList) {
             spendingService.addSpending(user, startDate.toString(), endDate.toString());
+            try {
+                spendingService.updateDaySpending(user, month, day, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -165,19 +167,17 @@ public class UserServiceImpl implements UserService {
      */
     public void addUserMonthSpending(User user){
         // codef로 전 달 소비내역 모두 불러오기
-        // date로 캘린더 생성
-        Date now = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(now);
-        // 전날을 기준으로 함
-        calendar.add(Calendar.DATE, -1);
+        // 어제 날짜 구하기 (시스템 시계, 시스템 타임존)
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+
+        // 연도, 월, 일
+        int year = yesterday.getYear();
+        int month = yesterday.getMonthValue();
+        int day = yesterday.getDayOfMonth();
 
         StringBuilder startDate = new StringBuilder();
         StringBuilder endDate = new StringBuilder();
-        // 년, 월, 일 값 가져오기
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
         int sy = year, ey = year, sm = month - 1, em = month, sd = 1, ed = day; // 시작 년월일, 끝 년월일
         if(month == 1) {
             // month가 1월이면 그 전달은 12월, 즉 year도 작년이 되어야 함
@@ -304,9 +304,18 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    /**
+     * Bearer 떼고 액세스 토큰 가져옴
+     * @return
+     */
+    private String parsingAccessToken(String accessToken) {
+        return accessToken.substring(JwtHeaderUtilEnums.GRANT_TYPE.getValue().length());
+    }
+
     @Override
     public Map<String, Object> reissueToken(String accessToken, String refreshToken) {
         // accessToken에서 email 가져오기
+        accessToken = parsingAccessToken(accessToken);
         String email = jwtUtil.getUsername(accessToken);
         // refresh 토큰 redis 레포지토리에서 가져와서 일치 여부 검사
         String originRefreshToken = refreshTokenRepository.findById(email).orElseThrow(() -> new NotFoundException("해당 이메일에 대한 토큰이 존재하지 않습니다.")).getRefreshToken();
@@ -389,7 +398,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(String email) {
-        deleteUser(email);
+        userRepository.deleteByEmail(email);
     }
 
     @Override
