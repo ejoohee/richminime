@@ -41,7 +41,8 @@ dependencies:
   url_launcher: ^6.1.14
   flame: ^1.8.2
   percent_indicator: ^4.2.3
-
+  cookie_jar: ^4.0.8
+  circular_menu: ^2.0.1
   # credit_card_input_form: ^2.3.0
 
 dev_dependencies:
