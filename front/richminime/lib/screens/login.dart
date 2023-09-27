@@ -48,7 +48,7 @@ class _LoginState extends State<Login> {
     //read 함수를 통하여 key값에 맞는 정보를 불러오게 됩니다. 이때 불러오는 결과의 타입은 String 타입임을 기억해야 합니다.
     //(데이터가 없을때는 null을 반환을 합니다.)
     String? token = await storage.read(key: "accessToken");
-    print(token);
+    // print(token);
 
     if (!context.mounted) return;
     //token의 정보가 있다면 바로 로그아웃 페이지로 넝어가게 합니다.
