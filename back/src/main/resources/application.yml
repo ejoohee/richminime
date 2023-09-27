@@ -32,17 +32,18 @@ spring:
     init:
       mode: always
   datasource:
-    driverClassName: org.h2.Driver
-    password: ''
-    username: sa
-    hikari:
-      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
+    # driverClassName: org.h2.Driver
+    # password: ''
+    # username: sa
+    # hikari:
+    #   jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
     #  datasource:
     # url: jdbc:mariadb://j9A704.p.ssafy.io:3306/richminime
-  #    url: jdbc:mariadb://mariadb:3306/richminime
-  #    username: root
-  #    password: richminime
-  #    driver-class-name: org.mariadb.jdbc.Driver
+
+     url: jdbc:mariadb://mariadb:3306/richminime
+     username: root
+     password: richminime
+     driver-class-name: org.mariadb.jdbc.Driver
   # datasource:
   #   driverClassName: org.h2.Driver
   #   password: ''
