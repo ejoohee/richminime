@@ -460,6 +460,73 @@ public class UserServiceImpl implements UserService {
         // 회원가입 성공하면 월 소비내역 초기값 저장하는 메서드 호출
         addUserMonthSpending(user);
         // 일일 소비패턴 분석(초기값)
+        // 어제랑 그저께를 비교
+        initUserDaySpending(user);
+    }
+
+    void initUserDaySpending(User user){
+        // 그저제 날짜 구하기 (시스템 시계, 시스템 타임존)
+        LocalDate time = LocalDate.now().minusDays(2);
+        // 연도, 월, 일
+        int year = time.getYear();
+        int month = time.getMonthValue();
+        int day = time.getDayOfMonth();
+        StringBuilder startDate = new StringBuilder();
+        StringBuilder endDate = new StringBuilder();
+        startDate.append(year);
+        endDate.append(year);
+
+        // 달이 10 미만이라면 앞에 0을 붙여줘야 함
+        if(month < 10) {
+            startDate.append(0).append(month);
+            endDate.append(0).append(month);
+        }else {
+            startDate.append(month);
+            endDate.append(month);
+        }
+        // 일이 10 미만이라면 앞에 0을 붙여줘야 함
+        if(day < 10) {
+            startDate.append(0).append(day);
+            endDate.append(0).append(day);
+        }else {
+            startDate.append(day);
+            endDate.append(day);
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        try {
+            // 그저께 소비내역 데이터 저장
+            spendingService.initDaySpending(user, month, day, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
+            // 어제 소비내역 데이터와 비교하여 분석 데이터 저장
+            time = LocalDate.now().plusDays(1);
+            // 연도, 월, 일
+            year = time.getYear();
+            month = time.getMonthValue();
+            day = time.getDayOfMonth();
+            startDate = new StringBuilder();
+            endDate = new StringBuilder();
+            startDate.append(year);
+            endDate.append(year);
+
+            // 달이 10 미만이라면 앞에 0을 붙여줘야 함
+            if(month < 10) {
+                startDate.append(0).append(month);
+                endDate.append(0).append(month);
+            }else {
+                startDate.append(month);
+                endDate.append(month);
+            }
+            // 일이 10 미만이라면 앞에 0을 붙여줘야 함
+            if(day < 10) {
+                startDate.append(0).append(day);
+                endDate.append(0).append(day);
+            }else {
+                startDate.append(day);
+                endDate.append(day);
+            }
+            spendingService.updateDaySpending(user, month, day, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
