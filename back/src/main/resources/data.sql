@@ -1,12 +1,9 @@
-/*alter table users
-    add constraint ck_item_cnt check ( item_count <= 20 ),
-    add constraint ck_clothing_cnt;
-
+/*
 insert into users
-(user_id, email, password, nickname, connected_id, organization_code, card_number, user_type)
+(user_id, email, password, nickname, connected_id, organization_code, card_number, user_type, balance)
 values
-('100001', 'test@naver.com', '$2a$10$KWa2GxJjM79nA7lDzr.8mectx6knAbmwjftSN2..MDN6j/oTCRTaK', '테스트1', 'abc123', '0301', '1234567890123456', 'ROLE_USER'),
-('100000', 'dd39@naver.com', '$2a$10$KWa2GxJjM79nA7lDzr.8mectx6knAbmwjftSN2..MDN6j/oTCRTaK', '관리자윤영', 'dd39', '0301', '1111222233334444', 'ROLE_ADMIN');
+('100001', 'test@naver.com', '$2a$10$KWa2GxJjM79nA7lDzr.8mectx6knAbmwjftSN2..MDN6j/oTCRTaK', '테스트1', 'abc123', '0301', '1234567890123456', 'ROLE_USER', '1000'),
+('100000', 'dd39@naver.com', '$2a$10$KWa2GxJjM79nA7lDzr.8mectx6knAbmwjftSN2..MDN6j/oTCRTaK', '관리자윤영', 'dd39', '0301', '1111222233334444', 'ROLE_ADMIN', '10000000');
 
 insert into  clothing
 (clothing_id, clothing_name, clothing_type, clothing_img, clothing_apply_img, clothing_info, price)
@@ -32,8 +29,9 @@ values
 insert into user_item
 (user_item_id, item_id, user_id)
 values
-('100000', '100', '100001'),
-('100001', '100', '100000');
+('1000', '100', '100001'),
+('1001', '100', '100000'),
+('1002', '201', '100000');
 
 insert into feedback
 (feedback_id, feedback_type, content)
