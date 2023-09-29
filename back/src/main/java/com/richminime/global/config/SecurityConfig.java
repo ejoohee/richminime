@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/user/check-login-email", "/user/email").permitAll()
                 .antMatchers("/h2-console/**",
                         "/favicon.ico",
-//                        "/item/**",
+                        "/item/**", // 임시
                         "/error",
                         "/swagger-ui/**",
                         "/swagger-resources/**",
@@ -70,6 +70,9 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/item").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/item/*").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/item/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/feedback").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/feedback/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/feedback/*").hasRole("ADMIN")
                 .antMatchers("/**").hasRole("USER")
                 .and()
                 // HTTP 기본 인증을 사용하지 않도록 설정

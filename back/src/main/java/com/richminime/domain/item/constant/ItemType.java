@@ -1,4 +1,4 @@
-package com.richminime.domain.item.domain;
+package com.richminime.domain.item.constant;
 
 import lombok.Getter;
 

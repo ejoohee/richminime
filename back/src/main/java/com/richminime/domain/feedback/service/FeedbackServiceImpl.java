@@ -5,6 +5,7 @@ import com.richminime.domain.feedback.domain.FeedbackType;
 import com.richminime.domain.feedback.dto.FeedbackReqDto;
 import com.richminime.domain.feedback.dto.FeedbackResDto;
 import com.richminime.domain.feedback.repository.FeedbackRepository;
+import com.richminime.domain.spending.repository.MonthSpendingPatternRedisRepository;
 import com.richminime.domain.spending.repository.SpendingRepository;
 import com.richminime.domain.spending.service.SpendingService;
 import com.richminime.domain.user.domain.User;
@@ -13,6 +14,7 @@ import com.richminime.domain.user.dto.response.FindUserResDto;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.domain.user.service.UserService;
 import com.richminime.global.util.SecurityUtils;
+import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,18 +32,23 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final UserRepository userRepository;
     private final SpendingRepository spendingRepository;
     private final SpendingService spendingService;
+//    private final MonthSpendingPatternRedisRepository monthSpendingPatternRedisRepository;
     private final SecurityUtils securityUtils;
-//    private String email = securityUtils.getLoggedInUserEmail();
+    private final JWTUtil jwtUtil;
 
+    /**
+     * 피드백 1일1회 랜덤 추천
+     * 로그인 사용자의 소비패턴에 따라 피드백을 1일1회 랜덤으로 추천합니다.
+     * @return
+     */
     @Override
-    public FeedbackResDto findFeedback() {
-        String email = securityUtils.getLoggedInUserEmail();
+    public FeedbackResDto findFeedback(String token) {
+        String email = jwtUtil.getUsername(token);
 
         log.info("[피드백 추천] 로그인 유저 반환. email : {}", email);
 
         User loginUser = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                {
+                .orElseThrow(() -> {
                     log.error("[피드백 추천] 로그인 유저를 찾을 수 없습니다.");
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "로그인 유저를 찾을 수 없습니다.");
                 });
@@ -52,9 +59,12 @@ public class FeedbackServiceImpl implements FeedbackService {
         return null;
     }
 
-    private boolean isAdmin() {
-
-        String email = securityUtils.getLoggedInUserEmail();
+    /**
+     * 로그인 유저가 관리자인지 체크합니다.
+     * @return
+     */
+    private boolean isAdmin(String token) {
+        String email = jwtUtil.getUsername(token);
 
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
@@ -68,13 +78,19 @@ public class FeedbackServiceImpl implements FeedbackService {
         return false;
     }
 
+    /**
+     * 피드백 등록
+     * 관리자 회원만 피드백 등록이 가능합니다.
+     * @param feedbackReqDto
+     * @return
+     */
     @Transactional
     @Override
-    public FeedbackResDto addFeedback(FeedbackReqDto feedbackReqDto) {
+    public FeedbackResDto addFeedback(String token, FeedbackReqDto feedbackReqDto) {
         log.info("[피드백 등록] 피드백 등록 요청.");
 
         // 관리자 확인
-        if(!isAdmin()) {
+        if(!isAdmin(token)) {
             log.error("[피드백 등록] 관리자 회원만 피드백 등록이 가능합니다.");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "등록 권한이 없습니다.");
         };
@@ -91,13 +107,18 @@ public class FeedbackServiceImpl implements FeedbackService {
         return FeedbackResDto.entityToDto(feedback);
     }
 
+    /**
+     * 피드백 수정
+     * 관리자 회원만 피드백 수정이 가능합니다.
+     * @return
+     */
     @Transactional
     @Override
-    public FeedbackResDto updateFeedback(Long feedbackId, FeedbackReqDto feedbackReqDto) {
+    public FeedbackResDto updateFeedback(String token, Long feedbackId, FeedbackReqDto feedbackReqDto) {
         log.info("[피드백 수정] 피드백 수정 요청. feedbackId : {}", feedbackId);
 
         // 관리자 확인
-        if(!isAdmin()) {
+        if(!isAdmin(token)) {
             log.error("[피드백 수정] 관리자 회원만 피드백 수정이 가능합니다.");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다.");
         };
@@ -115,13 +136,18 @@ public class FeedbackServiceImpl implements FeedbackService {
         return FeedbackResDto.entityToDto(feedback);
     }
 
+    /**
+     * 피드백 삭제
+     * 관리자 회원만 피드백 삭제가 가능합니다.
+     * @return
+     */
     @Transactional
     @Override
-    public void deleteFeedback(Long feedbackId) {
+    public void deleteFeedback(String token, Long feedbackId) {
         log.info("[피드백 삭제] 피드백 삭제 요청. feedbackId : {]", feedbackId);
 
         // 관리자 확인
-        if(!isAdmin()) {
+        if(!isAdmin(token)) {
             log.error("[피드백 삭제] 관리자 회원만 피드백 삭제가 가능합니다.");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "삭제 권한이 없습니다.");
         };
