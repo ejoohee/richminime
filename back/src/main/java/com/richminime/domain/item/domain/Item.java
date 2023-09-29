@@ -1,5 +1,6 @@
 package com.richminime.domain.item.domain;
 
+import com.richminime.domain.item.constant.ItemType;
 import com.richminime.domain.item.dto.ItemUpdateReqDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

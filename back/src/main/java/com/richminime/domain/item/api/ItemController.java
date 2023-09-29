@@ -1,7 +1,6 @@
 package com.richminime.domain.item.api;
 
-import com.richminime.domain.item.domain.Item;
-import com.richminime.domain.item.domain.ItemType;
+import com.richminime.domain.item.constant.ItemType;
 import com.richminime.domain.item.dto.ItemReqDto;
 import com.richminime.domain.item.dto.ItemResDto;
 import com.richminime.domain.item.dto.ItemUpdateReqDto;
