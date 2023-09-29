@@ -44,6 +44,7 @@ dependencies:
   flutter_animated_button: ^2.0.3
   cookie_jar: ^4.0.8
   circular_menu: ^2.0.1
+  simple_shadow: ^0.3.1
 
   # credit_card_input_form: ^2.3.0
 
@@ -90,6 +91,9 @@ flutter:
         - asset: assets/fonts/PF스타더스트S.ttf
         - asset: assets/fonts/PF스타더스트S Bold.ttf
           weight: 700
+    - family: G7
+      fonts:
+        - asset: assets/fonts/G7StarForceTtf-OEg6.ttf
 
   # To add assets to your application, add an assets section, like this:
   assets:
@@ -97,6 +101,9 @@ flutter:
     - assets/images/minime/default.png
     - assets/images/miniroom/princess_theme.jpg
     - assets/images/miniroom/default.png
+    - assets/images/miniroom/handholdingmoneybag.png
+    - assets/images/miniroom/coin.png
+
       #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 
@@ -10,10 +12,41 @@ class Closet extends StatefulWidget {
 
 class _ClosetState extends State<Closet> {
   final List<String> categories = ["전체", "상의", "하의", "드레스", "악세서리", "신발"];
-  int selectedIndex = 0; // 선택된 카테고리 인덱스
+  int selectedCategoryIndex = 0; // 선택된 카테고리 인덱스
+
+  // 옷 클릭하면 바로 입혀볼 옷. 디폴트는 맨몸
+  String appliedImg = 'assets/images/minime/default.png';
+  bool isClothingApplied = false;
+  int selectedClothingIndex = 3000000;
+  String clothName = '아야아야';
+  String clothInfo = '';
+
+  tryOutfit(int index) {
+    setState(() {});
+    if (index == selectedClothingIndex) {
+      isClothingApplied = false;
+      selectedClothingIndex = 3000000;
+      //옷벗기기
+    } else {
+      selectedClothingIndex = index;
+      isClothingApplied = true;
+      // 옷 갈아입히기
+      clothName = '<$index번 옷>';
+      clothInfo =
+          '$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index$index';
+    }
+    print('$index $isClothingApplied');
+  }
+
+  // 입는다
+  putOn() {
+    //selectedClothingIndex 써라
+  }
 
   @override
   Widget build(BuildContext context) {
+    // applied Img 갈아껴주기 위해 디폴트 값 설정.
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
@@ -26,12 +59,118 @@ class _ClosetState extends State<Closet> {
                 flex: 5,
                 child: Container(
                   margin: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.symmetric(vertical: 5),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade400.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: Center(
-                      child: Image.asset("assets/images/minime/default.png")),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Stack(
+                        children: [
+                          Image.asset(appliedImg),
+                          isClothingApplied
+                              ? IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      isClothingApplied = false;
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    Icons.close_rounded,
+                                  ),
+                                )
+                              : Container(),
+                        ],
+                      ),
+                      isClothingApplied
+                          ? Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      clothName,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Expanded(
+                                      child: ShaderMask(
+                                        shaderCallback: (Rect bounds) {
+                                          return LinearGradient(
+                                            //아래 속성들을 조절하여 원하는 값을 얻을 수 있다.
+                                            begin: Alignment.center,
+                                            end: Alignment.topCenter,
+                                            colors: [
+                                              Colors.white,
+                                              Colors.white.withOpacity(0.02)
+                                            ],
+                                            stops: const [0.8, 1],
+                                            tileMode: TileMode.mirror,
+                                          ).createShader(bounds);
+                                        },
+                                        child: SingleChildScrollView(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            child: Text(
+                                              clothInfo,
+                                              overflow: TextOverflow
+                                                  .clip, // Overflow 발생 시 글 내용을 자르지 않고 표시
+                                              style: const TextStyle(
+                                                fontSize: 17,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Material(
+                                      elevation: 3,
+                                      color: Theme.of(context).cardColor,
+                                      shadowColor: Colors.black54,
+                                      borderRadius: BorderRadius.circular(5),
+                                      child: InkWell(
+                                          splashColor: Colors.white54,
+                                          onTap: putOn,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 5, horizontal: 12),
+                                            child: Text(
+                                              "너로 정했다",
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          )),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : const SizedBox(
+                              width: 1,
+                            ),
+                    ],
+                  ),
                 ),
               ),
               Flexible(
@@ -84,7 +223,7 @@ class _ClosetState extends State<Closet> {
                       itemCount: 30,
                       itemBuilder: (context, index) {
                         return GestureDetector(
-                          onTap: () {},
+                          onTap: () => tryOutfit(index),
                           child: Container(
                             margin: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
@@ -128,7 +267,7 @@ class _ClosetState extends State<Closet> {
             width: 70,
             text: categories[index],
             isReverse: false,
-            isSelected: selectedIndex == index ? true : false,
+            isSelected: selectedCategoryIndex == index ? true : false,
             selectedBackgroundColor: Theme.of(context).cardColor,
             selectedTextColor: Colors.black,
             transitionType: TransitionType.LEFT_TO_RIGHT,
@@ -143,7 +282,7 @@ class _ClosetState extends State<Closet> {
             borderWidth: 2,
             onPress: () {
               setState(() {
-                selectedIndex = index; // 카테고리 선택 시 인덱스 업데이트
+                selectedCategoryIndex = index; // 카테고리 선택 시 인덱스 업데이트
               });
             },
           ),

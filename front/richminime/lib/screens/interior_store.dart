@@ -9,13 +9,6 @@ class Interior extends StatefulWidget {
 
 class _InteriorState extends State<Interior> {
   int selectedIndex = 0;
-  String miniMeImgLink = '';
-  // 룸테마적용
-  applyTheme() {}
-
-  // 테마 입어보기
-  tryTheme(int index) {}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,82 +27,41 @@ class _InteriorState extends State<Interior> {
                     Flexible(
                       fit: FlexFit.tight,
                       flex: 1,
-                      child: Stack(children: [
-                        Container(
-                          clipBehavior: Clip.hardEdge,
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 7, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(7),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              '전',
-                              style: TextStyle(
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
+                      child: Container(
+                        clipBehavior: Clip.hardEdge,
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 7, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(7),
                         ),
-                        Center(
-                          child: Image.asset(
-                            'assets/images/minime/default.png',
-                            scale: 5,
+                        child: const Center(
+                            child: Text(
+                          '전',
+                          style: TextStyle(
+                            color: Colors.black,
                           ),
-                        )
-                      ]),
+                        )),
+                      ),
                     ),
                     Flexible(
                       fit: FlexFit.tight,
                       flex: 1,
-                      child: Stack(
-                        children: [
-                          Container(
-                            clipBehavior: Clip.hardEdge,
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 7, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            child: const Center(
-                                child: Text(
-                              '후',
-                              style: TextStyle(
-                                color: Colors.black,
-                              ),
-                            )),
+                      child: Container(
+                        clipBehavior: Clip.hardEdge,
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 7, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        child: const Center(
+                            child: Text(
+                          '후',
+                          style: TextStyle(
+                            color: Colors.black,
                           ),
-                          Center(
-                            child: Image.asset(
-                              'assets/images/minime/default.png',
-                              scale: 5,
-                            ),
-                          ),
-                          Positioned(
-                            right: 15,
-                            bottom: 17,
-                            child: Material(
-                              color: Colors.purple.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(5),
-                              child: InkWell(
-                                  splashColor: Colors.white24,
-                                  onTap: applyTheme,
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 12),
-                                    child: Text(
-                                      "너로 정했다",
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  )),
-                            ),
-                          )
-                        ],
+                        )),
                       ),
                     ),
                   ],
@@ -150,7 +102,11 @@ class _InteriorState extends State<Interior> {
                       itemCount: 30,
                       itemBuilder: (context, index) {
                         return GestureDetector(
-                          onTap: () => tryTheme(index),
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                          },
                           child: Container(
                             clipBehavior: Clip.hardEdge,
                             margin: const EdgeInsets.all(3),
