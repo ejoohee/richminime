@@ -27,6 +27,7 @@ public class UserItemResDto {
                 .itemType(item.getItemType().getValue())
                 .itemImg(item.getItemImg())
                 .itemInfo(item.getItemInfo())
+                .price(item.getPrice())
                 .build();
     }
 
