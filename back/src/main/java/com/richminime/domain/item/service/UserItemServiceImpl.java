@@ -211,7 +211,7 @@ public class UserItemServiceImpl implements UserItemService {
                 });
 
         // 로그인 유저와 테마 소유자가 동일한지 체크
-        if(loginUser.getUserId().equals(userItem.getUser().getUserId())) {
+        if(!loginUser.getUserId().equals(userItem.getUser().getUserId())) {
             log.error("[테마 판매하기] 로그인 유저와 테마 소유자가 일치하지 않습니다. 판매 불가.");
             throw new ForbiddenException();
         }
