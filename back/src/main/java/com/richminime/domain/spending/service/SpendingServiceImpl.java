@@ -161,6 +161,10 @@ public class SpendingServiceImpl implements SpendingService {
             if(idx == null) {
                 // 처음 등장한 유형인 경우
                 idx = cnt;
+                spendingAmountList.add(SpendingDto.builder()
+                        .amount(0L)
+                        .category(category)
+                        .build());
                 map.put(category, cnt++);
             }
             spendingDto = spendingAmountList.get(idx);
@@ -203,6 +207,10 @@ public class SpendingServiceImpl implements SpendingService {
             if(idx == null) {
                 // 처음 등장한 유형인 경우
                 idx = cnt;
+                spendingAmountList.add(SpendingDto.builder()
+                                .amount(0L)
+                                .category(category)
+                        .build());
                 map.put(category, cnt++);
             }
             spendingDto = spendingAmountList.get(idx);
@@ -225,12 +233,11 @@ public class SpendingServiceImpl implements SpendingService {
         // 그저께
         // redis에 저장되어있는 값이 그저께 분석한 일일 소비배턴 분석 데이터
         Optional<DaySpendingPattern> yesterday = daySpendingPatternRedisRepository.findById(email);
-
         Boolean lessSpent = null;
-
-        if(totalAmount > yesterday.get().getTotalAmount()) lessSpent = false;
-        if(totalAmount < yesterday.get().getTotalAmount()) lessSpent = true;
-
+        if(yesterday.isPresent()) {
+            if (totalAmount > yesterday.get().getTotalAmount()) lessSpent = false;
+            if (totalAmount < yesterday.get().getTotalAmount()) lessSpent = true;
+        }
         return DaySpendingPattern.builder()
                 .email(email)
                 .month(month)
@@ -264,6 +271,13 @@ public class SpendingServiceImpl implements SpendingService {
         // 회원의 balance 업데이트
         // 100원당 1 코인
         user.updateBalance(user.getBalance() + (daySpendingPattern.getTotalAmount() / 100));
+        daySpendingPatternRedisRepository.save(daySpendingPattern);
+    }
+
+    @Override
+    public void initDaySpending(User user, int month, int day, Date startDate, Date endDate) {
+        List<Spending> todaySpendingList = spendingRepository.findSpendingByUserIdAndSpentDateBetween(user.getUserId(), startDate, endDate);
+        DaySpendingPattern daySpendingPattern = analyzeDaySpending(todaySpendingList, user.getEmail(), month, day);
         daySpendingPatternRedisRepository.save(daySpendingPattern);
     }
 
