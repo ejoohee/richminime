@@ -497,7 +497,7 @@ public class UserServiceImpl implements UserService {
             // 그저께 소비내역 데이터 저장
             spendingService.initDaySpending(user, month, day, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
             // 어제 소비내역 데이터와 비교하여 분석 데이터 저장
-            time = LocalDate.now().plusDays(1);
+            time = LocalDate.now().minusDays(1);
             // 연도, 월, 일
             year = time.getYear();
             month = time.getMonthValue();

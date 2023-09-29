@@ -161,6 +161,10 @@ public class SpendingServiceImpl implements SpendingService {
             if(idx == null) {
                 // 처음 등장한 유형인 경우
                 idx = cnt;
+                spendingAmountList.add(SpendingDto.builder()
+                        .amount(0L)
+                        .category(category)
+                        .build());
                 map.put(category, cnt++);
             }
             spendingDto = spendingAmountList.get(idx);
@@ -203,6 +207,10 @@ public class SpendingServiceImpl implements SpendingService {
             if(idx == null) {
                 // 처음 등장한 유형인 경우
                 idx = cnt;
+                spendingAmountList.add(SpendingDto.builder()
+                                .amount(0L)
+                                .category(category)
+                        .build());
                 map.put(category, cnt++);
             }
             spendingDto = spendingAmountList.get(idx);
