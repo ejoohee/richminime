@@ -17,12 +17,9 @@ import javax.persistence.*;
 @Entity
 public class UserItem {
 
-    // userItemId, itemId, userId 포린키
-
     @Id @GeneratedValue
     @Column(name = "user_item_id")
     private Long userItemId;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
