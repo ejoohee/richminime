@@ -1,0 +1,99 @@
+management:
+  health:
+    diskspace:
+      enabled: true
+    default:
+      enabled: true
+    db:
+      enabled: true
+  servlet:
+    context-path: /manage
+spa:
+  default-file: /dist/index.html5
+spring:
+  web:
+    resources:
+      static-locations: classpath:/dist/
+      add-mappings: "false"
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+  datasource:
+    driver-class-name: org.h2.Driver
+    password: ''
+    username: sa
+    hikari:
+      jdbc-url: jdbc:h2:tcp://localhost/~/richMinime
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+  devtools:
+    livereload:
+      enabled: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username:
+    password:
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+  redis:
+    host: localhost
+    port: 6379
+logging:
+  level:
+    org:
+      hibernate.SQL: DEBUG
+      hibernate.type.descriptor.sql.BasicBinder: TRACE
+      spring.boot: DEBUG
+      spring.security: DEBUG
+      spring.web: DEBUG
+      apache.tiles: INFO
+    root: INFO
+    com.samsung.security: DEBUG
+server:
+  servlet:
+    encoding:
+      enabled: true
+      force: true
+      charset: UTF-8
+    contextPath: /api
+  address: 0.0.0.0
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
+build:
+  date: "@build.date@"
+jwt:
+  expiration: '1296000000'
+  cookieName: refresh-token
+  secret: dyAeHubOOc8KaOfYB6XEQoEj1QzRlVgtjNL8PYs1A1tymZvvqkcEU7L1imkKHeDa
+springfox:
+  documentation:
+    swagger:
+      use-model-v3: false
+rsa:
+  private-key: MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJoum431VIgbYZkMY7qIacPp0SHx4uKOYr4S2EFVc3zMjgHujZ9gh9/GnIszCJ4nOAebD0gzfjup+gRs/4vUWFMMzc4d1TEdMdF1ra2OKb5YtCYqR98cu3XwzFpS0ONvXo6tMm3rGEpArdBGELWjBfmtKkshzxE6otqL04WVJs1BAgMBAAECgYBiKEf6EXT2jdANutiG+a+z/ViaLr+OEq4EakTpGzjB/AxwaGobTD5UlcI10JCs9zTxiqMpCTdVTrqQNMBgShjMEcO37Rj1nUTP5TQUg05vvSKh9uthY3nxUJTdlzmgNmMIQSrYHAD7/a9TqnBBr/8dZWxmpjyCF1foAWkk+IQmEQJBAMeRPx6dnWXZDNhyjgnNzAAW9mmTSNi9Bnut319FwWcrHQrRBnoOk5xFml4/f2+dyyys6jS/89bo743wuoN03yUCQQDFx+b/EHz7ZS320Yqpl0dVnILQhWnuDI4PJhAdq38ACfmQP7YSUHn/upxl1TL78P/TBbnNzYQXAvSJdcJp6djtAkAW4L7Eqrr1hwli8tb3psEBLaC3/6t1NU499XPK/zspsZaVu9qrOWqQmqYUseDREdzN1VDQFUVF2NRFiFhJY6eFAkAiu4FIZ6fbKiCRSKkWMTfYw/yBC/zXTiMga+nGnBhYdGf8OgQKYVGbZDUU+QTUE7WJZGcFykKZG+6/uQtkOCndAkEArvTMLPzdUZYTNkRD/xkyBPMKolN3xRtPKRn5x8Lj/acy2gEQQ7NXfxz4eN7803W6MzHgPVJ4sL0ouJCq2I+JmA==
+  public-key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaLpuN9VSIG2GZDGO6iGnD6dEh8eLijmK+EthBVXN8zI4B7o2fYIffxpyLMwieJzgHmw9IM347qfoEbP+L1FhTDM3OHdUxHTHRda2tjim+WLQmKkffHLt18MxaUtDjb16OrTJt6xhKQK3QRhC1owX5rSpLIc8ROqLai9OFlSbNQQIDAQAB
+codef:
+  auth-header: 'Basic MjFjZTRiYTgtNTUzNy00NTRmLTg3YmUtN2RhYWQyOGVjYjFmOjA0MTZmODdjLWI4YTYtNGJjMS05ZDM2LTJlYTgwOTVlMTNjNA=='
+gpt:
+  api-key: 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

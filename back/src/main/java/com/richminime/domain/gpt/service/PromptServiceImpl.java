@@ -2,6 +2,9 @@ package com.richminime.domain.gpt.service;
 
 import com.richminime.domain.gpt.dao.PromptRepository;
 import com.richminime.domain.gpt.domain.Prompt;
+import com.richminime.domain.gpt.dto.PromptReqDto;
+import com.richminime.domain.gpt.dto.PromptResDto;
+import com.richminime.global.util.SecurityUtils;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -23,18 +26,19 @@ import java.util.Map;
 public class PromptServiceImpl implements PromptService {
 
     private final PromptRepository promptRepository;
+    private final SecurityUtils securityUtils;
     @Value("${gpt.api-key}")
     private String apikey;
 
-    private String gptUrl = "https://api.openai.com/v1/chat/completions";
+    public final String gptUrl = "https://api.openai.com/v1/chat/completions";
     @Override
-    public Mono<String> findChatbotReply(String request) {
+    public Mono<PromptResDto> findChatbotReply(PromptReqDto dto) {
         WebClient webClient = WebClient.create(gptUrl);
         HttpHeaders httpheaders = new HttpHeaders();
         httpheaders.setContentType(MediaType.APPLICATION_JSON);
         httpheaders.set("Authorization","Bearer " + apikey);
         //추후 시큐리티 완료 되면 getUser()로 대체
-        List<Prompt> prompts = promptRepository.findByUser_UserId(1L);
+        List<Prompt> prompts = promptRepository.findByUser_UserId(securityUtils.getUserNo());
         List<Message> messages = new ArrayList<>();
         Message systemMessage = new Message("system","너는 은행 상담원이야");
         messages.add(systemMessage);
@@ -48,8 +52,7 @@ public class PromptServiceImpl implements PromptService {
                 messages.add(assistantMessage);
             }
         }
-        userMessage = new Message("user","content");
-        System.out.println(request);
+        userMessage = new Message("user",dto.getRequest());
         messages.add(userMessage);
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model","gpt-3.5-turbo");
@@ -57,21 +60,6 @@ public class PromptServiceImpl implements PromptService {
 
         System.out.println(requestBody);
 
-/*        String reply = "";
-        Mono mono = webClient.post()
-                .headers(headers -> headers.addAll(httpheaders)) //헤더 설정(콜백 함수로 headers를 받아 headers에 Httpheaders 설정
-                .bodyValue(requestBody)//requestbody 설정
-                .retrieve()
-                .bodyToMono(String.class) //응답을 string으로 받겠다는 설정
-                .map(
-                        result ->{
-                            System.out.println(result);
-                            System.out.println("성공");
-                            return result;
-                });
-        mono.subscribe(
-                item -> System.out.println(item)
-        );*/
 
         return webClient.post()
                 .headers(headers -> headers.addAll(httpheaders)) //헤더 설정(콜백 함수로 headers를 받아 headers에 Httpheaders 설정
@@ -82,7 +70,8 @@ public class PromptServiceImpl implements PromptService {
                         result ->{
                             System.out.println(result);
                             System.out.println("성공");
-                            return result;
+
+                            return PromptResDto.builder().response(result).build();
                         });
     }
     @Data
