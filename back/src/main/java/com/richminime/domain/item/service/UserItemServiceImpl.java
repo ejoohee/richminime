@@ -164,7 +164,7 @@ public class UserItemServiceImpl implements UserItemService {
         // 잔액 부족이면 구매 불가
         if(newBalance < 0){
             log.error("[테마 구매하기] 잔액이 부족해 구매할 수 없습니다.");
-            throw new InsufficientBalanceException(INSUFFICINET_BALANCE.getMessage());
+            throw new InsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
         }
 
         log.info("[테마 구매하기] 테마 구매 가능 !!");
