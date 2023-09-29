@@ -3,7 +3,6 @@ package com.richminime.domain.item.service;
 import com.richminime.domain.item.constant.ItemType;
 import com.richminime.domain.item.dto.ItemReqDto;
 import com.richminime.domain.item.dto.ItemResDto;
-import com.richminime.domain.item.dto.ItemSearchCondition;
 import com.richminime.domain.item.dto.ItemUpdateReqDto;
 
 import java.util.List;
