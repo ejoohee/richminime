@@ -31,17 +31,23 @@ public class ClothingServiceImpl implements ClothingService {
     private final UserRepository userRepository;
     private final SecurityUtils securityUtils;
 
-    @Transactional
-    @Override
-    public ClothingResDto addClothing(ClothingReqDto clothingReqDto) {
+    private User getLoggedInUser() {
         String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
-
-        User user = userRepository.findByEmail(loggedInUserEmail)
+        return userRepository.findByEmail(loggedInUserEmail)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+    }
 
+    private void checkAdminAuthority(User user) {
         if (!user.getUserType().equals(UserType.ROLE_ADMIN)) {
             throw new ForbiddenException();
         }
+    }
+
+    @Transactional
+    @Override
+    public ClothingResDto addClothing(ClothingReqDto clothingReqDto) {
+        User user = getLoggedInUser();
+        checkAdminAuthority(user);
 
         Clothing clothing = Clothing.builder()
                 .clothingName(clothingReqDto.getClothingName())
@@ -59,15 +65,8 @@ public class ClothingServiceImpl implements ClothingService {
     @Transactional
     @Override
     public ClothingResDto updateClothing(ClothingUpdateReqDto clothingUpdateReqDto) {
-
-        String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
-
-        User user = userRepository.findByEmail(loggedInUserEmail)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
-
-        if (!user.getUserType().equals(UserType.ROLE_ADMIN)) {
-            throw new ForbiddenException();
-        }
+        User user = getLoggedInUser();
+        checkAdminAuthority(user);
 
         Clothing clothing = clothingRepository.findById(clothingUpdateReqDto.getClothingId())
                 .orElseThrow(() -> new ClothingNotFoundException(CLOTHING_NOT_FOUND.getMessage()));
@@ -82,7 +81,6 @@ public class ClothingServiceImpl implements ClothingService {
     @Transactional
     @Override
     public List<ClothingResDto> findAllClothingByType(ClothingType clothingType) {
-
         if (clothingType == null) {
             List<Clothing> clothingList = clothingRepository.findAll();
             List<ClothingResDto> clothingInfoResponseDtoList = new ArrayList<>();
@@ -113,14 +111,9 @@ public class ClothingServiceImpl implements ClothingService {
     @Transactional
     @Override
     public void deleteClothing(Long clothingId) {
-        String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
+        User user = getLoggedInUser();
+        checkAdminAuthority(user);
 
-        User user = userRepository.findByEmail(loggedInUserEmail)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
-
-        if (!user.getUserType().equals(UserType.ROLE_ADMIN)) {
-            throw new ForbiddenException();
-        }
         Clothing clothing = clothingRepository.findById(clothingId)
                 .orElseThrow(() -> new ClothingNotFoundException(CLOTHING_NOT_FOUND.getMessage()));
 
