@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public enum FeedbackType {
 
-    긍정피드백("긍정 피드백"),
-    부정피드백("부정 피드백");
+    긍정피드백("긍정피드백"),
+    부정피드백("부정피드백");
     private String value;
 
     FeedbackType(String value) {
