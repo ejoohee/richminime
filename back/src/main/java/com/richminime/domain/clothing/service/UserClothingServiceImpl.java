@@ -8,6 +8,8 @@ import com.richminime.domain.clothing.dao.ClothingRepository;
 import com.richminime.domain.clothing.dao.UserClothingRepository;
 import com.richminime.domain.clothing.domain.Clothing;
 import com.richminime.domain.clothing.domain.UserClothing;
+import com.richminime.domain.clothing.dto.AddUserClothingResDto;
+import com.richminime.domain.clothing.dto.DeleteUserClothingResDto;
 import com.richminime.domain.clothing.dto.UserClothingReqDto;
 import com.richminime.domain.clothing.dto.UserClothingResDto;
 import com.richminime.domain.clothing.exception.ClothingDuplicatedException;
@@ -15,6 +17,7 @@ import com.richminime.domain.clothing.exception.ClothingNotFoundException;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
+import com.richminime.global.exception.ForbiddenException;
 import com.richminime.global.exception.InsufficientBalanceException;
 import com.richminime.global.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +44,7 @@ public class UserClothingServiceImpl implements UserClothingService {
 
     @Transactional
     @Override
-    public void addMyClothing(UserClothingReqDto userClothingReqDto) {
+    public AddUserClothingResDto addMyClothing(UserClothingReqDto userClothingReqDto) {
 
         String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
 
@@ -93,15 +96,25 @@ public class UserClothingServiceImpl implements UserClothingService {
 
         userClothingRepository.save(userClothing);
         userRepository.save(user);
+        return AddUserClothingResDto.entityToDto(userClothing);
     }
 
     @Transactional
     @Override
-    public void deleteMyClothing(Long userClothingId) {
+    public DeleteUserClothingResDto deleteMyClothing(Long userClothingId) {
         UserClothing userClothing = userClothingRepository.findById(userClothingId)
                 .orElseThrow(() -> new ClothingNotFoundException(CLOTHING_NOT_FOUND.getMessage()));
 
-        User user = userClothing.getUser();
+        String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
+
+        User user = userRepository.findByEmail(loggedInUserEmail)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        // 로그인 유저와 소유자가 동일한지 체크
+        if (!user.getUserId().equals(userClothing.getUser().getUserId())) {
+            throw new ForbiddenException();
+        }
+
         long saleAmount = Math.round(userClothing.getClothing().getPrice() * 0.4);
         long newBalance = user.getBalance() + saleAmount;
 
@@ -121,8 +134,9 @@ public class UserClothingServiceImpl implements UserClothingService {
         boolean sell = false;
         user.updateClothingCnt(sell);
 
-        userClothingRepository.delete(userClothing);
         userRepository.save(user);
+        userClothingRepository.delete(userClothing);
+        return DeleteUserClothingResDto.entityToDto(userClothing);
     }
 
     @Transactional

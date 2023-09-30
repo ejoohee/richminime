@@ -49,8 +49,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username:
-    password:
+    username: richminime@gmail.com
+    password: 'tgtzmsgpaabqxhkh'
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
@@ -95,3 +95,5 @@ rsa:
   public-key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaLpuN9VSIG2GZDGO6iGnD6dEh8eLijmK+EthBVXN8zI4B7o2fYIffxpyLMwieJzgHmw9IM347qfoEbP+L1FhTDM3OHdUxHTHRda2tjim+WLQmKkffHLt18MxaUtDjb16OrTJt6xhKQK3QRhC1owX5rSpLIc8ROqLai9OFlSbNQQIDAQAB
 codef:
   auth-header: 'Basic MjFjZTRiYTgtNTUzNy00NTRmLTg3YmUtN2RhYWQyOGVjYjFmOjA0MTZmODdjLWI4YTYtNGJjMS05ZDM2LTJlYTgwOTVlMTNjNA=='
+gpt:
+  api-key: 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

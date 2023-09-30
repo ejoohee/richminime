@@ -33,7 +33,7 @@ public class ClothingServiceImpl implements ClothingService {
 
     @Transactional
     @Override
-    public void addClothing(ClothingReqDto clothingReqDto) {
+    public ClothingResDto addClothing(ClothingReqDto clothingReqDto) {
         String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
 
         User user = userRepository.findByEmail(loggedInUserEmail)
@@ -53,6 +53,7 @@ public class ClothingServiceImpl implements ClothingService {
                 .build();
 
         clothingRepository.save(clothing);
+        return ClothingResDto.entityToDto(clothing);
     }
 
     @Transactional
