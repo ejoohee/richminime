@@ -1,6 +1,8 @@
 package com.richminime.domain.item.service;
 
 import com.richminime.domain.item.constant.ItemType;
+import com.richminime.domain.item.dto.AddUserItemResDto;
+import com.richminime.domain.item.dto.DeleteUserItemResDto;
 import com.richminime.domain.item.dto.UserItemResDto;
 
 import java.util.List;
@@ -16,9 +18,9 @@ public interface UserItemService {
     List<UserItemResDto> findAllUserItemByType(String token, ItemType itemType);
 
     // 소유하지 않은 테마 구매하기
-    UserItemResDto addUserItem(String token, Long itemId);
+    AddUserItemResDto addUserItem(String token, Long itemId);
 
     // 6. 소유한 테마 판매하기
-    void deleteUserItem(String token, Long userItemId);
+    DeleteUserItemResDto deleteUserItem(String token, Long userItemId);
 
 }

@@ -6,6 +6,8 @@ import com.richminime.domain.bankBook.domain.BankBook;
 import com.richminime.domain.item.domain.Item;
 import com.richminime.domain.item.constant.ItemType;
 import com.richminime.domain.item.domain.UserItem;
+import com.richminime.domain.item.dto.AddUserItemResDto;
+import com.richminime.domain.item.dto.DeleteUserItemResDto;
 import com.richminime.domain.item.dto.UserItemResDto;
 import com.richminime.domain.item.exception.ItemDuplicatedException;
 import com.richminime.domain.item.exception.ItemNotFoundException;
@@ -131,7 +133,7 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public UserItemResDto addUserItem(String token, Long itemId) {
+    public AddUserItemResDto addUserItem(String token, Long itemId) {
         User loginUser = getLoginUser(token);
         Long loginUserId = loginUser.getUserId();
 
@@ -190,7 +192,7 @@ public class UserItemServiceImpl implements UserItemService {
         userRepository.save(loginUser);
         userItemRepository.save(userItem);
 
-        return UserItemResDto.entityToDto(userItem);
+        return AddUserItemResDto.entityToDto(userItem);
     }
 
     /**
@@ -199,7 +201,7 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public void deleteUserItem(String token, Long userItemId) {
+    public DeleteUserItemResDto deleteUserItem(String token, Long userItemId) {
         log.info("[테마 판매하기] 소유한 테마 판매 요청. userItemId : {}", userItemId);
 
         User loginUser = getLoginUser(token);
@@ -237,6 +239,8 @@ public class UserItemServiceImpl implements UserItemService {
         userRepository.save(loginUser);
 
         log.info("[테마 판매하기] 판매 완료.");
+
+        return DeleteUserItemResDto.entityToDto(userItem);
     }
 
 }

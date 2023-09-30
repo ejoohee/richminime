@@ -10,10 +10,9 @@ import lombok.Data;
 @Builder
 public class DeleteUserItemResDto {
 
-    // 잔액, 팔린금액
     private Long userId;
-    private Long balance;
-    private Long sellPrice;
+    private Long balance; // 판매 후 잔액
+    private Long sellPrice; // 팔린 금액
 
     public static DeleteUserItemResDto entityToDto(UserItem userItem) {
         User user = userItem.getUser();
