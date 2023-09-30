@@ -19,7 +19,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Item {
 
-    // itemId, itemName, itemType, itemImg, itemInfo, price\
     @Id @GeneratedValue
     @Column(name = "item_id")
     private Long itemId;
@@ -34,6 +33,9 @@ public class Item {
     @Column(name = "item_img", length = 255, nullable = false)
     private String itemImg;
 
+    @Column(name = "item_apply_img", length = 255, nullable = false)
+    private String itemApplyImg;
+
     @Column(name = "item_info", length = 255, nullable = true)
     private String itemInfo;
 
@@ -46,6 +48,7 @@ public class Item {
     public void updateItem(ItemUpdateReqDto itemUpdateReqDto) {
         this.itemName = itemUpdateReqDto.getItemName() == null ? this.itemName : itemUpdateReqDto.getItemName();
         this.itemImg = itemUpdateReqDto.getItemImg() == null ? this.itemImg : itemUpdateReqDto.getItemImg();
+        this.itemApplyImg = itemUpdateReqDto.getItemApplyImg() == null ? itemApplyImg : itemUpdateReqDto.getItemApplyImg();
         this.itemInfo = itemUpdateReqDto.getItemInfo() == null ? this.itemInfo : itemUpdateReqDto.getItemInfo();
         this.price = itemUpdateReqDto.getPrice() == null ? price : itemUpdateReqDto.getPrice();
     }

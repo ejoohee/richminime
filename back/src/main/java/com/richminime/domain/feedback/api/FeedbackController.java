@@ -49,7 +49,7 @@ public class FeedbackController {
 
     @Operation(
             summary = "피드백 추천",
-            description = "로그인 유저별 소비패턴에 따른 1일 1회 피드백 랜덤 추천"
+            description = "로그인 유저별 전날 소비패턴에 따른 피드백 랜덤 추천"
     )
     @GetMapping
     public ResponseEntity<FeedbackResDto> findFeedback(@RequestHeader(ACCESS_TOKEN) String token) {

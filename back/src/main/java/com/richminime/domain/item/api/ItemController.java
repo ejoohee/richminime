@@ -1,10 +1,7 @@
 package com.richminime.domain.item.api;
 
 import com.richminime.domain.item.constant.ItemType;
-import com.richminime.domain.item.dto.ItemReqDto;
-import com.richminime.domain.item.dto.ItemResDto;
-import com.richminime.domain.item.dto.ItemUpdateReqDto;
-import com.richminime.domain.item.dto.UserItemResDto;
+import com.richminime.domain.item.dto.*;
 import com.richminime.domain.item.service.ItemService;
 import com.richminime.domain.item.service.UserItemService;
 import com.richminime.global.dto.MessageDto;
@@ -97,7 +94,7 @@ public class ItemController {
             description = "테마 상점에서 선택한 테마를 구매합니다.(미소유 시)"
     )
     @PostMapping("/my/{itemId}")
-    public ResponseEntity<UserItemResDto> addUserItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long itemId) {
+    public ResponseEntity<AddUserItemResDto> addUserItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long itemId) {
         return ResponseEntity.ok(userItemService.addUserItem(token, itemId));
     }
 
@@ -106,18 +103,8 @@ public class ItemController {
             description = "소유한 테마 중 선택한 테마를 판매합니다."
     )
     @DeleteMapping("/my/{userItemId}")
-    public ResponseEntity<MessageDto> deleteUserItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long userItemId) {
-        userItemService.deleteUserItem(token, userItemId);
-        return ResponseEntity.ok(MessageDto.msg("DELETE SUCCESS"));
+    public ResponseEntity<DeleteUserItemResDto> deleteUserItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long userItemId) {
+        return ResponseEntity.ok(userItemService.deleteUserItem(token, userItemId));
     }
 
-
-//    @Operation(
-//            summary = "로그인 사용자가 소유한 테마 적용/해제 하기",
-//            description = "소유한 테마 중 선택한 테마를 적용/해제합니다."
-//    )
-//    @PutMapping("/my/{userItemId}")
-//    public ResponseEntity<UserItemResDto> updateUserItem(@PathVariable Long userItemId) {
-//        return ResponseEntity.ok(userItemService.updateUserItem(userItemId));
-//    }
 }

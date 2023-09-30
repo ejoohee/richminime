@@ -58,6 +58,7 @@ public class SecurityConfig {
                 .antMatchers("/h2-console/**",
                         "/favicon.ico",
                         "/item/**", // 임시
+                        "/feedback/**", // 임시
                         "/error",
                         "/swagger-ui/**",
                         "/swagger-resources/**",
