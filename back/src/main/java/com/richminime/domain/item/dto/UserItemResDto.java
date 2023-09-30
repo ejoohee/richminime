@@ -14,6 +14,7 @@ public class UserItemResDto {
     private String itemName;
     private String itemType;
     private String itemImg;
+    private String itemApplyImg;
     private String itemInfo;
     private Long price;
 
@@ -26,6 +27,7 @@ public class UserItemResDto {
                 .itemName(item.getItemName())
                 .itemType(item.getItemType().getValue())
                 .itemImg(item.getItemImg())
+                .itemApplyImg(item.getItemApplyImg())
                 .itemInfo(item.getItemInfo())
                 .price(item.getPrice())
                 .build();
