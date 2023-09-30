@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // 패키�
 import 'package:richminime/screens/bankbook.dart';
 import 'package:richminime/screens/home_screen.dart'; // HomeScreen 임포트
 import 'package:richminime/screens/login.dart';
+import 'package:richminime/screens/sign_up.dart';
 
 void main() {
   runApp(const App());
@@ -27,7 +28,7 @@ class App extends StatelessWidget {
           color: Color(0xFFEEb4a2),
         )),
       ),
-      home: const HomeScreen(),
+      home: const Login(),
       // home: FutureBuilder<String?>(
       //   // FutureBuilder를 사용하여 SecureStorage에서 토큰을 읽어옵니다.
       //   future: storage.read(key: "accessToken"),

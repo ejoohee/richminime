@@ -112,13 +112,26 @@ class UserService {
     }
   }
 
-  Future<String> sendCheckEmail(String email) async {
-    final url = Uri.parse("$baseUrl/user/check-login-email");
+  Future<String> checkEmail(String email) async {
+    final url = Uri.parse("$baseUrl/user/check-login-email?email=$email");
 
+    final response = await http.get(
+      url,
+      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    );
+
+    if (response.statusCode == 200) {
+      return "true";
+    } else {
+      return response.body.toString();
+    }
+  }
+
+  Future<String> sendCheckEmailCode(String email) async {
+    final url = Uri.parse("$baseUrl/user/send-email-code?email=$email");
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/x-www-form-urlencoded"},
-      body: {"email": email},
     );
 
     if (response.statusCode == 200) {
@@ -133,14 +146,20 @@ class UserService {
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
-      body: {
+      body: jsonEncode({
         "email": email,
         "code": code,
-      },
+      }),
     );
 
+    Map<String, dynamic> responseBody = jsonDecode(response.body);
+
     if (response.statusCode == 200) {
-      return "true";
+      if (responseBody['success'] == true) {
+        return "true";
+      } else {
+        return "false";
+      }
     } else {
       return response.body.toString();
     }

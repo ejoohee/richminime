@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:richminime/miniroom/mini_room.dart';
-import 'package:richminime/miniroom/mini_room_widget.dart';
 import 'package:richminime/screens/closet.dart';
 import 'package:richminime/screens/interior.dart';
 import 'package:circular_menu/circular_menu.dart';
@@ -88,16 +87,21 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: Visibility(
         visible: currentPageIndex == 1, // currentPageIndex가 1일 때 노출
         child: CircularMenu(
+          curve: Curves.elasticInOut,
+          reverseCurve: Curves.elasticInOut,
+          animationDuration: const Duration(milliseconds: 1000),
+          radius: 125,
           alignment: Alignment.bottomCenter,
-          toggleButtonSize: 48,
+          toggleButtonSize: 60,
           toggleButtonColor: Colors.pink,
           items: [
             CircularMenuItem(
-              icon: Icons.home,
+              icon: Icons.monetization_on_sharp,
               onTap: () {
                 // Home 아이콘을 클릭할 때 수행할 작업
               },
               color: Colors.blue,
+              iconSize: 50,
             ),
             CircularMenuItem(
               icon: Icons.search,
@@ -105,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Search 아이콘을 클릭할 때 수행할 작업
               },
               color: Colors.orange,
+              iconSize: 50,
             ),
             CircularMenuItem(
               icon: Icons.settings,
@@ -112,6 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Settings 아이콘을 클릭할 때 수행할 작업
               },
               color: Colors.deepPurple,
+              iconSize: 50,
             ),
             CircularMenuItem(
               icon: Icons.star,
@@ -119,6 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Star 아이콘을 클릭할 때 수행할 작업
               },
               color: Colors.yellow,
+              iconSize: 50,
             ),
           ],
         ),
