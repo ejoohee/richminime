@@ -1,7 +1,7 @@
 package com.richminime.domain.user.service;
 
 import com.richminime.domain.user.dto.request.*;
-import com.richminime.domain.user.dto.response.CheckEmailResDto;
+import com.richminime.domain.user.dto.response.CheckResDto;
 import com.richminime.domain.user.dto.response.FindBalanceResDto;
 import com.richminime.domain.user.dto.response.FindUserResDto;
 import com.richminime.domain.user.dto.response.GenerateConnectedIdResDto;
@@ -15,7 +15,7 @@ public interface UserService {
 
     Map<String, Object> login(LoginReqDto loginRequest);
 
-    CheckEmailResDto checkEmail(String email);
+    CheckResDto checkEmail(String email);
 
     GenerateConnectedIdResDto generateConnectedId(GenerateConnectedIdReqDto generateConnectedIdRequest);
 
@@ -23,7 +23,7 @@ public interface UserService {
 
     void sendEmailCode(String email);
 
-    CheckEmailResDto checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto);
+    CheckResDto checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto);
 
     Map<String, Object> reissueToken(String accessToken, String refreshToken);
 
@@ -42,5 +42,7 @@ public interface UserService {
     void deleteUser(String email);
 
     void updatePassword(UpdatePasswordReqDto updatePasswordReqDto);
+
+    CheckResDto checkCardNumber(CheckCardNumberReqDto checkCardNumberReqDto);
 
 }

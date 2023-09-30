@@ -16,6 +16,7 @@ import com.richminime.domain.user.repository.LogoutAccessTokenRedisRepository;
 import com.richminime.domain.user.repository.RefreshTokenRedisRepository;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
+import com.richminime.global.common.codef.dto.response.FindCardListResDto;
 import com.richminime.global.common.jwt.JwtExpirationEnums;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.exception.NotFoundException;
@@ -218,9 +219,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public CheckEmailResDto checkEmail(String email) {
+    public CheckResDto checkEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
-        return CheckEmailResDto.builder()
+        return CheckResDto.builder()
                 // 존재하면 false, 존재하지 않으면 true 반환
                 .success(!user.isPresent())
                 .build();
@@ -296,7 +297,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CheckEmailResDto checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto) {
+    public CheckResDto checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto) {
         ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
         String originCode = (String) valueOperations.get(checkEmailCodeReqDto.getEmail());
         if(originCode == null)
@@ -308,7 +309,7 @@ public class UserServiceImpl implements UserService {
             valueOperations.getOperations().delete(checkEmailCodeReqDto.getEmail());
             valueOperations.set(checkEmailCodeReqDto.getEmail(), "이메일 인증 완료", 60 * 5L, TimeUnit.SECONDS);
         }
-        return CheckEmailResDto.builder()
+        return CheckResDto.builder()
                 // 존재하면 false, 존재하지 않으면 true 반환
                 .success(result)
                 .build();
@@ -422,6 +423,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public CheckResDto checkCardNumber(CheckCardNumberReqDto checkCardNumberReqDto) {
+        // uuid에 해당하는 커넥티드 아이디 가져오기
+        String connectedId = getConnectedIdByUUID(UUID.fromString(checkCardNumberReqDto.getUuid()));
+        // codef에서 보유카드 불러오고 그 카드 중 입력한 카드번호와 일치하는 게 있는지 검사
+        String organization = checkCardNumberReqDto.getOrganization();
+        List<FindCardListResDto> findCardListResDtoList;
+        try {
+            findCardListResDtoList = codefWebClient.findCardList(organization, connectedId);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        boolean result = false;
+        for (FindCardListResDto findCardListResDto : findCardListResDtoList) {
+            if(findCardListResDto.getResCardNo().equals(checkCardNumberReqDto.getCardNumber())){
+                // 보유 카드 목록에 해당하는 게 있음
+                result = true;
+                break;
+            }
+        }
+        return CheckResDto.builder()
+                .success(result)
+                .build();
+    }
+
+    private String getConnectedIdByUUID(UUID uuid){
+        // uuid에 해당하는 커넥티드 아이디 가져오기
+        String connectedId = connectedIdMap.remove(uuid);
+        if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
+        return connectedId;
+    }
+
+
+    @Override
     @Transactional
     public void addUser(AddUserReqDto addUserRequest) {
         // 회원가입 정보 유효성 확인
@@ -430,13 +464,16 @@ public class UserServiceImpl implements UserService {
             addUserRequest.getNickname() == null || addUserRequest.getNickname().equals(""))
             throw new IllegalArgumentException(UserExceptionMessage.SIGN_UP_NOT_VALID.getMessage());
         ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
+        // 이메일 인증 여부 확인
         String checkResult = (String) valueOperations.get(addUserRequest.getEmail());
         if(!checkResult.equals("이메일 인증 완료"))
             throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
-
+        // 카드 유효 여부 확인
+        checkResult = (String) valueOperations.get(UUID.fromString(addUserRequest.getUuid()));
+        if(!checkResult.equals("카드 유효성 검사 완료"))
+            throw new IllegalArgumentException(UserExceptionMessage.CARD_CHECK_FAILED.getMessage());
         // uuid에 해당하는 커넥티드 아이디 가져오기
-        String connectedId = connectedIdMap.remove(UUID.fromString(addUserRequest.getUuid()));
-        if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
+        String connectedId = getConnectedIdByUUID(UUID.fromString(addUserRequest.getUuid()));
         String organizationCode = addUserRequest.getOrganization();
         // 패스워드 암호화
         addUserRequest.setPassword(passwordEncoder.encode(addUserRequest.getPassword()));
