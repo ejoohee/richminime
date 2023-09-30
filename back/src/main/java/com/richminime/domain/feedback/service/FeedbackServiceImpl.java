@@ -57,9 +57,9 @@ public class FeedbackServiceImpl implements FeedbackService {
 
         String feedbackType;
         if(daySpending.getLessSpent())
-            feedbackType = "POSITIVE";
+            feedbackType = "긍정피드백";
         else
-            feedbackType = "NEGATIVE";
+            feedbackType = "부정피드백";
 
         Feedback feedback = feedbackRepository.findByFeedbackTypeToRandom(feedbackType);
 
