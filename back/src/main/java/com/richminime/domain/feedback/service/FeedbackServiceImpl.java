@@ -1,27 +1,28 @@
 package com.richminime.domain.feedback.service;
 
 import com.richminime.domain.feedback.domain.Feedback;
-import com.richminime.domain.feedback.domain.FeedbackType;
+import com.richminime.domain.feedback.constant.FeedbackType;
 import com.richminime.domain.feedback.dto.FeedbackReqDto;
 import com.richminime.domain.feedback.dto.FeedbackResDto;
+import com.richminime.domain.feedback.exception.FeedbackNotFoundException;
 import com.richminime.domain.feedback.repository.FeedbackRepository;
-import com.richminime.domain.spending.repository.MonthSpendingPatternRedisRepository;
-import com.richminime.domain.spending.repository.SpendingRepository;
+import com.richminime.domain.spending.dto.response.FindDaySpendingResDto;
 import com.richminime.domain.spending.service.SpendingService;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.domain.UserType;
-import com.richminime.domain.user.dto.response.FindUserResDto;
+import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
-import com.richminime.domain.user.service.UserService;
 import com.richminime.global.util.SecurityUtils;
 import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+
+import static com.richminime.domain.feedback.constant.FeedbackExceptionMessage.*;
+import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
+import static com.richminime.global.constant.ExceptionMessage.*;
 
 @Slf4j
 @Service
@@ -30,15 +31,13 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
     private final UserRepository userRepository;
-    private final SpendingRepository spendingRepository;
     private final SpendingService spendingService;
-//    private final MonthSpendingPatternRedisRepository monthSpendingPatternRedisRepository;
     private final SecurityUtils securityUtils;
     private final JWTUtil jwtUtil;
 
     /**
-     * 피드백 1일1회 랜덤 추천
-     * 로그인 사용자의 소비패턴에 따라 피드백을 1일1회 랜덤으로 추천합니다.
+     * 전날 소비패턴에 따른 피드백 랜덤 추천
+     * 로그인 사용자의 전날 소비패턴에 따라 피드백을 랜덤으로 추천합니다.
      * @return
      */
     @Override
@@ -50,13 +49,25 @@ public class FeedbackServiceImpl implements FeedbackService {
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[피드백 추천] 로그인 유저를 찾을 수 없습니다.");
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "로그인 유저를 찾을 수 없습니다.");
+                    return new UserNotFoundException(USER_NOT_FOUND.getMessage());
                 });
 
         // 스펜딩 불러오기
+        FindDaySpendingResDto daySpending = spendingService.findDaySpending();
 
+        String feedbackType;
+        if(daySpending.getLessSpent())
+            feedbackType = "POSITIVE";
+        else
+            feedbackType = "NEGATIVE";
 
-        return null;
+        Feedback feedback = feedbackRepository.findByFeedbackTypeToRandom(feedbackType);
+
+        log.info("[피드백 추천] 피드백 랜덤 추천 완료. 피드백 타입 : {}", feedbackType);
+        return FeedbackResDto.builder()
+                .feedbackType(feedback.getFeedbackType().getValue())
+                .content(feedback.getContent())
+                .build();
     }
 
     /**
@@ -69,7 +80,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[피드백 서비스] 로그인 유저를 찾을 수 없습니다.");
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "로그인 유저를 찾을 수 없습니다.");
+                    return new UserNotFoundException(USER_NOT_FOUND.getMessage());
                 });
 
         if(loginUser.getUserType().equals(UserType.ROLE_ADMIN))
@@ -89,10 +100,9 @@ public class FeedbackServiceImpl implements FeedbackService {
     public FeedbackResDto addFeedback(String token, FeedbackReqDto feedbackReqDto) {
         log.info("[피드백 등록] 피드백 등록 요청.");
 
-        // 관리자 확인
         if(!isAdmin(token)) {
             log.error("[피드백 등록] 관리자 회원만 피드백 등록이 가능합니다.");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "등록 권한이 없습니다.");
+            throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         };
 
         Feedback feedback = Feedback.builder()
@@ -102,8 +112,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
         feedbackRepository.save(feedback);
 
-        log.info("[피드백 등록] 피드백 등록 완료");
-
+        log.info("[피드백 등록] 피드백 등록 완료 feedbackId : {}", feedback.getFeedbackId());
         return FeedbackResDto.entityToDto(feedback);
     }
 
@@ -117,16 +126,15 @@ public class FeedbackServiceImpl implements FeedbackService {
     public FeedbackResDto updateFeedback(String token, Long feedbackId, FeedbackReqDto feedbackReqDto) {
         log.info("[피드백 수정] 피드백 수정 요청. feedbackId : {}", feedbackId);
 
-        // 관리자 확인
         if(!isAdmin(token)) {
             log.error("[피드백 수정] 관리자 회원만 피드백 수정이 가능합니다.");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다.");
+            throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         };
 
         Feedback feedback = feedbackRepository.findById(feedbackId)
                 .orElseThrow(() -> {
                     log.error("[피드백 수정] 피드백을 찾을 수 없습니다");
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "피드백을 찾을 수 없습니다.");
+                    return new FeedbackNotFoundException(FEEDBACK_NOT_FOUND.getMessage());
                 });
 
         feedback.updateFeedback(feedbackReqDto);
@@ -146,19 +154,19 @@ public class FeedbackServiceImpl implements FeedbackService {
     public void deleteFeedback(String token, Long feedbackId) {
         log.info("[피드백 삭제] 피드백 삭제 요청. feedbackId : {]", feedbackId);
 
-        // 관리자 확인
         if(!isAdmin(token)) {
             log.error("[피드백 삭제] 관리자 회원만 피드백 삭제가 가능합니다.");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "삭제 권한이 없습니다.");
+            throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         };
 
         Feedback feedback = feedbackRepository.findById(feedbackId)
                 .orElseThrow(() -> {
                     log.error("[피드백 삭제] 피드백을 찾을 수 없습니다");
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "피드백을 찾을 수 없습니다.");
+                    return new FeedbackNotFoundException(FEEDBACK_NOT_FOUND.getMessage());
                 });
 
         feedbackRepository.delete(feedback);
         log.info("[피드백 삭제] 피드백 삭제 완료.");
     }
+
 }
