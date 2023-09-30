@@ -37,7 +37,7 @@ public class Clothing {
     @Column(columnDefinition = "BIGINT DEFAULT 0")
     private long price;
 
-    @OneToMany(mappedBy = "clothing")
+    @OneToMany(mappedBy = "clothing", cascade = CascadeType.REMOVE)
     private List<UserClothing> userClothings = new ArrayList<>();
 
     @Builder
