@@ -449,7 +449,7 @@ public class UserServiceImpl implements UserService {
 
     private String getConnectedIdByUUID(UUID uuid){
         // uuid에 해당하는 커넥티드 아이디 가져오기
-        String connectedId = connectedIdMap.remove(uuid);
+        String connectedId = connectedIdMap.get(uuid);
         if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
         return connectedId;
     }
@@ -464,14 +464,14 @@ public class UserServiceImpl implements UserService {
             addUserRequest.getNickname() == null || addUserRequest.getNickname().equals(""))
             throw new IllegalArgumentException(UserExceptionMessage.SIGN_UP_NOT_VALID.getMessage());
         ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
-        // 이메일 인증 여부 확인
+//        // 이메일 인증 여부 확인
         String checkResult = (String) valueOperations.get(addUserRequest.getEmail());
         if(!checkResult.equals("이메일 인증 완료"))
             throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
-        // 카드 유효 여부 확인
-        checkResult = (String) valueOperations.get(UUID.fromString(addUserRequest.getUuid()));
-        if(!checkResult.equals("카드 유효성 검사 완료"))
-            throw new IllegalArgumentException(UserExceptionMessage.CARD_CHECK_FAILED.getMessage());
+//        // 카드 유효 여부 확인
+//        checkResult = (String) valueOperations.get(UUID.fromString(addUserRequest.getUuid()));
+//        if(!checkResult.equals("카드 유효성 검사 완료"))
+//            throw new IllegalArgumentException(UserExceptionMessage.CARD_CHECK_FAILED.getMessage());
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = getConnectedIdByUUID(UUID.fromString(addUserRequest.getUuid()));
         String organizationCode = addUserRequest.getOrganization();
@@ -499,6 +499,9 @@ public class UserServiceImpl implements UserService {
         // 일일 소비패턴 분석(초기값)
         // 어제랑 그저께를 비교
         initUserDaySpending(user);
+        // 회원가입 무사 완료 시
+        // 커넥티드 아이디 정보 삭제
+        connectedIdMap.remove(UUID.fromString(addUserRequest.getUuid()));
     }
 
     void initUserDaySpending(User user){
