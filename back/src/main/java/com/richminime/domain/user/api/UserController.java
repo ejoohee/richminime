@@ -123,7 +123,7 @@ public class UserController {
         LoginResDto loginResDto = (LoginResDto) map.get("accessToken");
         String refreshToken = (String) map.get("refreshToken");
         return ResponseEntity.ok()
-                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure")
+                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure; Path=/")
                 .body(loginResDto);
     }
 
@@ -205,7 +205,7 @@ public class UserController {
         ReissueTokenResDto reissueResDto = (ReissueTokenResDto) map.get("accessToken");
        refreshToken = (String) map.get("refreshToken");
         return ResponseEntity.ok()
-                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure")
+                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure; Path=/")
                 .body(reissueResDto);
     }
 
