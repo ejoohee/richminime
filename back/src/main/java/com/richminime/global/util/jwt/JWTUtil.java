@@ -34,11 +34,6 @@ public class JWTUtil {
         return extractAllClaims(token).get("id", String.class);
     }
 
-    // userId(PK) 가져오기 추가 (유녕)
-//    public Long getUserNo(String token) {
-//        return (Long) Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().get("id");
-//    }
-
     private Key getSigningKey(String secretKey) {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);

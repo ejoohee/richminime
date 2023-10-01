@@ -27,7 +27,7 @@ import java.util.List;
 
 import static com.richminime.domain.clothing.constant.ClothingExceptionMessage.*;
 import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
-import static com.richminime.global.constant.ExceptionMessage.INSUFFICINET_BALANCE;
+import static com.richminime.global.constant.ExceptionMessage.INSUFFICIENT_BALANCE;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +68,7 @@ public class UserClothingServiceImpl implements UserClothingService {
 
         //잔액부족
         if (newBalance < 0)
-            throw new InsufficientBalanceException(INSUFFICINET_BALANCE.getMessage());
+            throw new InsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
 
         BankBook bankBook = BankBook.builder()
                 .userId(user.getUserId())

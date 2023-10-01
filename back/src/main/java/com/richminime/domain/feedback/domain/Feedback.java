@@ -1,5 +1,6 @@
 package com.richminime.domain.feedback.domain;
 
+import com.richminime.domain.feedback.constant.FeedbackType;
 import com.richminime.domain.feedback.dto.FeedbackReqDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

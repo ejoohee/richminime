@@ -116,8 +116,6 @@ public class User {
             this.itemCount++;
         else
             this.itemCount--;
-
-//        if(itemCount > 20) { 서비스단 구현 }
     }
 
     // 클로징 카운트 업데이트

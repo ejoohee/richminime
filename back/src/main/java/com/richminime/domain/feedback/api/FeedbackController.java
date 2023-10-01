@@ -16,15 +16,16 @@ import org.springframework.web.bind.annotation.*;
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
+    private final String ACCESS_TOKEN = "AccessToken";
 
     @Operation(
             summary = "피드백 등록",
             description = "관리자 회원만 피드백을 새로 등록할 수 있습니다."
     )
     @PostMapping
-    public ResponseEntity<FeedbackResDto> addFeedback(@RequestBody FeedbackReqDto feedbackReqDto) {
+    public ResponseEntity<FeedbackResDto> addFeedback(@RequestHeader(ACCESS_TOKEN) String token, @RequestBody FeedbackReqDto feedbackReqDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(feedbackService.addFeedback(feedbackReqDto));
+                .body(feedbackService.addFeedback(token, feedbackReqDto));
     }
 
     @Operation(
@@ -32,8 +33,8 @@ public class FeedbackController {
             description = "관리자 회원만 피드백을 수정할 수 있습니다."
     )
     @PutMapping("/{feedbackId}")
-    public ResponseEntity<FeedbackResDto> updateFeedback(@PathVariable Long feedbackId, @RequestBody FeedbackReqDto feedbackReqDto) {
-        return ResponseEntity.ok(feedbackService.updateFeedback(feedbackId, feedbackReqDto));
+    public ResponseEntity<FeedbackResDto> updateFeedback(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long feedbackId, @RequestBody FeedbackReqDto feedbackReqDto) {
+        return ResponseEntity.ok(feedbackService.updateFeedback(token, feedbackId, feedbackReqDto));
     }
 
     @Operation(
@@ -41,18 +42,18 @@ public class FeedbackController {
             description = "관리자 회원만 피드백을 삭제할 수 있습니다."
     )
     @DeleteMapping("/{feedbackId}")
-    public ResponseEntity<MessageDto> deleteFeedback(@PathVariable Long feedbackId) {
-        feedbackService.deleteFeedback(feedbackId);
+    public ResponseEntity<MessageDto> deleteFeedback(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long feedbackId) {
+        feedbackService.deleteFeedback(token, feedbackId);
         return ResponseEntity.ok(MessageDto.msg("DELETE SUCCESS"));
     }
 
     @Operation(
             summary = "피드백 추천",
-            description = "로그인 유저별 소비패턴에 따른 1일 1회 피드백 랜덤 추천"
+            description = "로그인 유저별 전날 소비패턴에 따른 피드백 랜덤 추천"
     )
     @GetMapping
-    public ResponseEntity<FeedbackResDto> findFeedback() {
-        return ResponseEntity.ok(feedbackService.findFeedback());
+    public ResponseEntity<FeedbackResDto> findFeedback(@RequestHeader(ACCESS_TOKEN) String token) {
+        return ResponseEntity.ok(feedbackService.findFeedback(token));
     }
 
 

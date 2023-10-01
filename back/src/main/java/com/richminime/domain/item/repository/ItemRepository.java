@@ -1,8 +1,7 @@
 package com.richminime.domain.item.repository;
 
-import com.richminime.domain.clothing.domain.Clothing;
 import com.richminime.domain.item.domain.Item;
-import com.richminime.domain.item.domain.ItemType;
+import com.richminime.domain.item.constant.ItemType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
