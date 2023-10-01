@@ -1,0 +1,3 @@
+class OuterService {
+  Future getExchangeRate() {}
+}

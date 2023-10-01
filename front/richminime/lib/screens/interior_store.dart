@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Interior extends StatefulWidget {
-  const Interior({super.key});
+class InteriorStore extends StatefulWidget {
+  const InteriorStore({super.key});
 
   @override
-  State<Interior> createState() => _InteriorState();
+  State<InteriorStore> createState() => _InteriorStoreState();
 }
 
-class _InteriorState extends State<Interior> {
+class _InteriorStoreState extends State<InteriorStore> {
   int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {

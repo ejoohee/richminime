@@ -77,6 +77,7 @@ class _MiniRoomState extends State<MiniRoom> {
               );
             },
             child: Hero(
+              transitionOnUserGestures: true,
               tag: 'TV',
               child: Image.asset(
                 DefaultSetting.tv,
