@@ -2,7 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 
 class ClothingStoreSelected extends StatefulWidget {
-  const ClothingStoreSelected({super.key});
+  final int clothingId;
+  final String clothingImg;
+  final String clothingApplyImg;
+  final String clothingInfo;
+  final String clothingName;
+  final int price;
+
+  const ClothingStoreSelected(
+      {required this.clothingId,
+      required this.clothingImg,
+      required this.clothingApplyImg,
+      required this.clothingInfo,
+      required this.clothingName,
+      required this.price,
+      Key? key})
+      : super(key: key);
 
   @override
   State<ClothingStoreSelected> createState() => _ClothingStoreSelectedState();
