@@ -66,6 +66,26 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
     _controller.forward();
   }
 
+  Future<void> _showDialog(String message) async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('알림'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // AlertDialog를 닫습니다.
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future onNextButtonTap() async {
     setState(() {
       isLoading = true; // 로딩 시작
@@ -98,9 +118,7 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
         ),
       );
     } else {
-      AlertDialog(
-        title: Text(response),
-      );
+      _showDialog("카드사 정보를 확인해주세요."); // 다이얼로그로 메시지 표시
     }
   }
 
