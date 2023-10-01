@@ -3,10 +3,52 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:richminime/constants/api.dart';
 import 'package:richminime/models/clothing_model.dart';
+import 'package:http_interceptor/http_interceptor.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+const storage = FlutterSecureStorage();
+const String baseUrl = Api.BASE_URL;
+
+class HttpInterceptor implements InterceptorContract {
+  @override
+  Future<RequestData> interceptRequest({required RequestData data}) async {
+    final token = await storage.read(key: "accessToken");
+    if (token != null) {
+      data.headers["Authorization"] = "Bearer $token";
+    }
+    return data;
+  }
+
+  @override
+  Future<ResponseData> interceptResponse({required ResponseData data}) async {
+    if (data.statusCode == 401) {
+      String? accessToken = await storage.read(key: "accessToken");
+      var cj = CookieJar();
+      List<Cookie> cookies = await cj.loadForRequest(Uri.parse(baseUrl));
+      String? refreshToken;
+      for (var cookie in cookies) {
+        if (cookie.name == 'refresh_token') {
+          refreshToken = cookie.value;
+          break;
+        }
+      }
+      final url = Uri.parse('$baseUrl/user/reissue-token');
+      final response = await http.post(
+        url,
+        headers: {
+          "Authorization": "Bearer $accessToken",
+          "Refresh-Token": "$refreshToken",
+        },
+      );
+      await const FlutterSecureStorage()
+          .write(key: "accessToken", value: response.body);
+    }
+    return data;
+  }
+}
 
 class ClothingService {
-  static const String baseUrl = Api.BASE_URL;
-
   // 전체 옷 조회(카테고리 별) - 옷가게
   Future<List<ClothingModel>> getAllClothings(String? clothingType) async {
     List<ClothingModel> clothingInstances = [];
