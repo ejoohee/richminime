@@ -4,7 +4,6 @@ import com.richminime.domain.user.dto.request.*;
 import com.richminime.domain.user.dto.response.*;
 import com.richminime.domain.user.service.UserService;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
-import com.richminime.global.dto.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +52,7 @@ public class UserController {
             description = "회원 가입 시 해당 이메일로 이미 가입한 회원이 있는지 검사합니다."
     )
     @GetMapping("/check-login-email")
-    public ResponseEntity<CheckEmailResDto> checkEmail(@RequestParam(name = "email") String email) {
+    public ResponseEntity<CheckResDto> checkEmail(@RequestParam(name = "email") String email) {
         return ResponseEntity.ok().body(userService.checkEmail(email));
     }
 
@@ -72,8 +71,17 @@ public class UserController {
             description = "입력한 코드가 전송한 인증 코드와 일치하는지 검사합니다."
     )
     @PostMapping("/check-email-code")
-    public ResponseEntity<CheckEmailResDto> checkEmailCode(@RequestBody CheckEmailCodeReqDto checkEmailCodeReqDto) {
+    public ResponseEntity<CheckResDto> checkEmailCode(@RequestBody CheckEmailCodeReqDto checkEmailCodeReqDto) {
         return ResponseEntity.ok().body(userService.checkEmailCode(checkEmailCodeReqDto));
+    }
+
+    @Operation(
+            summary = "카드 유효성 검사",
+            description = "입력한 코드가 전송한 인증 코드와 일치하는지 검사합니다."
+    )
+    @PostMapping("/check-card")
+    public ResponseEntity<CheckResDto> checkCardNumber(@RequestBody CheckCardNumberReqDto checkCardNumberReqDto) {
+        return ResponseEntity.ok().body(userService.checkCardNumber(checkCardNumberReqDto));
     }
 
     @Operation(
@@ -115,7 +123,7 @@ public class UserController {
         LoginResDto loginResDto = (LoginResDto) map.get("accessToken");
         String refreshToken = (String) map.get("refreshToken");
         return ResponseEntity.ok()
-                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure")
+                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure; Path=/")
                 .body(loginResDto);
     }
 
@@ -197,7 +205,7 @@ public class UserController {
         ReissueTokenResDto reissueResDto = (ReissueTokenResDto) map.get("accessToken");
        refreshToken = (String) map.get("refreshToken");
         return ResponseEntity.ok()
-                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure")
+                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure; Path=/")
                 .body(reissueResDto);
     }
 

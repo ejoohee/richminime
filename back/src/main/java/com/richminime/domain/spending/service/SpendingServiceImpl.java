@@ -1,5 +1,8 @@
 package com.richminime.domain.spending.service;
 
+import com.richminime.domain.bankBook.constant.TransactionType;
+import com.richminime.domain.bankBook.dao.BankBookRepository;
+import com.richminime.domain.bankBook.domain.BankBook;
 import com.richminime.domain.spending.constatnt.SpendingCategoryEnums;
 import com.richminime.domain.spending.constatnt.TimeEnums;
 import com.richminime.domain.spending.domain.DaySpendingPattern;
@@ -37,6 +40,8 @@ import java.util.*;
 public class SpendingServiceImpl implements SpendingService {
 
     private final SpendingRepository spendingRepository;
+    private final BankBookRepository bankBookRepository;
+
     private final UserRepository userRepository;
     private final CodefWebClient codefWebClient;
 
@@ -270,7 +275,20 @@ public class SpendingServiceImpl implements SpendingService {
         DaySpendingPattern daySpendingPattern = analyzeDaySpending(todaySpendingList, user.getEmail(), month, day);
         // 회원의 balance 업데이트
         // 100원당 1 코인
-        user.updateBalance(user.getBalance() + (daySpendingPattern.getTotalAmount() / 100));
+        Long deposit = daySpendingPattern.getTotalAmount() / 100;
+        Long newBalance = user.getBalance() + deposit;
+        user.updateBalance(newBalance);
+        // 적립내역 backbook에 저장
+        BankBook bankBook = BankBook.builder()
+                .userId(user.getUserId())
+                .amount(deposit)
+                .date(LocalDate.now())
+                .balance(newBalance)
+                .transactionType(TransactionType.getTransactionType("적립"))
+                .summary(null)
+                .build();
+
+        bankBookRepository.save(bankBook);
         daySpendingPatternRedisRepository.save(daySpendingPattern);
     }
 

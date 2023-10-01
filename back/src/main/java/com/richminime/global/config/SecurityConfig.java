@@ -53,7 +53,7 @@ public class SecurityConfig {
         return http.antMatcher("/**")
                 .authorizeRequests()
                 // 토큰 인증 없이도 접근 가능한 api
-                .antMatchers(HttpMethod.POST, "/user", "/user/login", "/user/send-email-code", "/user/check-email-code", "/user/connected-id", "/user/reissue-token").permitAll()
+                .antMatchers(HttpMethod.POST, "/user", "/user/login", "/user/send-email-code", "/user/check-email-code", "/user/connected-id", "/user/check-card", "/user/reissue-token").permitAll()
                 .antMatchers(HttpMethod.GET, "/user/check-login-email", "/user/email").permitAll()
                 .antMatchers("/h2-console/**",
                         "/favicon.ico",
