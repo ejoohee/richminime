@@ -466,8 +466,8 @@ public class UserServiceImpl implements UserService {
         ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
 //        // 이메일 인증 여부 확인
         String checkResult = (String) valueOperations.get(addUserRequest.getEmail());
-//        if(!checkResult.equals("이메일 인증 완료"))
-//            throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
+        if(!checkResult.equals("이메일 인증 완료"))
+            throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = getConnectedIdByUUID(UUID.fromString(addUserRequest.getUuid()));
         String organizationCode = addUserRequest.getOrganization();
