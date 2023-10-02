@@ -8,7 +8,6 @@ public enum ClothingType {
     직업("직업"),
     동물잠옷("동물잠옷"),
     코스프레("코스프레");
-
     private final String value;
 
     ClothingType(String value) {this.value = value;}
