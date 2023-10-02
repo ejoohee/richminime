@@ -329,7 +329,7 @@ public class UserServiceImpl implements UserService {
     public ReissueTokenResDto reissueToken(String accessToken, String refreshToken) {
         // accessToken에서 email 가져오기
         accessToken = parsingAccessToken(accessToken);
-        String email = jwtUtil.getUsername(accessToken);
+        String email = jwtUtil.getUsername(refreshToken);
         // refresh 토큰 redis 레포지토리에서 가져와서 일치 여부 검사
         String originRefreshToken = refreshTokenRepository.findById(email).orElseThrow(() -> new NotFoundException("해당 이메일에 대한 토큰이 존재하지 않습니다.")).getRefreshToken();
         if(!originRefreshToken.equals(refreshToken)) {
