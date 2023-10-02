@@ -16,7 +16,7 @@ public interface UserService {
 
     GenerateConnectedIdResDto generateConnectedId(GenerateConnectedIdReqDto generateConnectedIdRequest);
 
-    void logout(String email, String accessToken);
+    void logout(String accessToken);
 
     void sendEmailCode(String email);
 

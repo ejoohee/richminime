@@ -262,8 +262,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void logout(String email, String accessToken) {
+    public void logout(String accessToken) {
         // 로그아웃 여부 redis에 넣어서 accessToken가 유효한지 확인
+        String email = getLoginId();
         long remainMilliSeconds = jwtUtil.getRemainMilliSeconds((accessToken));
         refreshTokenRepository.deleteById(email);
         logoutAccessTokenRepository.save(LogoutAccessToken.builder()
@@ -329,7 +330,13 @@ public class UserServiceImpl implements UserService {
     public ReissueTokenResDto reissueToken(String accessToken, String refreshToken) {
         // accessToken에서 email 가져오기
         accessToken = parsingAccessToken(accessToken);
-        String email = jwtUtil.getUsername(refreshToken);
+        String email = null;
+        try {
+            email = jwtUtil.getUsername(refreshToken);
+        }catch (Exception e) {
+            // 리프레시 토큰 만료
+            throw new TokenException("리프레시 토큰이 만료되었습니다. 로그인을 다시 해주세요.");
+        }
         // refresh 토큰 redis 레포지토리에서 가져와서 일치 여부 검사
         String originRefreshToken = refreshTokenRepository.findById(email).orElseThrow(() -> new NotFoundException("해당 이메일에 대한 토큰이 존재하지 않습니다.")).getRefreshToken();
         if(!originRefreshToken.equals(refreshToken)) {
