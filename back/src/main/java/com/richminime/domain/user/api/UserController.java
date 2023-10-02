@@ -128,8 +128,8 @@ public class UserController {
             description = "로그아웃 합니다."
     )
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestParam(name = "email") String email, @RequestHeader("Authorization") String accessToken) {
-        userService.logout(email, accessToken.substring(JwtHeaderUtilEnums.GRANT_TYPE.getValue().length()));
+    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String accessToken) {
+        userService.logout(accessToken.substring(JwtHeaderUtilEnums.GRANT_TYPE.getValue().length()));
         return ResponseEntity.ok().build();
     }
 
