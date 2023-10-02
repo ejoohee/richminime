@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:richminime/models/clothing_model.dart';
+import 'package:richminime/services/clothig_service.dart';
 import 'package:richminime/widgets/clothing_store_selected.dart';
 
 class ClothingStore extends StatefulWidget {
@@ -10,9 +12,31 @@ class ClothingStore extends StatefulWidget {
 }
 
 class _ClothingStoreState extends State<ClothingStore> {
-  final List<String> categories = ["일상", "파티", "직업"];
+  final ClothingService clothingService = ClothingService();
+  final List<String> categories = ["전체", "일상", "직업", "동물잠옷", "코스프레"];
   int selectedIndex = 0; // 선택된 카테고리 인덱스
 
+  List<ClothingModel> clothingList = [];
+  @override
+  void initState() {
+    super.initState();
+    loadClothingData(); // 데이터 로딩
+  }
+
+  Future<void> loadClothingData() async {
+    try {
+      final loadedClothingList =
+          await clothingService.getAllClothings(categories[selectedIndex]);
+      setState(() {
+        clothingList = loadedClothingList;
+      });
+    } catch (e) {
+      // 에러 처리
+      print("Error loading clothing data: $e");
+    }
+  }
+
+// 옷 선택했다
   bool isSelected = false;
 
   onSelect() {
@@ -139,9 +163,7 @@ class _ClothingStoreState extends State<ClothingStore> {
                                       )
                                     ],
                                   ),
-                                  child: Center(
-                                    child: Text('옷 사진들 $index'),
-                                  ),
+                                  child: Center(child: Text('$index')),
                                 ),
                               );
                             },

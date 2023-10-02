@@ -4,8 +4,19 @@ import 'package:richminime/constants/default_setting.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
 class InterestRate extends StatefulWidget {
-  const InterestRate({super.key});
-
+  final String? name;
+  final String? index;
+  final String? value;
+  final String? date;
+  final String? unit;
+  const InterestRate({
+    required this.name,
+    required this.index,
+    required this.value,
+    required this.date,
+    required this.unit,
+    Key? key,
+  }) : super(key: key);
   @override
   State<InterestRate> createState() => _InterestRateState();
 }
@@ -44,7 +55,7 @@ class _InterestRateState extends State<InterestRate> {
                   color: Colors.white,
                   child: Image.asset(
                     DefaultSetting.tv,
-                    scale: 0.7,
+                    scale: 1.5,
                   ),
                 ),
               ),
@@ -70,13 +81,39 @@ class _InterestRateState extends State<InterestRate> {
               ),
               width: double.maxFinite, //가로 꽉 차게 설정
               height: 150,
-              child: const Center(
-                child: Text(
-                  "오늘의 금리",
-                  style: TextStyle(
-                      fontFamily: "StarDust",
-                      fontSize: 20,
-                      color: Colors.black87),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '<${widget.name}>' ?? '',
+                      style: const TextStyle(
+                          fontFamily: "StarDust",
+                          fontSize: 25,
+                          color: Colors.black87),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      '${widget.index} : ${widget.value} (${widget.unit}) ' ??
+                          '',
+                      style: const TextStyle(
+                          fontFamily: "StarDust",
+                          fontSize: 20,
+                          color: Colors.black87),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      '${widget.date} 기준' ?? '',
+                      style: const TextStyle(
+                          fontFamily: "StarDust",
+                          fontSize: 20,
+                          color: Colors.black87),
+                    ),
+                  ],
                 ),
               ),
             ),
