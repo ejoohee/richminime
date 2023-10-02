@@ -47,8 +47,20 @@ class HttpInterceptor implements InterceptorContract {
           "Refresh-Token": "$refreshToken",
         },
       );
-      await const FlutterSecureStorage()
-          .write(key: "accessToken", value: response.body);
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseBody = json.decode(response.body);
+        String? newAccessToken =
+            responseBody['accessToken']; // Adjust this according to your API
+
+        // Update the stored access token
+        await storage.write(key: "accessToken", value: newAccessToken);
+
+        // Retry the original request with the new access token
+        data.headers?["Authorization"] = "Bearer $newAccessToken";
+        // Here you should re-execute the original request.
+        // This part depends on your HTTP client's implementation.
+      }
     }
     return data;
   }
@@ -69,11 +81,11 @@ class UserService {
         },
       ),
     );
-    print(response.statusCode);
-    print(response.body.toString());
+
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       final String? token = responseData['accessToken'];
+      final String? refreshToken = responseData['refreshToken'];
       final String? nickname = responseData['nickname'];
       final String balance =
           responseData['balance'].toString(); // value에 int가 들어갈 수 없음.
@@ -81,6 +93,7 @@ class UserService {
         await storage.write(key: "accessToken", value: token);
         await storage.write(key: "nickname", value: nickname);
         await storage.write(key: "balance", value: balance);
+        await storage.write(key: "refreshToken", value: refreshToken);
         return true;
       }
     }
@@ -103,7 +116,6 @@ class UserService {
       ),
     );
 
-    print(response.body.toString());
     if (response.statusCode == 201) {
       final uuid = jsonDecode(response.body)['uuid'];
       return "uuid $uuid";
@@ -120,8 +132,14 @@ class UserService {
       headers: {"Content-Type": "application/x-www-form-urlencoded"},
     );
 
+    Map<String, dynamic> responseBody = jsonDecode(response.body);
+
     if (response.statusCode == 200) {
-      return "true";
+      if (responseBody['success'] == true) {
+        return "true";
+      } else {
+        return "false";
+      }
     } else {
       return response.body.toString();
     }

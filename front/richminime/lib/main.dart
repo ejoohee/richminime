@@ -36,7 +36,7 @@ class App extends StatelessWidget {
       //     // 토큰이 있는 경우
       //     if (snapshot.connectionState == ConnectionState.done) {
       //       if (snapshot.hasData && snapshot.data != null) {
-      //         return const BankBook(); // HomeScreen으로 이동
+      //         return const HomeScreen(); // HomeScreen으로 이동
       //       }
       //       // 토큰이 없는 경우
       //       return const Login(); // Login 화면으로 이동

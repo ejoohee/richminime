@@ -22,17 +22,11 @@ class HttpInterceptor implements InterceptorContract {
 
   @override
   Future<ResponseData> interceptResponse({required ResponseData data}) async {
-    if (data.statusCode == 401) {
+    if (data.statusCode == 401 || data.statusCode == 500) {
       String? accessToken = await storage.read(key: "accessToken");
-      var cj = CookieJar();
-      List<Cookie> cookies = await cj.loadForRequest(Uri.parse(baseUrl));
-      String? refreshToken;
-      for (var cookie in cookies) {
-        if (cookie.name == 'refresh_token') {
-          refreshToken = cookie.value;
-          break;
-        }
-      }
+      String? refreshToken = await storage.read(key: "refreshToken");
+      print(accessToken);
+      print(refreshToken);
       final url = Uri.parse('$baseUrl/user/reissue-token');
       final response = await http.post(
         url,
@@ -41,22 +35,43 @@ class HttpInterceptor implements InterceptorContract {
           "Refresh-Token": "$refreshToken",
         },
       );
-      await const FlutterSecureStorage()
-          .write(key: "accessToken", value: response.body);
+      print(response.body);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseBody = json.decode(response.body);
+        String? newAccessToken = responseBody['accessToken'];
+        String? newRefreshToken = responseBody['refreshToken'];
+
+        await storage.write(key: "accessToken", value: newAccessToken);
+        await storage.write(key: "refreshToken", value: newRefreshToken);
+
+        final originalRequestData = data.request;
+        originalRequestData?.headers["Authorization"] =
+            "Bearer $newAccessToken";
+      }
     }
     return data;
   }
 }
 
 class ClothingService {
+  final client = InterceptedClient.build(interceptors: [HttpInterceptor()]);
+
   // 전체 옷 조회(카테고리 별) - 옷가게
   Future<List<ClothingModel>> getAllClothings(String? clothingType) async {
     List<ClothingModel> clothingInstances = [];
 
     final url = Uri.parse('$baseUrl/clothing?clothingType=$clothingType');
+    final token = await storage.read(key: "accessToken");
+    final headers = {
+      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
+    };
 
-    final response = await http.get(url);
-
+    final response = await client.get(
+      url,
+      headers: headers, // 헤더 추가
+    );
+    print(response.statusCode);
+    print(response.body);
     if (response.statusCode == 200) {
       // message, data형태로 담겨있는 response를 우선 responseBody로 받은 다음
       final Map<String, dynamic> responseBody = jsonDecode(response.body);
@@ -67,6 +82,8 @@ class ClothingService {
       }
 
       return clothingInstances;
+    } else if (response.statusCode == 401 || response.statusCode == 500) {
+      getAllClothings(clothingType);
     }
     throw Error();
   }
@@ -75,7 +92,7 @@ class ClothingService {
   Future buyClothing(int clothingId, int price) async {
     final url = Uri.parse('$baseUrl/clothing/my/$clothingId');
 
-    final response = await http.post(url, headers: {
+    final response = await client.post(url, headers: {
       //  "Authorization": "Bearer $accessToken",
     });
 
@@ -87,7 +104,7 @@ class ClothingService {
   Future sellClothing(int clothingId) async {
     final url = Uri.parse('$baseUrl/clothing/my/$clothingId');
 
-    final response = await http.delete(url, headers: {
+    final response = await client.delete(url, headers: {
       //  "Authorization": "Bearer $accessToken",
     });
 
@@ -103,7 +120,7 @@ class ClothingService {
 
     final url = Uri.parse('$baseUrl/clothing/my?clothingType=$clothingType');
 
-    final response = await http.get(url);
+    final response = await client.get(url);
 
     if (response.statusCode == 200) {
       // message, data형태로 담겨있는 response를 우선 responseBody로 받은 다음

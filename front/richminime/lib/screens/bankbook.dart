@@ -56,7 +56,7 @@ class _BankBookState extends State<BankBook> {
                         child: ListTile(
                           title: Text({transaction.summary}.toString()),
                           subtitle: Text(
-                              'Date: ${transaction.date}, Amount: ${transaction.amount}, Balance: ${transaction.balance}, Type: ${transaction.transactionType}'),
+                              '날짜: ${transaction.date}, 금액: ${transaction.amount}, 잔액: ${transaction.balance}, 타입: ${transaction.transactionType}'),
                         ),
                       );
                     },
