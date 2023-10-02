@@ -155,10 +155,12 @@ public class UserServiceImpl implements UserService {
         List<User> userList = userRepository.findAll();
 
         for (User user : userList) {
-            spendingService.addSpending(user, startDate.toString(), endDate.toString());
             try {
+                spendingService.addSpending(user, startDate.toString(), endDate.toString());
                 spendingService.updateDaySpending(user, month, day, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
             } catch (ParseException e) {
+                throw new RuntimeException(e);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -175,7 +177,7 @@ public class UserServiceImpl implements UserService {
      *    1일부터 오늘의 전날까지 spending을 저장해주고
      *    전 날의 금액 총합을 가져와서 balance 갱신
      */
-    public void addUserMonthSpending(User user){
+    public void addUserMonthSpending(User user) throws Exception {
         // codef로 전 달 소비내역 모두 불러오기
         // 어제 날짜 구하기 (시스템 시계, 시스템 타임존)
         LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -468,10 +470,6 @@ public class UserServiceImpl implements UserService {
         String checkResult = (String) valueOperations.get(addUserRequest.getEmail());
         if(!checkResult.equals("이메일 인증 완료"))
             throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
-//        // 카드 유효 여부 확인
-//        checkResult = (String) valueOperations.get(UUID.fromString(addUserRequest.getUuid()));
-//        if(!checkResult.equals("카드 유효성 검사 완료"))
-//            throw new IllegalArgumentException(UserExceptionMessage.CARD_CHECK_FAILED.getMessage());
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = getConnectedIdByUUID(UUID.fromString(addUserRequest.getUuid()));
         String organizationCode = addUserRequest.getOrganization();
@@ -495,7 +493,14 @@ public class UserServiceImpl implements UserService {
 
 
         // 회원가입 성공하면 월 소비내역 초기값 저장하는 메서드 호출
-        addUserMonthSpending(user);
+        try {
+            addUserMonthSpending(user);
+        } catch (Exception e) {
+            // 카드번호에 문제가 있는 상황
+            // 회원가입을 취소
+            userRepository.deleteById(user.getUserId());
+            throw new RuntimeException(e);
+        }
         // 일일 소비패턴 분석(초기값)
         // 어제랑 그저께를 비교
         initUserDaySpending(user);

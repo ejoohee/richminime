@@ -20,6 +20,7 @@ import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
 import com.richminime.global.common.codef.dto.request.FindSpendingListReqDto;
+import com.richminime.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,16 +55,12 @@ public class SpendingServiceImpl implements SpendingService {
      * @throws UnsupportedEncodingException
      */
     @Override
-    public void addSpending(User user, String startDate, String endDate) {
+    public void addSpending(User user, String startDate, String endDate) throws Exception {
         // codef api 호출
         // 리스트로 받아서 한꺼번에 저장
         List<Spending> spendingList;
-        try {
-            spendingList = codefWebClient.findSpendingList(FindSpendingListReqDto.create(user, startDate.toString(), endDate.toString()), user.getUserId());
-            spendingRepository.saveAll(spendingList);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        spendingList = codefWebClient.findSpendingList(FindSpendingListReqDto.create(user, startDate.toString(), endDate.toString()), user.getUserId());
+        spendingRepository.saveAll(spendingList);
     }
 
 

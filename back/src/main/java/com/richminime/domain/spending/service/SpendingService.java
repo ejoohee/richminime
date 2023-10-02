@@ -14,7 +14,7 @@ import java.util.Map;
 public interface SpendingService {
 
     // 매일 자정마다 그 전날 소비내역 불러옴
-    void addSpending(User user, String startDate, String endDate);
+    void addSpending(User user, String startDate, String endDate) throws Exception;
 
     FindMonthSpendingResDto findMonthSpending();
 
