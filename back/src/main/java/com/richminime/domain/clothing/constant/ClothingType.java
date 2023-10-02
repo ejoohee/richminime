@@ -3,6 +3,7 @@ package com.richminime.domain.clothing.constant;
 import com.richminime.global.exception.NotFoundException;
 
 public enum ClothingType {
+
     일상("일상"),
     직업("직업"),
     동물잠옷("동물잠옷"),

@@ -10,7 +10,6 @@ public class ItemReqDto {
     String itemName;
     String itemType;
     String itemImg;
-    String itemApplyImg;
     String itemInfo;
     Long price;
 

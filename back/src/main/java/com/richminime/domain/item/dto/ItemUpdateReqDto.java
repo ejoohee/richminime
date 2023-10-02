@@ -7,7 +7,6 @@ public class ItemUpdateReqDto {
     
     String itemName;
     String itemImg;
-    String itemApplyImg;
     String itemInfo;
     Long price;
     
