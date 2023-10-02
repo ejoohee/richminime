@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class UserController {
             description = "필요한 정보를 입력하여 회원 가입합니다."
     )
     @PostMapping
-    public ResponseEntity<Void> addUser(@RequestBody AddUserReqDto addUserRequest) {
+    public ResponseEntity<Void> addUser(@RequestBody @Valid AddUserReqDto addUserRequest) {
         userService.addUser(addUserRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
