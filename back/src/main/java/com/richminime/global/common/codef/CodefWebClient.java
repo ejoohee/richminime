@@ -1,6 +1,7 @@
 package com.richminime.global.common.codef;
 
 import com.richminime.domain.spending.domain.Spending;
+import com.richminime.domain.user.exception.UserExceptionMessage;
 import com.richminime.global.common.codef.dto.request.AccountDto;
 import com.richminime.global.common.codef.dto.request.CreateConnectedIdReqDto;
 import com.richminime.global.common.codef.dto.request.FindCardListReqDto;
@@ -8,6 +9,7 @@ import com.richminime.global.common.codef.dto.request.FindSpendingListReqDto;
 import com.richminime.global.common.codef.dto.response.CodefOAuthResDto;
 import com.richminime.global.common.codef.dto.response.FindCardListResDto;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
+import com.richminime.global.exception.NotFoundException;
 import com.richminime.global.util.rsa.RSAUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -199,6 +201,11 @@ public class CodefWebClient {
      */
     private List<Spending> parseSpendingListFromJson(String jsonResponse, Long userId) {
         JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
+        // 응답 코드가 에러코드인 경우 - code : CF-13101
+        if(jsonObject.getJsonObject("result").getString("code").equals(CodefErrorCode.CARD_NO_INVALID.getCode())){
+            // 카드번호가 유효하지 않음 -> 커넥티드 아이디로 등록한 계정에서 접근할 수 있는 카드가 아님
+            throw new NotFoundException(UserExceptionMessage.CARD_CHECK_FAILED.getMessage());
+        }
         JsonArray jsonArray = jsonObject.getJsonArray("data");
         List<Spending> spendingList = new ArrayList<>();
         return jsonArray.stream().map(json -> {
