@@ -53,6 +53,8 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
   TextEditingController cardPasswordController = TextEditingController();
   TextEditingController cardNickNameController = TextEditingController();
   TextEditingController verificationController = TextEditingController();
+  TextEditingController cardPasswordConfirmController = TextEditingController();
+
   final userService = UserService();
   String enteredCode = "";
 
@@ -209,7 +211,26 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
     String organization = widget.organization;
     String cardNumber = widget.cardNumber;
     String uuid = widget.uuid;
-
+    if (!isEmailVerified) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('이메일 인증이 필요합니다.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+      return; // 이메일이 인증되지 않았으면 더 이상 진행하지 않음
+    }
     if (_formKey.currentState!.validate()) {
       final response = await userService.signUp(
           email, password, nickname, organization, cardNumber, uuid);
@@ -330,7 +351,7 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                             obscureText: true,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '비밀번호를 입력하세요.';
+                                return '비밀번호를 입력해주세요.';
                               } else if (value.length < 8 ||
                                   value.length > 16) {
                                 return '비밀번호는 8~16자리 사이여야 합니다.';
@@ -348,10 +369,31 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                           ),
                           const SizedBox(height: 10),
                           TextFormField(
+                            controller: cardPasswordConfirmController,
+                            obscureText: true,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return '비밀번호를 입력해주세요.';
+                              } else if (value != cardPasswordController.text) {
+                                return '비밀번호가 일치하지 않습니다.';
+                              }
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 10),
+                              labelText: '비밀번호 확인',
+                              fillColor: Color(0xFFFFFDFD),
+                              filled: true,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
                             controller: cardNickNameController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '닉네임을 입력하세요.';
+                                return '닉네임을 입력해주세요.';
                               } else if (value.length < 2 || value.length > 8) {
                                 return '닉네임은 2~8자리 사이여야 합니다.';
                               }

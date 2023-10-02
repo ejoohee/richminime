@@ -18,10 +18,17 @@ class BankbookService {
     });
     // print(response.body);
     if (response.statusCode == 200) {
-      final List<dynamic> transactions = jsonDecode(response.body);
-      for (var transaction in transactions) {
-        bankbookInstance.add(BankbookModel.fromJson(transaction));
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      final List<dynamic>? transactions =
+          data["transactions"]; // 타입을 List<dynamic>?로 변경
+
+      if (transactions != null) {
+        // null 검사 추가
+        for (var transaction in transactions) {
+          bankbookInstance.add(BankbookModel.fromJson(transaction));
+        }
       }
+
       return bankbookInstance;
     } else {
       throw Exception('Failed to load transactions');
