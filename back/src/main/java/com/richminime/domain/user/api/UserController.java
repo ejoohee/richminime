@@ -120,12 +120,7 @@ public class UserController {
     )
     @PostMapping("/login")
     public ResponseEntity<LoginResDto> login(@RequestBody LoginReqDto loginRequest) {
-        Map<String, Object> map = userService.login(loginRequest);
-        LoginResDto loginResDto = (LoginResDto) map.get("accessToken");
-        String refreshToken = (String) map.get("refreshToken");
-        return ResponseEntity.ok()
-                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure; Path=/")
-                .body(loginResDto);
+        return ResponseEntity.ok().body(userService.login(loginRequest));
     }
 
     @Operation(
@@ -202,12 +197,8 @@ public class UserController {
     )
     @PostMapping("/reissue-token")
     public ResponseEntity<ReissueTokenResDto> reissueToken(@RequestHeader("Authorization") String accessToken, @RequestHeader("Refresh-Token") String refreshToken) {
-        Map<String, Object> map = userService.reissueToken(accessToken, refreshToken);
-        ReissueTokenResDto reissueResDto = (ReissueTokenResDto) map.get("accessToken");
-       refreshToken = (String) map.get("refreshToken");
         return ResponseEntity.ok()
-                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure; Path=/")
-                .body(reissueResDto);
+                .body(userService.reissueToken(accessToken, refreshToken));
     }
 
     @Operation(

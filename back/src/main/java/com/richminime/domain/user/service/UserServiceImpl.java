@@ -326,7 +326,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> reissueToken(String accessToken, String refreshToken) {
+    public ReissueTokenResDto reissueToken(String accessToken, String refreshToken) {
         // accessToken에서 email 가져오기
         accessToken = parsingAccessToken(accessToken);
         String email = jwtUtil.getUsername(accessToken);
@@ -348,12 +348,10 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
                 .build());
-        Map<String, Object> map = new HashMap<>();
-        map.put("accessToken", ReissueTokenResDto.builder()
+        return ReissueTokenResDto.builder()
                 .accessToken(accessToken)
-                .build());
-        map.put("refreshToken", refreshToken);
-        return map;
+                .refreshToken(refreshToken)
+                .build();
     }
 
     @Override
@@ -468,8 +466,8 @@ public class UserServiceImpl implements UserService {
         ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
 //        // 이메일 인증 여부 확인
         String checkResult = (String) valueOperations.get(addUserRequest.getEmail());
-        if(!checkResult.equals("이메일 인증 완료"))
-            throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
+//        if(!checkResult.equals("이메일 인증 완료"))
+//            throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = getConnectedIdByUUID(UUID.fromString(addUserRequest.getUuid()));
         String organizationCode = addUserRequest.getOrganization();
@@ -575,7 +573,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> login(LoginReqDto loginRequest) {
+    public LoginResDto login(LoginReqDto loginRequest) {
         // 이메일 인증 후 로그인 가능하게 변경해야 함
         // 해당 이메일 아이디의 회원이 존재하지 않으면 예외처리
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
@@ -593,14 +591,12 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
                 .build());
-        Map<String, Object> map = new HashMap<>();
-        map.put("accessToken", LoginResDto.builder()
+        return LoginResDto.builder()
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .nickname(user.getNickname())
                 .balance(user.getBalance())
-                .build());
-        map.put("refreshToken", refreshToken);
-        return map;
+                .build();
     }
 
     /**

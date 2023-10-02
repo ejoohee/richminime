@@ -6,19 +6,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class LoginResDto {
 
     private String accessToken;
 
+    private String refreshToken;
+
     private String nickname;
 
     private Long balance;
-
-    @Builder
-    public LoginResDto(String accessToken, String nickname, Long balance) {
-        this.accessToken = accessToken;
-        this.nickname = nickname;
-        this.balance = balance;
-    }
 
 }
