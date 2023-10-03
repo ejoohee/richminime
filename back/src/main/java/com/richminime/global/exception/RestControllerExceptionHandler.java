@@ -59,12 +59,18 @@ public class RestControllerExceptionHandler {
         );
     }
 
-    // 메시지반 반환하게 유녕 추가
+    // 메시지만 반환하게 유녕 추가
     @ExceptionHandler(ItemException.class)
-    public ResponseEntity<MessageDto> handleIllegalArgumentExceptionByItem(
-            ItemException exception) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                MessageDto.msg(exception.getMessage())
-        );
+    public ResponseEntity<MessageDto> handleItemException(ItemException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(MessageDto.msg(exception.getMessage()));
     }
+
+    // 메시지만 반환하게 유녕 추가
+    @ExceptionHandler(FeedbackException.class)
+    public ResponseEntity<MessageDto> handleFeedbackException(FeedbackException feedbackException) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(MessageDto.msg(feedbackException.getMessage()));
+    }
+
 }
