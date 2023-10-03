@@ -1,12 +1,9 @@
 package com.richminime.domain.item.exception;
 
-import com.richminime.global.exception.DuplicatedException;
+import com.richminime.global.exception.ItemException;
 
-public class ItemDuplicatedException extends DuplicatedException {
+public class ItemDuplicatedException extends ItemException {
 
-    public ItemDuplicatedException() {
-        super();
-    }
 
     public ItemDuplicatedException(String msg) {
         super(msg);
