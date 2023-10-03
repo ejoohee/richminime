@@ -133,14 +133,21 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public AddUserItemResDto addUserItem(String token, Long itemId) {
-        User loginUser = getLoginUser(token);
-        Long loginUserId = loginUser.getUserId();
+    public AddUserItemResDto addUserItem(Long itemId) {
+//        User loginUser = getLoginUser(token);
+//        Long loginUserId = loginUser.getUserId();
+        String email = securityUtils.getLoggedInUserEmail();
 
-        log.info("[테마 구매하기] 테마 구매 요청. userId : {}, itemId : {}", loginUserId, itemId);
+        log.info("[테마 구매하기] 테마 구매 요청. email : {}, itemId : {}", email, itemId);
+
+        User loginUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[테마 구매] 로그인 사용자 없음");
+                    return new UserNotFoundException(USER_NOT_FOUND.getMessage());
+                });
 
         // 보유하고 있는 테마인지 확인
-        Boolean alreadyOwned = userItemRepository.existsByUser_UserIdAndItem_ItemId(loginUserId, itemId);
+        Boolean alreadyOwned = userItemRepository.existsByUser_UserIdAndItem_ItemId(loginUser.getUserId(), itemId);
 
         // 보유중이면 구매 불가
         if(alreadyOwned) {
@@ -172,7 +179,7 @@ public class UserItemServiceImpl implements UserItemService {
         log.info("[테마 구매하기] 테마 구매 가능 !!");
 
         BankBook bankBook = BankBook.builder()
-                .userId(loginUserId)
+                .userId(loginUser.getUserId())
                 .amount(item.getPrice())
                 .date(LocalDate.now())
                 .balance(newBalance)
