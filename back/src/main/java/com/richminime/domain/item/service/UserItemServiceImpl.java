@@ -43,14 +43,14 @@ public class UserItemServiceImpl implements UserItemService {
     private final UserRepository userRepository;
     private final BankBookRepository bankBookRepository;
     private final SecurityUtils securityUtils;
-    private final JWTUtil jwtUtil;
+//    private final JWTUtil jwtUtil;
 
     /**
      * 로그인 유저를 반환하는 메서드
      * @return loginUser
      */
-    private User getLoginUser(String token) {
-        String email = jwtUtil.getUsername(token);
+    private User getLoginUser() {
+        String email = securityUtils.getLoggedInUserEmail();
 
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
@@ -67,11 +67,11 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public List<UserItemResDto> findAllUserItem(String token) {
-        String email = jwtUtil.getUsername(token);
+    public List<UserItemResDto> findAllUserItem() {
+        String email = securityUtils.getLoggedInUserEmail();
         log.info("[소유한 테마 전체 조회] 사용자가 소유한 테마 전체 조회, userEmail : {}", email);
 
-        User loginUser = getLoginUser(token);
+        User loginUser = getLoginUser();
 
         return userItemRepository.findAllByUser_UserId(loginUser.getUserId()).stream()
                 .map(userItem -> UserItemResDto.entityToDto(userItem))
@@ -85,14 +85,14 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public List<UserItemResDto> findAllUserItemByType(String token, ItemType itemType) {
+    public List<UserItemResDto> findAllUserItemByType(ItemType itemType) {
         if(itemType == null)
-            return findAllUserItem(token);
+            return findAllUserItem();
 
-        String email = jwtUtil.getUsername(token);
+        String email = securityUtils.getLoggedInUserEmail();
         log.info("[소유한 테마 카테고리별 조회] 사용자가 소유한 테마 조건별 조회. email : {}, 카테고리 : {}", email, itemType);
 
-        User loginUser = getLoginUser(token);
+        User loginUser = getLoginUser();
 
         return userItemRepository.findAllByUser_UserIdAndItem_ItemType(loginUser.getUserId(), itemType).stream()
                 .map(userItem -> UserItemResDto.entityToDto(userItem))
@@ -106,8 +106,8 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public UserItemResDto findUserItem(String token, Long userItemId) {
-        String email = jwtUtil.getUsername(token);
+    public UserItemResDto findUserItem(Long userItemId) {
+        String email = securityUtils.getLoggedInUserEmail();
         log.info("[소유한 테마 상세 조회] 사용자가 선택한 소유테마 상세 조회 요청. email : {}, userItemId : {}", email, userItemId);
 
         UserItem userItem = userItemRepository.findById(userItemId)
@@ -208,10 +208,10 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public DeleteUserItemResDto deleteUserItem(String token, Long userItemId) {
+    public DeleteUserItemResDto deleteUserItem(Long userItemId) {
         log.info("[테마 판매하기] 소유한 테마 판매 요청. userItemId : {}", userItemId);
 
-        User loginUser = getLoginUser(token);
+        User loginUser = getLoginUser();
 
         UserItem userItem = userItemRepository.findById(userItemId)
                 .orElseThrow(() -> {
