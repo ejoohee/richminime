@@ -1,11 +1,15 @@
 package com.richminime.global.common.codef;
 
 import com.richminime.domain.spending.domain.Spending;
+import com.richminime.domain.user.exception.UserExceptionMessage;
 import com.richminime.global.common.codef.dto.request.AccountDto;
 import com.richminime.global.common.codef.dto.request.CreateConnectedIdReqDto;
+import com.richminime.global.common.codef.dto.request.FindCardListReqDto;
 import com.richminime.global.common.codef.dto.request.FindSpendingListReqDto;
 import com.richminime.global.common.codef.dto.response.CodefOAuthResDto;
+import com.richminime.global.common.codef.dto.response.FindCardListResDto;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
+import com.richminime.global.exception.NotFoundException;
 import com.richminime.global.util.rsa.RSAUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +26,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonException;
 import javax.json.JsonObject;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -107,6 +112,62 @@ public class CodefWebClient {
         return connectedId;
     }
 
+    // 보유 카드 조회
+    public List<FindCardListResDto> findCardList(String organization, String connectedId) throws UnsupportedEncodingException {
+        FindCardListReqDto request = FindCardListReqDto.builder()
+                .organization(organization)
+                .connectedId(connectedId)
+                .cardNo("")
+                .cardPassword("")
+                .birthDate("")
+                .inquiryType("0")
+                .build();
+        // api 요청
+        Mono<String> response = devWebClient.post()
+                .uri("/kr/card/p/account/card-list")
+                .contentType(MediaType.APPLICATION_JSON)  // Content-Type 설정
+                .body(BodyInserters.fromValue(request))  // 폼 데이터 전송
+                .retrieve()
+                .bodyToMono(String.class);
+        // URL 디코드
+        String decodedResponse = URLDecoder.decode(response.block(), "UTF-8");
+        log.info("response------------------->{}", decodedResponse);
+        // json 파싱
+        return parseCardListFromJson(decodedResponse);
+    }
+
+    private List<FindCardListResDto> parseCardListFromJson(String jsonResponse) {
+        JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
+        try {
+            // 반환받은 데이터가 리스트 형태(복수 건)
+            JsonArray jsonArray = jsonObject.getJsonArray("data");
+            return jsonArray.stream().map(json -> {
+                        JsonObject jsonObject1 = Json.createObjectBuilder()
+                                .add("index", json)
+                                .build();
+                        jsonObject1 = jsonObject1.getJsonObject("index");
+                        return FindCardListResDto.builder()
+                                .resCardNo(jsonObject1.getString("resCardNo"))
+                                .resCardName(jsonObject1.getString("resCardName"))
+                                .resCardType(jsonObject1.getString("resCardType"))
+                                .build();
+                    })
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            // 반환받은 데이터가 리스트 형태가 아니라 객체 형태(단일 건)
+            JsonObject jsonObject1 = jsonObject.getJsonObject("data");
+            List<FindCardListResDto> findCardListResDtoList = new ArrayList<>();
+            findCardListResDtoList.add(
+                FindCardListResDto.builder()
+                    .resCardNo(jsonObject1.getString("resCardNo"))
+                    .resCardName(jsonObject1.getString("resCardName"))
+                    .resCardType(jsonObject1.getString("resCardType"))
+                    .build()
+            );
+            return findCardListResDtoList;
+        }
+    }
+
     public String parseConnectedIdFromJson(String jsonResponse) {
         JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
         return jsonObject.getJsonObject("data").getString("connectedId");
@@ -138,8 +199,13 @@ public class CodefWebClient {
      * @param userId
      * @return
      */
-    public List<Spending> parseSpendingListFromJson(String jsonResponse, Long userId) {
+    private List<Spending> parseSpendingListFromJson(String jsonResponse, Long userId) {
         JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
+        // 응답 코드가 에러코드인 경우 - code : CF-13101
+        if(jsonObject.getJsonObject("result").getString("code").equals(CodefErrorCode.CARD_NO_INVALID.getCode())){
+            // 카드번호가 유효하지 않음 -> 커넥티드 아이디로 등록한 계정에서 접근할 수 있는 카드가 아님
+            throw new NotFoundException(UserExceptionMessage.CARD_CHECK_FAILED.getMessage());
+        }
         JsonArray jsonArray = jsonObject.getJsonArray("data");
         List<Spending> spendingList = new ArrayList<>();
         return jsonArray.stream().map(json -> {

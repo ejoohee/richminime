@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class CheckEmailResDto {
+public class CheckResDto {
 
     private Boolean success;
 
     @Builder
-    public CheckEmailResDto(Boolean success) {
+    public CheckResDto(Boolean success) {
         this.success = success;
     }
 

@@ -16,6 +16,7 @@ import com.richminime.domain.user.repository.LogoutAccessTokenRedisRepository;
 import com.richminime.domain.user.repository.RefreshTokenRedisRepository;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
+import com.richminime.global.common.codef.dto.response.FindCardListResDto;
 import com.richminime.global.common.jwt.JwtExpirationEnums;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.exception.NotFoundException;
@@ -154,10 +155,12 @@ public class UserServiceImpl implements UserService {
         List<User> userList = userRepository.findAll();
 
         for (User user : userList) {
-            spendingService.addSpending(user, startDate.toString(), endDate.toString());
             try {
+                spendingService.addSpending(user, startDate.toString(), endDate.toString());
                 spendingService.updateDaySpending(user, month, day, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
             } catch (ParseException e) {
+                throw new RuntimeException(e);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -174,7 +177,7 @@ public class UserServiceImpl implements UserService {
      *    1일부터 오늘의 전날까지 spending을 저장해주고
      *    전 날의 금액 총합을 가져와서 balance 갱신
      */
-    public void addUserMonthSpending(User user){
+    public void addUserMonthSpending(User user) throws Exception {
         // codef로 전 달 소비내역 모두 불러오기
         // 어제 날짜 구하기 (시스템 시계, 시스템 타임존)
         LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -218,9 +221,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public CheckEmailResDto checkEmail(String email) {
+    public CheckResDto checkEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
-        return CheckEmailResDto.builder()
+        return CheckResDto.builder()
                 // 존재하면 false, 존재하지 않으면 true 반환
                 .success(!user.isPresent())
                 .build();
@@ -259,8 +262,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void logout(String email, String accessToken) {
+    public void logout(String accessToken) {
         // 로그아웃 여부 redis에 넣어서 accessToken가 유효한지 확인
+        String email = getLoginId();
         long remainMilliSeconds = jwtUtil.getRemainMilliSeconds((accessToken));
         refreshTokenRepository.deleteById(email);
         logoutAccessTokenRepository.save(LogoutAccessToken.builder()
@@ -296,7 +300,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CheckEmailResDto checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto) {
+    public CheckResDto checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto) {
         ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
         String originCode = (String) valueOperations.get(checkEmailCodeReqDto.getEmail());
         if(originCode == null)
@@ -308,7 +312,7 @@ public class UserServiceImpl implements UserService {
             valueOperations.getOperations().delete(checkEmailCodeReqDto.getEmail());
             valueOperations.set(checkEmailCodeReqDto.getEmail(), "이메일 인증 완료", 60 * 5L, TimeUnit.SECONDS);
         }
-        return CheckEmailResDto.builder()
+        return CheckResDto.builder()
                 // 존재하면 false, 존재하지 않으면 true 반환
                 .success(result)
                 .build();
@@ -323,10 +327,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> reissueToken(String accessToken, String refreshToken) {
+    public ReissueTokenResDto reissueToken(String accessToken, String refreshToken) {
         // accessToken에서 email 가져오기
         accessToken = parsingAccessToken(accessToken);
-        String email = jwtUtil.getUsername(accessToken);
+        String email = null;
+        try {
+            email = jwtUtil.getUsername(refreshToken);
+        }catch (Exception e) {
+            // 리프레시 토큰 만료
+            throw new TokenException("리프레시 토큰이 만료되었습니다. 로그인을 다시 해주세요.");
+        }
         // refresh 토큰 redis 레포지토리에서 가져와서 일치 여부 검사
         String originRefreshToken = refreshTokenRepository.findById(email).orElseThrow(() -> new NotFoundException("해당 이메일에 대한 토큰이 존재하지 않습니다.")).getRefreshToken();
         if(!originRefreshToken.equals(refreshToken)) {
@@ -345,12 +355,10 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
                 .build());
-        Map<String, Object> map = new HashMap<>();
-        map.put("accessToken", ReissueTokenResDto.builder()
+        return ReissueTokenResDto.builder()
                 .accessToken(accessToken)
-                .build());
-        map.put("refreshToken", refreshToken);
-        return map;
+                .refreshToken(refreshToken)
+                .build();
     }
 
     @Override
@@ -422,6 +430,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public CheckResDto checkCardNumber(CheckCardNumberReqDto checkCardNumberReqDto) {
+        // uuid에 해당하는 커넥티드 아이디 가져오기
+        String connectedId = getConnectedIdByUUID(UUID.fromString(checkCardNumberReqDto.getUuid()));
+        // codef에서 보유카드 불러오고 그 카드 중 입력한 카드번호와 일치하는 게 있는지 검사
+        String organization = checkCardNumberReqDto.getOrganization();
+        List<FindCardListResDto> findCardListResDtoList;
+        try {
+            findCardListResDtoList = codefWebClient.findCardList(organization, connectedId);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        boolean result = false;
+        for (FindCardListResDto findCardListResDto : findCardListResDtoList) {
+            if(findCardListResDto.getResCardNo().equals(checkCardNumberReqDto.getCardNumber())){
+                // 보유 카드 목록에 해당하는 게 있음
+                result = true;
+                break;
+            }
+        }
+        return CheckResDto.builder()
+                .success(result)
+                .build();
+    }
+
+    private String getConnectedIdByUUID(UUID uuid){
+        // uuid에 해당하는 커넥티드 아이디 가져오기
+        String connectedId = connectedIdMap.get(uuid);
+        if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
+        return connectedId;
+    }
+
+
+    @Override
     @Transactional
     public void addUser(AddUserReqDto addUserRequest) {
         // 회원가입 정보 유효성 확인
@@ -430,13 +471,12 @@ public class UserServiceImpl implements UserService {
             addUserRequest.getNickname() == null || addUserRequest.getNickname().equals(""))
             throw new IllegalArgumentException(UserExceptionMessage.SIGN_UP_NOT_VALID.getMessage());
         ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
+//        // 이메일 인증 여부 확인
         String checkResult = (String) valueOperations.get(addUserRequest.getEmail());
         if(!checkResult.equals("이메일 인증 완료"))
             throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
-
         // uuid에 해당하는 커넥티드 아이디 가져오기
-        String connectedId = connectedIdMap.remove(UUID.fromString(addUserRequest.getUuid()));
-        if(connectedId == null) throw new UserNotFoundException(UserExceptionMessage.CONNECTED_ID_NOT_CREATED.getMessage());
+        String connectedId = getConnectedIdByUUID(UUID.fromString(addUserRequest.getUuid()));
         String organizationCode = addUserRequest.getOrganization();
         // 패스워드 암호화
         addUserRequest.setPassword(passwordEncoder.encode(addUserRequest.getPassword()));
@@ -458,10 +498,20 @@ public class UserServiceImpl implements UserService {
 
 
         // 회원가입 성공하면 월 소비내역 초기값 저장하는 메서드 호출
-        addUserMonthSpending(user);
+        try {
+            addUserMonthSpending(user);
+        } catch (Exception e) {
+            // 카드번호에 문제가 있는 상황
+            // 회원가입을 취소
+            userRepository.deleteById(user.getUserId());
+            throw new RuntimeException(e);
+        }
         // 일일 소비패턴 분석(초기값)
         // 어제랑 그저께를 비교
         initUserDaySpending(user);
+        // 회원가입 무사 완료 시
+        // 커넥티드 아이디 정보 삭제
+        connectedIdMap.remove(UUID.fromString(addUserRequest.getUuid()));
     }
 
     void initUserDaySpending(User user){
@@ -530,7 +580,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> login(LoginReqDto loginRequest) {
+    public LoginResDto login(LoginReqDto loginRequest) {
         // 이메일 인증 후 로그인 가능하게 변경해야 함
         // 해당 이메일 아이디의 회원이 존재하지 않으면 예외처리
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
@@ -548,14 +598,12 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .expiration(JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
                 .build());
-        Map<String, Object> map = new HashMap<>();
-        map.put("accessToken", LoginResDto.builder()
+        return LoginResDto.builder()
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .nickname(user.getNickname())
                 .balance(user.getBalance())
-                .build());
-        map.put("refreshToken", refreshToken);
-        return map;
+                .build();
     }
 
     /**
