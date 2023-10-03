@@ -184,7 +184,7 @@ public class UserItemServiceImpl implements UserItemService {
                 .date(LocalDate.now())
                 .balance(newBalance)
                 .transactionType(TransactionType.getTransactionType("구매"))
-                .summary(item.getItemInfo())
+                .summary(item.getItemName() + " 구매")
                 .build();
 
         bankBookRepository.save(bankBook);
@@ -234,7 +234,7 @@ public class UserItemServiceImpl implements UserItemService {
                 .date(LocalDate.now())
                 .balance(newBalance)
                 .transactionType(TransactionType.getTransactionType("판매"))
-                .summary(userItem.getItem().getItemInfo())
+                .summary(userItem.getItem().getItemName() + " 판매")
                 .build();
 
         bankBookRepository.save(bankBook);
