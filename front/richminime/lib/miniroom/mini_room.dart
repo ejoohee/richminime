@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/constants/default_setting.dart';
 import 'package:richminime/screens/closet.dart';
 import 'package:richminime/screens/exchange_rate.dart';
 import 'package:richminime/screens/interest_rate.dart';
+import 'package:richminime/services/miniroom_service.dart';
 import 'package:richminime/services/outer_service.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:flutter/material.dart';
+
+const storage = FlutterSecureStorage();
 
 class MiniRoom extends StatefulWidget {
   const MiniRoom({super.key});
@@ -16,9 +20,11 @@ class MiniRoom extends StatefulWidget {
 }
 
 class _MiniRoomState extends State<MiniRoom> {
+  final MiniroomService miniroomService = MiniroomService();
   double posX = 150;
   double posY = 400;
 
+  // 미니미 더블탭 >> 어제 소비에 대한 피드백
   bool isMinimeTapped = false;
   showFeedback() {
     setState(() {
@@ -26,29 +32,22 @@ class _MiniRoomState extends State<MiniRoom> {
     });
   }
 
-  //잔액 보여주기
-  bool isVisible = false;
-
-//환율 받기
-  String? erName, erIndex, erValue, erDate, erUnit;
+  // 지구본 더블탭 >> 환율
+  late List<financeInfoModel> fourER;
   getER() async {
-    final Future<financeInfoModel?> er = OuterService.getExchangeRate();
+    final List<financeInfoModel> er = await OuterService.getExchangeRate();
 
     try {
-      financeInfoModel? financeData = await er;
+      List<financeInfoModel> financeData = er;
       // 데이터를 사용할 수 있음
-      erName = financeData?.name;
-      erIndex = financeData?.index;
-      erValue = financeData?.value;
-      erDate = financeData?.date;
-      erUnit = financeData?.unit;
+      fourER = financeData;
     } catch (e) {
       // 오류 처리
       print('Error: $e');
     }
   }
 
-// 기준금리 받기
+  // TV더블탭 >> 기준금리 받기
   String? irName, irIndex, irValue, irDate, irUnit;
 
   getIR() async {
@@ -68,6 +67,34 @@ class _MiniRoomState extends State<MiniRoom> {
       // 오류 처리
       print('Error: $e');
     }
+  }
+
+  // 미니미 캐릭터 받아오기
+  String minime = DefaultSetting.minime;
+  bool isLoaded = false;
+  //잔액 보여주기
+  var balance;
+
+  loadMinime() async {
+    balance = await storage.read(key: "balance");
+    print('토큰 $balance');
+    String tmpMinime = await miniroomService.getCharacter();
+    print('캐릭터 옷? : $tmpMinime');
+    if (tmpMinime == '') {
+      return;
+    } else {
+      minime = tmpMinime;
+      isLoaded = true;
+    }
+    setState(() {});
+  }
+
+  bool isVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadMinime();
   }
 
   @override
@@ -158,13 +185,7 @@ class _MiniRoomState extends State<MiniRoom> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ExchangeRate(
-                    name: erName,
-                    index: erIndex,
-                    value: erValue,
-                    date: erDate,
-                    unit: erUnit,
-                  ),
+                  builder: (context) => ExchangeRate(fourER: fourER),
                 ),
               );
             },
@@ -193,11 +214,17 @@ class _MiniRoomState extends State<MiniRoom> {
               sigma: 10,
               offset: const Offset(0, 0),
               color: Colors.white,
-              child: Image.asset(
-                DefaultSetting.minime,
-                width: 100,
-                height: 100,
-              ),
+              child: isLoaded
+                  ? Image.network(
+                      minime,
+                      width: 100,
+                      height: 100,
+                    )
+                  : Image.asset(
+                      minime,
+                      width: 100,
+                      height: 100,
+                    ),
             ),
           ),
         ),
@@ -223,6 +250,22 @@ class _MiniRoomState extends State<MiniRoom> {
                           scale: 5,
                         ),
                       ),
+                      Text(
+                        balance,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          shadows: <Shadow>[
+                            Shadow(
+                              offset: Offset(0, 0), // 그림자의 위치 (X, Y)
+                              blurRadius: 10, // 그림자의 흐림 정도
+                              color: Colors.white, // 그림자의 색상
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      )
                     ],
                   )
                 : SimpleShadow(

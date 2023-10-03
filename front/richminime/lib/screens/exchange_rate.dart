@@ -1,21 +1,16 @@
 // 금리뉴스 tv
 // 환율 지구본
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:richminime/constants/default_setting.dart';
+import 'package:richminime/services/outer_service.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
 class ExchangeRate extends StatefulWidget {
-  final String? name;
-  final String? index;
-  final String? value;
-  final String? date;
-  final String? unit;
+  final List<financeInfoModel> fourER;
+
   const ExchangeRate({
-    required this.name,
-    required this.index,
-    required this.value,
-    required this.date,
-    required this.unit,
+    required this.fourER,
     Key? key,
   }) : super(key: key);
   @override
@@ -23,6 +18,13 @@ class ExchangeRate extends StatefulWidget {
 }
 
 class _ExchangeRateState extends State<ExchangeRate> {
+  int currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -82,41 +84,109 @@ class _ExchangeRateState extends State<ExchangeRate> {
                 // color: Theme.of(context).cardColor,
               ),
               width: double.maxFinite, //가로 꽉 차게 설정
-              height: 150,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '<${widget.name}>' ?? '',
-                      style: const TextStyle(
-                          fontFamily: "StarDust",
-                          fontSize: 25,
-                          color: Colors.black87),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      '${widget.index} : ${widget.value} (${widget.unit}) ' ??
-                          '',
-                      style: const TextStyle(
-                          fontFamily: "StarDust",
-                          fontSize: 20,
-                          color: Colors.black87),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      widget.date ?? '',
-                      style: const TextStyle(
-                          fontFamily: "StarDust",
-                          fontSize: 20,
-                          color: Colors.black87),
-                    ),
-                  ],
-                ),
+              height: 250,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // 이전 버튼 추가
+                      Flexible(
+                        flex: 1,
+                        fit: FlexFit.tight,
+                        child: Visibility(
+                          visible: currentIndex > 0,
+                          child: IconButton(
+                            padding: const EdgeInsets.all(0),
+                            onPressed: () {
+                              setState(() {
+                                currentIndex--;
+                              });
+                            },
+                            icon: const Icon(
+                              Icons.arrow_back_ios_rounded,
+                              color: Colors.grey,
+                              size: 50,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 4,
+                        fit: FlexFit.tight,
+                        child: Center(
+                          child: Text(
+                            '<${widget.fourER[currentIndex].name}>',
+                            style: const TextStyle(
+                                fontFamily: "StarDust",
+                                fontSize: 25,
+                                color: Colors.black87),
+                          ),
+                        ),
+                      ),
+                      // 다음 버튼 추가
+                      Flexible(
+                        flex: 1,
+                        fit: FlexFit.tight,
+                        child: Visibility(
+                          visible: currentIndex < widget.fourER.length - 1,
+                          child: IconButton(
+                            padding: const EdgeInsets.all(0),
+                            onPressed: () {
+                              setState(() {
+                                currentIndex++;
+                              });
+                            },
+                            icon: const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              color: Colors.grey,
+                              size: 50,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  AnimatedTextKit(
+                    key: ValueKey<int>(currentIndex), // currentIndex를 key로 사용
+
+                    animatedTexts: [
+                      TypewriterAnimatedText(
+                        '${widget.fourER[currentIndex].index} : \n${widget.fourER[currentIndex].value} (${widget.fourER[currentIndex].unit}) ',
+                        textStyle: const TextStyle(
+                            fontFamily: "StarDust",
+                            fontSize: 20,
+                            color: Colors.black87),
+                        textAlign: TextAlign.center,
+                        speed: const Duration(milliseconds: 100),
+                      ),
+                    ],
+                    totalRepeatCount: 1,
+                    pause: const Duration(milliseconds: 1000),
+                    displayFullTextOnTap: true,
+                    stopPauseOnTap: true,
+                  ),
+                  // Text(
+                  //   '${widget.fourER[currentIndex].index} : \n${widget.fourER[currentIndex].value} (${widget.fourER[currentIndex].unit}) ',
+                  //   style: const TextStyle(
+                  //       fontFamily: "StarDust",
+                  //       fontSize: 20,
+                  //       color: Colors.black87),
+                  //   textAlign: TextAlign.center,
+                  // ),
+                  // const SizedBox(
+                  //   height: 10,
+                  // ),
+                  Text(
+                    widget.fourER[currentIndex].date!,
+                    style: const TextStyle(
+                        fontFamily: "StarDust",
+                        fontSize: 20,
+                        color: Colors.black87),
+                  ),
+                ],
               ),
             ),
             const SizedBox(

@@ -1,8 +1,11 @@
 import 'dart:ffi';
 import 'dart:math';
-
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:richminime/models/clothing_model.dart';
+import 'package:richminime/models/user_clothing_model.dart';
+import 'package:richminime/services/clothig_service.dart';
 
 class Closet extends StatefulWidget {
   const Closet({super.key});
@@ -12,14 +15,42 @@ class Closet extends StatefulWidget {
 }
 
 class _ClosetState extends State<Closet> {
-  final List<String> categories = ["전체", "상의", "하의", "드레스", "악세서리", "신발"];
+  final ClothingService clothingService = ClothingService();
+
+  final List<String> categories = ["전체", "일상", "직업", "동물잠옷", "코스프레"];
   int selectedCategoryIndex = 0; // 선택된 카테고리 인덱스
 
-  // 옷 클릭하면 바로 입혀볼 옷. 디폴트는 맨몸
-  String appliedImg = 'assets/images/minime/default.png';
+  List<UserClothingModel> myClothingList = [];
+  List<UserClothingModel> sortedClothingList = [];
+
+// 옷들 모두 가져오기
+  @override
+  void initState() {
+    super.initState();
+    loadClothingData(); // 데이터 로딩
+  }
+
+  Future<void> loadClothingData() async {
+    String selectedCategory = '';
+    try {
+      final loadedClothingList =
+          await clothingService.getMyAllClothings(selectedCategory);
+      setState(() {
+        myClothingList = loadedClothingList;
+        sortedClothingList = myClothingList;
+      });
+    } catch (e) {
+      // 에러 처리
+      print("Error loading clothing data: $e");
+    }
+  }
+
+  // 옷 드래그앤드롭하면 바로 입혀볼 옷. 디폴트는 맨몸(b4)
+  String b4appliedImg = 'assets/images/minime/default.png';
+  String appliedImg = '';
   bool isClothingApplied = false;
   int selectedClothingIndex = 3000000;
-  String clothName = '아야아야';
+  String clothName = '';
   String clothInfo = '';
 
   // 입는다
@@ -38,8 +69,6 @@ class _ClosetState extends State<Closet> {
 
   @override
   Widget build(BuildContext context) {
-    // applied Img 갈아껴주기 위해 디폴트 값 설정.
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
@@ -99,47 +128,32 @@ class _ClosetState extends State<Closet> {
                       tileMode: TileMode.mirror,
                     ).createShader(bounds);
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: GridView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                      ),
-                      itemCount: 30,
-                      itemBuilder: (context, index) {
-                        return LongPressDraggable<int>(
-                          data: index,
-                          feedback: Text('옷 넣을곳 $index'),
-                          childWhenDragging: Container(
-                            margin: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade400,
-                              borderRadius: BorderRadius.circular(5),
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 3,
-                                  offset: const Offset(3, 3),
-                                  color: Colors.black.withOpacity(0.3),
-                                )
-                              ],
+                  child: sortedClothingList.isEmpty
+                      ? const Center(
+                          child: Text('얼른 사줘잉'),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: GridView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
                             ),
-                            // child: Center(
-                            //   child: Text('옷 넣을곳 $index'),
-                            // ),
-                          ),
-                          child: GestureDetector(
-                            onTap: () => wannaSell(index),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Container(
+                            itemCount: sortedClothingList.length,
+                            itemBuilder: (context, index) {
+                              return LongPressDraggable<int>(
+                                data: index,
+                                // 여기 feedback에 이미지.
+                                feedback: Image.network(
+                                  sortedClothingList[index].clothingImg!,
+                                  width: 200,
+                                ),
+                                // 빈 네모
+                                childWhenDragging: Container(
                                   margin: const EdgeInsets.all(5),
                                   decoration: BoxDecoration(
-                                    color: index == sellingIndex
-                                        ? Colors.black.withOpacity(0.2)
-                                        : Theme.of(context).cardColor,
+                                    color: Colors.grey.shade400,
                                     borderRadius: BorderRadius.circular(5),
                                     boxShadow: [
                                       BoxShadow(
@@ -149,49 +163,83 @@ class _ClosetState extends State<Closet> {
                                       )
                                     ],
                                   ),
-                                  child: Center(
-                                    child: Text('옷 넣을곳 $index'),
+                                ),
+                                // 진짜 차일드... 데이터 들어갈 곳
+                                child: GestureDetector(
+                                  onTap: () => wannaSell(index),
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          color: index == sellingIndex
+                                              ? Colors.black.withOpacity(0.2)
+                                              : Theme.of(context).cardColor,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              blurRadius: 3,
+                                              offset: const Offset(3, 3),
+                                              color:
+                                                  Colors.black.withOpacity(0.3),
+                                            )
+                                          ],
+                                        ),
+                                        child: Center(
+                                          child: Image.network(
+                                              sortedClothingList[index]
+                                                  .clothingImg!),
+                                        ),
+                                      ),
+                                      if (index == sellingIndex)
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 5),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          3), // borderRadius를 3으로 설정합니다.
+                                                ),
+                                                elevation: 5,
+                                              ),
+                                              onPressed: () =>
+                                                  sellCloting(index),
+                                              child: const Text(
+                                                '판매하기',
+                                                style: TextStyle(
+                                                    color: Colors.black54),
+                                              ),
+                                            ),
+                                            IconButton(
+                                              iconSize: 20,
+                                              onPressed: () {
+                                                setState(() {
+                                                  sellingIndex = 3000000;
+                                                });
+                                              },
+                                              icon: const Icon(
+                                                  Icons.close_rounded),
+                                            ),
+                                          ],
+                                        )
+                                    ],
                                   ),
                                 ),
-                                if (index == sellingIndex)
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      ElevatedButton(
-                                        style: const ButtonStyle(
-                                          shape: MaterialStatePropertyAll(
-                                              RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(5)))),
-                                        ),
-                                        onPressed: () => sellCloting(index),
-                                        child: const Text(
-                                          '판매하기',
-                                          style:
-                                              TextStyle(color: Colors.black54),
-                                        ),
-                                      ),
-                                      IconButton(
-                                        iconSize: 20,
-                                        onPressed: () {
-                                          setState(() {
-                                            sellingIndex = 3000000;
-                                          });
-                                        },
-                                        icon: const Icon(Icons.close_rounded),
-                                      ),
-                                    ],
-                                  )
-                              ],
-                            ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  ),
+                        ),
                 ),
               ),
             ],
@@ -208,6 +256,7 @@ class _ClosetState extends State<Closet> {
       },
       onAccept: (int data) {
         setState(() {});
+        //입고있는 걸 또 하면이라는 뜻
         if (data == selectedClothingIndex) {
           isClothingApplied = false;
           // 우리가 만들 수 없는 옷 숫자로 설정
@@ -217,9 +266,9 @@ class _ClosetState extends State<Closet> {
           selectedClothingIndex = data;
           isClothingApplied = true;
           // 옷 갈아입히기
-          clothName = '<$data번 옷>';
-          clothInfo =
-              '$data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data $data ';
+          clothName = '<${sortedClothingList[data].clothingName}>';
+          clothInfo = '${sortedClothingList[data].clothingInfo}';
+          appliedImg = '${sortedClothingList[data].clothingApplyImg}';
         }
       },
     );
@@ -230,105 +279,118 @@ class _ClosetState extends State<Closet> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Stack(
+          alignment: Alignment.topLeft,
           children: [
-            Image.asset(appliedImg),
             isClothingApplied
-                ? IconButton(
-                    onPressed: () {
-                      setState(() {
-                        isClothingApplied = false;
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.close_rounded,
-                    ),
+                ? Image.network(
+                    appliedImg,
+                    width: 170,
+                    height: 250,
+                    fit: BoxFit.fitWidth,
                   )
-                : Container(),
+                : Image.asset(
+                    b4appliedImg,
+                    width: 170,
+                  ),
+            if (isClothingApplied)
+              IconButton(
+                // iconSize: 40,
+                onPressed: () {
+                  setState(() {
+                    isClothingApplied = false;
+                  });
+                },
+                icon: const Icon(
+                  Icons.close_rounded,
+                  fill: 0.2,
+                ),
+              )
           ],
         ),
-        isClothingApplied
-            ? Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        clothName,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Expanded(
-                        child: ShaderMask(
-                          shaderCallback: (Rect bounds) {
-                            return LinearGradient(
-                              //아래 속성들을 조절하여 원하는 값을 얻을 수 있다.
-                              begin: Alignment.center,
-                              end: Alignment.topCenter,
-                              colors: [
-                                Colors.white,
-                                Colors.white.withOpacity(0.02)
-                              ],
-                              stops: const [0.8, 1],
-                              tileMode: TileMode.mirror,
-                            ).createShader(bounds);
-                          },
-                          child: SingleChildScrollView(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 7),
-                              child: Text(
-                                clothInfo,
-                                overflow: TextOverflow
-                                    .clip, // Overflow 발생 시 글 내용을 자르지 않고 표시
-                                style: const TextStyle(
-                                  fontSize: 17,
-                                ),
-                              ),
+        Visibility(
+          visible: isClothingApplied,
+          child: Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    // !!! 옷 이름!!!!!
+                    clothName,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Expanded(
+                    child: ShaderMask(
+                      shaderCallback: (Rect bounds) {
+                        return LinearGradient(
+                          //아래 속성들을 조절하여 원하는 값을 얻을 수 있다.
+                          begin: Alignment.center,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Colors.white,
+                            Colors.white.withOpacity(0.02)
+                          ],
+                          stops: const [0.8, 1],
+                          tileMode: TileMode.mirror,
+                        ).createShader(bounds);
+                      },
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 7),
+                          child: Text(
+                            // !!! 옷 설명!!!!!
+                            clothInfo,
+                            overflow: TextOverflow
+                                .clip, // Overflow 발생 시 글 내용을 자르지 않고 표시
+                            style: const TextStyle(
+                              fontSize: 13,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Material(
-                        elevation: 3,
-                        color: Theme.of(context).cardColor,
-                        shadowColor: Colors.black54,
-                        borderRadius: BorderRadius.circular(5),
-                        child: InkWell(
-                            splashColor: Colors.white54,
-                            onTap: putOn,
-                            borderRadius: BorderRadius.circular(5),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 12),
-                              child: Text(
-                                "너로 정했다",
-                                style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
-                              ),
-                            )),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              )
-            : const SizedBox(
-                width: 1,
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Material(
+                    elevation: 3,
+                    color: Theme.of(context).cardColor,
+                    shadowColor: Colors.black54,
+                    borderRadius: BorderRadius.circular(5),
+                    child: InkWell(
+                        splashColor: Colors.white54,
+                        onTap: putOn,
+                        borderRadius: BorderRadius.circular(5),
+                        child: const Padding(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                          child: Text(
+                            "너로 정했다!",
+                            style: TextStyle(
+                                fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
+                        )),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                ],
               ),
+            ),
+          ),
+        )
       ],
     );
   }
@@ -362,6 +424,17 @@ class _ClosetState extends State<Closet> {
             onPress: () {
               setState(() {
                 selectedCategoryIndex = index; // 카테고리 선택 시 인덱스 업데이트
+                // 인덱스는 초기화 혀
+                selectedClothingIndex = 3000000;
+                if (selectedCategoryIndex == 0) {
+                  sortedClothingList = myClothingList;
+                } else {
+                  sortedClothingList = myClothingList
+                      .where((clothing) =>
+                          clothing.clothingType ==
+                          categories[selectedCategoryIndex])
+                      .toList(); // 카테고리 선택 시 인덱스 업데이트
+                }
               });
             },
           ),

@@ -6,6 +6,7 @@ import 'package:richminime/models/clothing_model.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:richminime/models/user_clothing_model.dart';
 
 const storage = FlutterSecureStorage();
 const String baseUrl = Api.BASE_URL;
@@ -76,63 +77,102 @@ class ClothingService {
       // message, data형태로 담겨있는 response를 우선 responseBody로 받은 다음
       final Map<String, dynamic> responseBody = jsonDecode(response.body);
       // 거기서 data만 뽑아서 clothing에 담아줌.
-      final List<dynamic> clothings = jsonDecode(responseBody['data']);
+      final List<dynamic> clothings = responseBody['data'];
+      print(clothings);
       for (var clothing in clothings) {
         clothingInstances.add(ClothingModel.fromJson(clothing));
       }
 
       return clothingInstances;
     } else if (response.statusCode == 401 || response.statusCode == 500) {
-      getAllClothings(clothingType);
+      return getAllClothings(clothingType);
     }
     throw Error();
   }
 
   // 옷 구매
-  Future buyClothing(int clothingId, int price) async {
-    final url = Uri.parse('$baseUrl/clothing/my/$clothingId');
+  Future<String> buyClothing(int clothingId) async {
+    final url = Uri.parse('$baseUrl/clothing/my?clothingId=$clothingId');
+    final token = await storage.read(key: "accessToken");
+    final headers = {
+      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
+    };
 
-    final response = await client.post(url, headers: {
-      //  "Authorization": "Bearer $accessToken",
-    });
+    final response = await client.post(
+      url,
+      headers: headers,
+    );
+    // Map<String, dynamic> requestBody = {
+    //   "clothingId": clothingId,
+    // };
 
-    if (response.statusCode == 200) {}
-    throw Error();
+    // // 데이터를 JSON 문자열로 변환
+    // String requestBodyJson = jsonEncode(requestBody);
+
+    print(response.statusCode);
+    print('응답은요 ${response.body}');
+    if (response.statusCode == 201) {
+      return '구매확정';
+      // '구매확정!\n잔액 : $balance 코인';
+    } else if (response.statusCode == 401 || response.statusCode == 500) {
+      return buyClothing(clothingId);
+    } else {
+      // 409 에러 처리..(중복)
+      return '구매 실패';
+    }
   }
 
   // 옷 팔기(삭제)
   Future sellClothing(int clothingId) async {
     final url = Uri.parse('$baseUrl/clothing/my/$clothingId');
-
-    final response = await client.delete(url, headers: {
-      //  "Authorization": "Bearer $accessToken",
-    });
-
+    final token = await storage.read(key: "accessToken");
+    final headers = {
+      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
+    };
+    final response = await client.delete(
+      url,
+      headers: headers,
+    );
+    print(response.statusCode);
     if (response.statusCode == 200) {
       //삭제된 옷장 재 렌더링(response로 보내줌)
+    } else if (response.statusCode == 401 || response.statusCode == 500) {
+      return sellClothing(clothingId);
     }
     throw Error();
   }
 
   // 내가 소유한 옷 전체 불러오기-my
-  Future<List<ClothingModel>> getMyAllClothings(String? clothingType) async {
-    List<ClothingModel> myClothingInstances = [];
+  Future<List<UserClothingModel>> getMyAllClothings(
+      String? clothingType) async {
+    List<UserClothingModel> myClothingInstances = [];
 
     final url = Uri.parse('$baseUrl/clothing/my?clothingType=$clothingType');
+    final token = await storage.read(key: "accessToken");
+    final headers = {
+      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
+    };
 
-    final response = await client.get(url);
+    final response = await client.get(
+      url,
+      headers: headers,
+    );
+    print('내옷장불러오기 : ${response.statusCode}');
+    print('응답은요 : ${response.body}');
 
     if (response.statusCode == 200) {
       // message, data형태로 담겨있는 response를 우선 responseBody로 받은 다음
       final Map<String, dynamic> responseBody = jsonDecode(response.body);
       // 거기서 data만 뽑아서 clothing에 담아줌.
-      final List<dynamic> clothings = jsonDecode(responseBody['data']);
+      final List<dynamic> clothings = responseBody['data'];
       for (var clothing in clothings) {
-        myClothingInstances.add(ClothingModel.fromJson(clothing));
+        myClothingInstances.add(UserClothingModel.fromJson(clothing));
       }
 
       return myClothingInstances;
+    } else if (response.statusCode == 401 || response.statusCode == 500) {
+      return getMyAllClothings(clothingType);
     }
-    throw Error();
+    return myClothingInstances;
   }
 }

@@ -14,9 +14,11 @@ class ClothingStore extends StatefulWidget {
 class _ClothingStoreState extends State<ClothingStore> {
   final ClothingService clothingService = ClothingService();
   final List<String> categories = ["전체", "일상", "직업", "동물잠옷", "코스프레"];
-  int selectedIndex = 0; // 선택된 카테고리 인덱스
+  int selectedCategoryIndex = 0; // 선택된 카테고리 인덱스
 
   List<ClothingModel> clothingList = [];
+  List<ClothingModel> sortedClothingList = [];
+
   @override
   void initState() {
     super.initState();
@@ -24,11 +26,13 @@ class _ClothingStoreState extends State<ClothingStore> {
   }
 
   Future<void> loadClothingData() async {
+    String selectedCategory = '';
     try {
       final loadedClothingList =
-          await clothingService.getAllClothings(categories[selectedIndex]);
+          await clothingService.getAllClothings(selectedCategory);
       setState(() {
         clothingList = loadedClothingList;
+        sortedClothingList = clothingList;
       });
     } catch (e) {
       // 에러 처리
@@ -38,16 +42,27 @@ class _ClothingStoreState extends State<ClothingStore> {
 
 // 옷 선택했다
   bool isSelected = false;
-
-  onSelect() {
+  int selectedIndex = 3000000;
+  onSelect(int index) {
     setState(() {
       isSelected = true;
+      selectedIndex = index;
     });
   }
 
   toTheList() {
     setState(() {
       isSelected = false;
+      selectedIndex = 3000000;
+    });
+  }
+
+  String selectedImage = "";
+  bool isNewImg = false;
+  void changeImage(String newImage) {
+    setState(() {
+      selectedImage = newImage;
+      isNewImg = true;
     });
   }
 
@@ -70,7 +85,9 @@ class _ClothingStoreState extends State<ClothingStore> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Center(
-                      child: Image.asset("assets/images/minime/default.png")),
+                      child: isNewImg
+                          ? Image.network(selectedImage)
+                          : Image.asset("assets/images/minime/default.png")),
                 ),
               ),
               Flexible(
@@ -116,13 +133,19 @@ class _ClothingStoreState extends State<ClothingStore> {
                 fit: FlexFit.tight,
                 flex: 5,
                 child: isSelected
-                    ? const ClothingStoreSelected(
-                        clothingId: 0,
-                        clothingName: '',
-                        clothingInfo: '',
-                        clothingImg: '',
-                        clothingApplyImg: '',
-                        price: 0,
+                    ? ClothingStoreSelected(
+                        clothingId:
+                            sortedClothingList[selectedIndex].clothingId!,
+                        clothingName:
+                            sortedClothingList[selectedIndex].clothingName!,
+                        clothingInfo:
+                            sortedClothingList[selectedIndex].clothingInfo!,
+                        clothingImg:
+                            sortedClothingList[selectedIndex].clothingImg!,
+                        clothingApplyImg:
+                            sortedClothingList[selectedIndex].clothingApplyImg!,
+                        price: sortedClothingList[selectedIndex].price!,
+                        onImageChange: changeImage,
                       )
                     : ShaderMask(
                         shaderCallback: (Rect bounds) {
@@ -146,10 +169,10 @@ class _ClothingStoreState extends State<ClothingStore> {
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 4,
                             ),
-                            itemCount: 30,
+                            itemCount: sortedClothingList.length,
                             itemBuilder: (context, index) {
                               return GestureDetector(
-                                onTap: onSelect,
+                                onTap: () => onSelect(index),
                                 child: Container(
                                   margin: const EdgeInsets.all(5),
                                   decoration: BoxDecoration(
@@ -163,7 +186,10 @@ class _ClothingStoreState extends State<ClothingStore> {
                                       )
                                     ],
                                   ),
-                                  child: Center(child: Text('$index')),
+                                  child: Center(
+                                      child: Image.network(
+                                          sortedClothingList[index]
+                                              .clothingImg!)),
                                 ),
                               );
                             },
@@ -191,7 +217,7 @@ class _ClothingStoreState extends State<ClothingStore> {
             width: 70,
             text: categories[index],
             // isReverse: false,
-            isSelected: selectedIndex == index ? true : false,
+            isSelected: selectedCategoryIndex == index ? true : false,
             selectedBackgroundColor: Theme.of(context).cardColor,
             selectedTextColor: Colors.black,
             transitionType: TransitionType.LEFT_TO_RIGHT,
@@ -205,7 +231,17 @@ class _ClothingStoreState extends State<ClothingStore> {
             borderWidth: 2,
             onPress: () {
               setState(() {
-                selectedIndex = index; // 카테고리 선택 시 인덱스 업데이트
+                selectedCategoryIndex = index;
+                selectedIndex = 3000000;
+                if (selectedCategoryIndex == 0) {
+                  sortedClothingList = clothingList;
+                } else {
+                  sortedClothingList = clothingList
+                      .where((clothing) =>
+                          clothing.clothingType ==
+                          categories[selectedCategoryIndex])
+                      .toList(); // 카테고리 선택 시 인덱스 업데이트
+                }
               });
             },
           ),
