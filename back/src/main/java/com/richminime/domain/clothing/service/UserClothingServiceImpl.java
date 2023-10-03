@@ -41,14 +41,15 @@ public class UserClothingServiceImpl implements UserClothingService {
 
     @Transactional
     @Override
-    public void addMyClothing(UserClothingReqDto userClothingReqDto) {
+    public void addMyClothing(Long clothingId) {
+//        public void addMyClothing(UserClothingReqDto userClothingReqDto) {
 
         String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
 
         User user = userRepository.findByEmail(loggedInUserEmail)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        long clothingId = userClothingReqDto.getClothingId();
+//        long clothingId = userClothingReqDto.getClothingId();
         Clothing clothing = clothingRepository.findById(clothingId)
                 .orElseThrow(() -> new ClothingNotFoundException(CLOTHING_NOT_FOUND.getMessage()));
 
