@@ -91,10 +91,6 @@ public class UserController {
     )
     @PostMapping("/connected-id")
     public ResponseEntity<GenerateConnectedIdResDto> generateConnectedId(@RequestBody GenerateConnectedIdReqDto generateConnectedIdRequest) {
-        log.info("기관코드" + " " +generateConnectedIdRequest.getOrganization());
-        log.info("아이디" + " " + generateConnectedIdRequest.getId());
-        log.info("비밀번호" + " " + generateConnectedIdRequest.getPassword());
-        log.info("카드번호" + " " + generateConnectedIdRequest.getCardNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.generateConnectedId(generateConnectedIdRequest));
     }
 
