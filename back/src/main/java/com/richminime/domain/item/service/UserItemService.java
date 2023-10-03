@@ -18,7 +18,7 @@ public interface UserItemService {
     List<UserItemResDto> findAllUserItemByType(String token, ItemType itemType);
 
     // 소유하지 않은 테마 구매하기
-    AddUserItemResDto addUserItem(String token, Long itemId);
+    AddUserItemResDto addUserItem(Long itemId);
 
     // 6. 소유한 테마 판매하기
     DeleteUserItemResDto deleteUserItem(String token, Long userItemId);

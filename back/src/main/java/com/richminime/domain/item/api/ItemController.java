@@ -94,8 +94,8 @@ public class ItemController {
             description = "테마 상점에서 선택한 테마를 구매합니다.(미소유 시)"
     )
     @PostMapping("/my/{itemId}")
-    public ResponseEntity<AddUserItemResDto> addUserItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long itemId) {
-        return ResponseEntity.ok(userItemService.addUserItem(token, itemId));
+    public ResponseEntity<AddUserItemResDto> addUserItem(@PathVariable Long itemId) {
+        return ResponseEntity.ok(userItemService.addUserItem(itemId));
     }
 
     @Operation(
