@@ -96,8 +96,8 @@ public class ItemServiceImpl implements ItemService {
      * 로그인 유저가 관리자인지 확인하는 메서드
      * 관리자면 true 반환 / 일반회원이면 false 반환
      */
-    public boolean isAdmin(String token) {
-        String email = jwtUtil.getUsername(token);
+    public boolean isAdmin() {
+        String email = securityUtils.getLoggedInUserEmail();
         log.info("[아이템 서비스] email : {}", email);
 
         User loginUser = userRepository.findByEmail(email)
@@ -120,11 +120,11 @@ public class ItemServiceImpl implements ItemService {
      */
     @Transactional
     @Override
-    public ItemResDto addItem(String token, ItemReqDto itemReqDto) {
+    public ItemResDto addItem(ItemReqDto itemReqDto) {
         log.info("[테마 상점 테마 등록] 테마 상점에 새로운 테마 등록 요청");
 
         // 관리자 유저인지 확인
-        if(!isAdmin(token)){
+        if(!isAdmin()){
             log.error("[테마 상점 테마 등록] 관리자 회원만 테마를 등록할 수 있습니다.");
             throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         }
@@ -152,11 +152,11 @@ public class ItemServiceImpl implements ItemService {
      */
     @Transactional
     @Override
-    public void deleteItem(String token, Long itemId) {
+    public void deleteItem(Long itemId) {
         log.info("[테마 상점 테마 삭제] 테마 상점에 등록된 테마 삭제 요청. itemId : {}", itemId);
         
         // 관리자 유저인지 확인
-        if(!isAdmin(token)){
+        if(!isAdmin()){
             log.error("[테마 상점 테마 삭제] 관리자 회원만 테마를 삭제할 수 있습니다.");
             throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         }
@@ -180,11 +180,11 @@ public class ItemServiceImpl implements ItemService {
      */
     @Transactional
     @Override
-    public ItemResDto updateItem(String token, Long itemId, ItemUpdateReqDto itemReqDto) {
+    public ItemResDto updateItem(Long itemId, ItemUpdateReqDto itemReqDto) {
         log.info("[테마 상점 테마 수정] 테마 상점에 등록된 테마 수정 요청. itemId : {}", itemId);
 
         // 관리자 유저 확인
-        if(!isAdmin(token)){
+        if(!isAdmin()){
             log.error("[테마 상점 테마 수정] 관리자 회원만 테마를 수정할 수 있습니다.");
             throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         }
