@@ -8,7 +8,8 @@ import com.richminime.domain.clothing.dto.UserClothingResDto;
 import java.util.List;
 
 public interface UserClothingService {
-    void addMyClothing(UserClothingReqDto userClothingReqDto);
+//    void addMyClothing(UserClothingReqDto userClothingReqDto);
+    void addMyClothing(Long clothingId);
     void deleteMyClothing(Long userClothingId);
     List<UserClothingResDto> findAllMyClothingByType(ClothingType clothingType);
 }
