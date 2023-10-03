@@ -10,6 +10,7 @@ import com.richminime.domain.item.dto.AddUserItemResDto;
 import com.richminime.domain.item.dto.DeleteUserItemResDto;
 import com.richminime.domain.item.dto.UserItemResDto;
 import com.richminime.domain.item.exception.ItemDuplicatedException;
+import com.richminime.domain.item.exception.ItemInsufficientBalanceException;
 import com.richminime.domain.item.exception.ItemNotFoundException;
 import com.richminime.domain.item.repository.ItemRepository;
 import com.richminime.domain.item.repository.UserItemRepository;
@@ -17,7 +18,6 @@ import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.exception.ForbiddenException;
-import com.richminime.global.exception.InsufficientBalanceException;
 import com.richminime.global.util.SecurityUtils;
 import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -173,7 +173,7 @@ public class UserItemServiceImpl implements UserItemService {
         // 잔액 부족이면 구매 불가
         if(newBalance < 0){
             log.error("[테마 구매하기] 잔액이 부족해 구매할 수 없습니다.");
-            throw new InsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
+            throw new ItemInsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
         }
 
         log.info("[테마 구매하기] 테마 구매 가능 !!");

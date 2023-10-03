@@ -1,5 +1,6 @@
 package com.richminime.global.exception;
 
+import com.richminime.global.dto.MessageDto;
 import com.richminime.global.dto.ResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,15 @@ public class RestControllerExceptionHandler {
             ForbiddenException exception) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 ResponseDto.create(AUTHORIZATION_FAILED.getMessage())
+        );
+    }
+
+    // 메시지반 반환하게 유녕 추가
+    @ExceptionHandler(ItemException.class)
+    public ResponseEntity<MessageDto> handleIllegalArgumentExceptionByItem(
+            ItemException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                MessageDto.msg(exception.getMessage())
         );
     }
 }

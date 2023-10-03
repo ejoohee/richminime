@@ -6,10 +6,10 @@ import com.richminime.domain.item.dto.ItemReqDto;
 import com.richminime.domain.item.dto.ItemResDto;
 import com.richminime.domain.item.dto.ItemUpdateReqDto;
 import com.richminime.domain.item.exception.ItemNotFoundException;
+import com.richminime.domain.item.exception.ItemUserNotFoundException;
 import com.richminime.domain.item.repository.ItemRepository;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.domain.UserType;
-import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.util.SecurityUtils;
 import com.richminime.global.util.jwt.JWTUtil;
@@ -33,7 +33,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final SecurityUtils securityUtils;
-    private final JWTUtil jwtUtil;
+//    private final JWTUtil jwtUtil;
 
     /**
      * 상점에 등록된 아이템 전체 조회
@@ -103,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[아이템 서비스] 로그인 유저를 찾을 수 없습니다.");
-                    return new UserNotFoundException(USER_NOT_FOUND.getMessage());
+                    return new ItemUserNotFoundException(USER_NOT_FOUND.getMessage());
                 });
 
         if(loginUser.getUserType().equals(UserType.ROLE_ADMIN))
@@ -126,7 +126,7 @@ public class ItemServiceImpl implements ItemService {
         // 관리자 유저인지 확인
         if(!isAdmin()){
             log.error("[테마 상점 테마 등록] 관리자 회원만 테마를 등록할 수 있습니다.");
-            throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
+            throw new ItemUserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         }
 
         Item item = Item.builder()
@@ -158,7 +158,7 @@ public class ItemServiceImpl implements ItemService {
         // 관리자 유저인지 확인
         if(!isAdmin()){
             log.error("[테마 상점 테마 삭제] 관리자 회원만 테마를 삭제할 수 있습니다.");
-            throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
+            throw new ItemUserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         }
         
         Item item = itemRepository.findItemByItemId(itemId)
@@ -186,7 +186,7 @@ public class ItemServiceImpl implements ItemService {
         // 관리자 유저 확인
         if(!isAdmin()){
             log.error("[테마 상점 테마 수정] 관리자 회원만 테마를 수정할 수 있습니다.");
-            throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
+            throw new ItemUserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         }
         
         Item item = itemRepository.findItemByItemId(itemId)
