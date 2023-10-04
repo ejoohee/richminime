@@ -19,8 +19,10 @@ import com.richminime.domain.user.exception.UserExceptionMessage;
 import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
+import com.richminime.global.common.codef.dto.request.DateDto;
 import com.richminime.global.common.codef.dto.request.FindSpendingListReqDto;
 import com.richminime.global.exception.NotFoundException;
+import com.richminime.global.util.SecurityUtils;
 import com.richminime.global.util.date.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -46,6 +48,7 @@ public class SpendingServiceImpl implements SpendingService {
 
     private final UserRepository userRepository;
     private final CodefWebClient codefWebClient;
+
 
     // redis에 각 회원의 월별 소비패턴 정보를 저장함
     private final MonthSpendingPatternRedisRepository monthSpendingPatternRedisRepository;
@@ -127,6 +130,11 @@ public class SpendingServiceImpl implements SpendingService {
         String email = getLoginId();
         List<SpendingDto> spendingAmountList;
         Optional<DaySpendingPattern> daySpendingPattern = daySpendingPatternRedisRepository.findById(email);
+        if(!daySpendingPattern.isPresent()) {
+            // 분석된 일일 소비패턴 데이터가 redis에 존재하지 않음
+            // 다시 계산해서 저장
+            initDaySpending();
+        }
         spendingAmountList = daySpendingPattern.get().getSpendingAmountList();
 
         return FindDaySpendingResDto.builder()
@@ -138,6 +146,36 @@ public class SpendingServiceImpl implements SpendingService {
                 .maxSpentCategoryList(daySpendingPattern.get().getMaxSpentCategoryList())
                 .maxAmount(daySpendingPattern.get().getMaxAmount())
                 .build();
+    }
+
+    /**
+     * 일 소비패턴 분석
+     * 그저께와 어제를 비교함
+     */
+    private void initDaySpending() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String email = getLoginId();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage()));
+        // 그저꼐
+        LocalDate dayBeforeYesterday = DateUtil.getMinusTimeFromNow(2);
+        // 어제
+        LocalDate yesterday = DateUtil.getMinusTimeFromNow(1);
+        DateDto dateDto= DateUtil.getYearMonthDay(dayBeforeYesterday);
+        String startDate = DateUtil.parseDateToString(dateDto);
+        try {
+            // 그저꼐 날자로 소비내역 가져옴
+            List<Spending> spendingList = spendingRepository.findSpendingByUserIdAndSpentDateBetween(user.getUserId(), sdf.parse(startDate), sdf.parse(startDate));
+            // 그저께 소비내역 분석
+            daySpendingPatternRedisRepository.save(analyzeDaySpending(spendingList, email, dateDto.getMonth(), dateDto.getDay()));
+            // 어제 날짜로 소비내역 가져옴
+            dateDto = DateUtil.getYearMonthDay(yesterday);
+            startDate = DateUtil.parseDateToString(dateDto);
+            spendingList = spendingRepository.findSpendingByUserIdAndSpentDateBetween(user.getUserId(), sdf.parse(startDate), sdf.parse(startDate));
+            // 어제 소비내역 분석
+            daySpendingPatternRedisRepository.save(analyzeDaySpending(spendingList, email, dateDto.getMonth(), dateDto.getDay()));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
