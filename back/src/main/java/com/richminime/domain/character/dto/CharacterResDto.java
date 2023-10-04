@@ -11,9 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CharacterResDto {
 
-    private Long characterId;
 
-    private String imgURL;
+    private String imgApplyURL;
 
 
 }

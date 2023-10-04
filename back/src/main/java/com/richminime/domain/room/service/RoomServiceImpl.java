@@ -7,7 +7,9 @@ import com.richminime.domain.item.repository.ItemRepository;
 import com.richminime.domain.room.domain.Room;
 import com.richminime.domain.room.dto.RoomReqDto;
 import com.richminime.domain.room.dto.RoomResDto;
+import com.richminime.domain.room.exception.RoomItemNotFoundException;
 import com.richminime.domain.room.exception.RoomNotFoundException;
+import com.richminime.domain.room.exception.RoomUserNotFoundException;
 import com.richminime.domain.room.repository.RoomRepository;
 import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
@@ -29,7 +31,7 @@ public class RoomServiceImpl implements RoomService {
 
     public Long findLoginUserId(){
         return userRepository.findByEmail(securityUtils.getLoggedInUserEmail())
-                        .orElseThrow(() -> new UserNotFoundException("유저 찾을 수 없음"))
+                        .orElseThrow(() -> new RoomUserNotFoundException("유저 찾을 수 없음",404L))
                 .getUserId();
     }
     @Override
@@ -37,13 +39,12 @@ public class RoomServiceImpl implements RoomService {
         Long loginUserId = findLoginUserId();
         Room room = roomRepository
                 .findByUserId(loginUserId)
-                .orElseThrow(() -> new RoomNotFoundException("룸을 찾을 수 없음"));
+                .orElseThrow(() -> new RoomNotFoundException("룸을 찾을 수 없음",404L));
         Item item = itemRepository
                 .findByItemId(room.getItem().getItemId())
-                .orElseThrow(() -> new ItemNotFoundException("아이템을 찾을 수 없음"));
+                .orElseThrow(() -> new RoomItemNotFoundException("아이템을 찾을 수 없음",404L));
 
         return RoomResDto.builder()
-                .roomId(room.getRoomId())
                 .imgURL(item.getItemImg())
                 .build();
     }
@@ -55,14 +56,22 @@ public class RoomServiceImpl implements RoomService {
         Long loginUserId = findLoginUserId();
         Room room = roomRepository
                 .findByUserId(loginUserId)
-                .orElseThrow(() -> new RoomNotFoundException("룸을 찾을 수 없음"));
-        Item item = itemRepository
+                .orElseThrow(() -> new RoomNotFoundException("룸을 찾을 수 없음",404L));
+        Item item;
+        if(dto.getItemId() == room.getItem().getItemId()){  //갈아끼울 테마(Item)과 이미 착용하고 있는 테마가 같을 시 기본 테마 적용
+            item = Item.builder().itemId(0L).build();
+            room.chageItem(item);
+            return RoomResDto.builder()
+                    .imgURL("url 프론트에서 처리 바람")
+                    .build();
+        }
+
+        item = itemRepository
                 .findByItemId(dto.getItemId())
-                .orElseThrow(() -> new ItemNotFoundException("아이템을 찾을 수 없음"));
+                .orElseThrow(() -> new RoomItemNotFoundException("아이템을 찾을 수 없음",404L));
         room.chageItem(item);   //dirty checking
 
         return RoomResDto.builder()
-                .roomId(room.getRoomId())
                 .imgURL(item.getItemImg())
                 .build();
     }
