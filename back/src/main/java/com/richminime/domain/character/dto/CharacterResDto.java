@@ -15,4 +15,5 @@ public class CharacterResDto {
     private String imgApplyURL;
 
 
+
 }

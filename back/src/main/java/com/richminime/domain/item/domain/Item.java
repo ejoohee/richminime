@@ -1,7 +1,9 @@
 package com.richminime.domain.item.domain;
 
+import com.richminime.domain.clothing.domain.Clothing;
 import com.richminime.domain.item.constant.ItemType;
 import com.richminime.domain.item.dto.ItemUpdateReqDto;
+import com.richminime.domain.room.domain.Room;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -39,8 +42,11 @@ public class Item {
     @Column(name = "price", nullable = false)
     private Long price;
     
-    @OneToMany(mappedBy = "item")
+    @OneToMany(mappedBy = "item" )
     private List<UserItem> userItems; // 하나의 아이템(청치마)를 산 유저가 많으니까
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE)
+    private List<Room> rooms = new ArrayList<>();
 
     public void updateItem(ItemUpdateReqDto itemUpdateReqDto) {
         this.itemName = itemUpdateReqDto.getItemName() == null ? this.itemName : itemUpdateReqDto.getItemName();
