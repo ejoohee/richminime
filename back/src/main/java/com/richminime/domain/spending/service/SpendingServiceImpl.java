@@ -214,6 +214,9 @@ public class SpendingServiceImpl implements SpendingService {
             totalAmount += spending.getCost();
             spendingDto.addAmount(amount);
         }
+        // 정렬
+        Collections.sort(spendingAmountList);
+
         LocalDate yesterday = DateUtil.getMinusTimeFromNow(1);
         return MonthSpendingPattern.builder()
                 .email(email)
@@ -260,7 +263,8 @@ public class SpendingServiceImpl implements SpendingService {
             totalAmount += spending.getCost();
             spendingDto.addAmount(amount);
         }
-
+        // 정렬
+        Collections.sort(spendingAmountList);
         // 최댓값 확인
         for (SpendingDto dto : spendingAmountList) {
             maxAmount = Math.max(maxAmount, dto.getAmount());
@@ -336,7 +340,8 @@ public class SpendingServiceImpl implements SpendingService {
         DaySpendingPattern daySpendingPattern = analyzeDaySpending(todaySpendingList, user.getEmail(), month, day);
         daySpendingPatternRedisRepository.save(daySpendingPattern);
     }
-    
+
+
 
     /**
      * 현재 로그인한 회원 아이디(이메일)을 반환
