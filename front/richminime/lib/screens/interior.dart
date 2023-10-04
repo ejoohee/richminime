@@ -53,7 +53,9 @@ class _InteriorState extends State<Interior> {
   }
 
   // 룸테마적용 ->api
-  applyTheme() {}
+  applyItem() async {
+    // await
+  }
 
   // 테마 입어보기
   int tryIndex = 3000000;
@@ -61,7 +63,60 @@ class _InteriorState extends State<Interior> {
     setState(() {});
     tryIndex = index;
   }
+
   // 테마 팔기
+  onSellTap() {
+    InteriorThemeModel item = sortedItemList[tappedIndex];
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('<${item.itemName}>'),
+          content: const Text(
+            '중고로 판매하시겠습니까?',
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                getSellResponse(item.itemId!);
+              },
+              child: const Text('넹'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 판매 확인 메세지창
+  getSellResponse(int itemId) async {
+    final response = await interiorService.sellItem(itemId);
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            response,
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +269,7 @@ class _InteriorState extends State<Interior> {
                                     borderRadius: BorderRadius.circular(5),
                                     child: InkWell(
                                         splashColor: Colors.white54,
-                                        onTap: () {},
+                                        onTap: applyItem,
                                         borderRadius: BorderRadius.circular(5),
                                         child: const Padding(
                                           padding: EdgeInsets.symmetric(
@@ -349,7 +404,7 @@ class _InteriorState extends State<Interior> {
                                           ),
                                           elevation: 5,
                                         ),
-                                        onPressed: () {},
+                                        onPressed: onSellTap,
                                         child: const Text(
                                           '판매하기',
                                           style:

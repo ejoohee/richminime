@@ -3,9 +3,11 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:richminime/miniroom/mini_room.dart';
 import 'package:richminime/models/clothing_model.dart';
 import 'package:richminime/models/user_clothing_model.dart';
 import 'package:richminime/services/clothig_service.dart';
+import 'package:richminime/services/miniroom_service.dart';
 
 class Closet extends StatefulWidget {
   const Closet({super.key});
@@ -16,7 +18,7 @@ class Closet extends StatefulWidget {
 
 class _ClosetState extends State<Closet> {
   final ClothingService clothingService = ClothingService();
-
+  final MiniroomService miniroomService = MiniroomService();
   final List<String> categories = ["전체", "일상", "직업", "동물잠옷", "코스프레"];
   int selectedCategoryIndex = 0; // 선택된 카테고리 인덱스
 
@@ -54,11 +56,35 @@ class _ClosetState extends State<Closet> {
   String clothName = '';
   String clothInfo = '';
 
-  // 입는다
-  putOn() {
-    //selectedClothingIndex 써라
+  // 입는다(적용한다.)
+  putOn() async {
+    int clothingId = sortedClothingList[selectedClothingIndex].clothingId!;
+
+    final response = await miniroomService.applyCharacter(clothingId);
+
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            response,
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
+  // 그냥 탭하면 ~ 팔지말지? 가 나온다.
   int sellingIndex = 3000000;
   wannaSell(int index) {
     setState(() {});
@@ -66,7 +92,57 @@ class _ClosetState extends State<Closet> {
   }
 
   // 팔기
-  sellCloting(int index) {}
+  onSellTap() {
+    UserClothingModel cloth = sortedClothingList[sellingIndex];
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('<${cloth.clothingName}>'),
+          content: const Text(
+            '중고로 판매하시겠습니까?',
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                getSellResponse(cloth.userClothingId!);
+              },
+              child: const Text('넹'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 판매 확인 메세지창
+  getSellResponse(int userClothingId) async {
+    final response = await clothingService.sellClothing(userClothingId);
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            response,
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,8 +290,7 @@ class _ClosetState extends State<Closet> {
                                                 ),
                                                 elevation: 5,
                                               ),
-                                              onPressed: () =>
-                                                  sellCloting(index),
+                                              onPressed: onSellTap,
                                               child: const Text(
                                                 '판매하기',
                                                 style: TextStyle(
@@ -426,6 +501,7 @@ class _ClosetState extends State<Closet> {
               setState(() {
                 selectedCategoryIndex = index; // 카테고리 선택 시 인덱스 업데이트
                 // 인덱스는 초기화 혀
+                sellingIndex = 3000000;
                 selectedClothingIndex = 3000000;
                 if (selectedCategoryIndex == 0) {
                   sortedClothingList = myClothingList;

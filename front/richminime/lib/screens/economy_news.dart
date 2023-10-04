@@ -1,4 +1,3 @@
-// 금리뉴스 tv
 // 환율 지구본
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
@@ -6,24 +5,18 @@ import 'package:richminime/constants/default_setting.dart';
 import 'package:richminime/services/outer_service.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 
-class ExchangeRate extends StatefulWidget {
-  final List<financeInfoModel> fourER;
-
-  const ExchangeRate({
-    required this.fourER,
+class EconomyNews extends StatefulWidget {
+  final List<financeInfoModel> economyNews;
+  const EconomyNews({
+    required this.economyNews,
     Key? key,
   }) : super(key: key);
   @override
-  State<ExchangeRate> createState() => _ExchangeRateState();
+  State<EconomyNews> createState() => _EconomyNewsState();
 }
 
-class _ExchangeRateState extends State<ExchangeRate> {
+class _EconomyNewsState extends State<EconomyNews> {
   int currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +25,8 @@ class _ExchangeRateState extends State<ExchangeRate> {
         Container(
           padding: const EdgeInsets.all(20),
           alignment: Alignment.topRight,
-          decoration: BoxDecoration(
-            color: Colors.black87.withOpacity(0.2),
+          decoration: const BoxDecoration(
+            color: Colors.black87,
           ),
           child: IconButton.outlined(
             onPressed: () {
@@ -50,14 +43,14 @@ class _ExchangeRateState extends State<ExchangeRate> {
           children: [
             Center(
               child: Hero(
-                tag: 'globe',
+                tag: 'TV',
                 child: SimpleShadow(
                   opacity: 1,
                   sigma: 30,
                   offset: const Offset(0, 0),
                   color: Colors.white,
                   child: Image.asset(
-                    DefaultSetting.globe,
+                    DefaultSetting.tv,
                     scale: 1.5,
                   ),
                 ),
@@ -74,7 +67,6 @@ class _ExchangeRateState extends State<ExchangeRate> {
             Container(
               margin: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                // shape: ,
                 color: Theme.of(context).colorScheme.background,
                 borderRadius: const BorderRadius.all(Radius.circular(5)),
                 border: Border.all(
@@ -89,8 +81,8 @@ class _ExchangeRateState extends State<ExchangeRate> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // 이전 버튼 추가
                       Flexible(
@@ -116,14 +108,27 @@ class _ExchangeRateState extends State<ExchangeRate> {
                       Flexible(
                         flex: 4,
                         fit: FlexFit.tight,
-                        child: Center(
-                          child: Text(
-                            '${widget.fourER[currentIndex].name} ',
-                            style: const TextStyle(
-                                fontFamily: "StarDust",
-                                fontSize: 27,
-                                color: Colors.black87),
-                          ),
+                        child: Column(
+                          children: [
+                            const Text(
+                              '오늘의 늬우스',
+                              style: TextStyle(
+                                  fontFamily: "StarDust",
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 27,
+                                  color: Colors.black87),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              '-${widget.economyNews[currentIndex].name}-',
+                              style: const TextStyle(
+                                  fontFamily: "StarDust",
+                                  fontSize: 15,
+                                  color: Colors.black87),
+                            ),
+                          ],
                         ),
                       ),
                       // 다음 버튼 추가
@@ -131,7 +136,7 @@ class _ExchangeRateState extends State<ExchangeRate> {
                         flex: 1,
                         fit: FlexFit.tight,
                         child: Visibility(
-                          visible: currentIndex < widget.fourER.length - 1,
+                          visible: currentIndex < widget.economyNews.length - 1,
                           child: IconButton(
                             padding: const EdgeInsets.all(0),
                             onPressed: () {
@@ -155,9 +160,10 @@ class _ExchangeRateState extends State<ExchangeRate> {
 
                     animatedTexts: [
                       TypewriterAnimatedText(
-                        '${widget.fourER[currentIndex].index} : \n${widget.fourER[currentIndex].value} (${widget.fourER[currentIndex].unit}) ',
+                        '${widget.economyNews[currentIndex].index} : \n${widget.economyNews[currentIndex].value} (${widget.economyNews[currentIndex].unit}) ',
                         textStyle: const TextStyle(
                             fontFamily: "StarDust",
+                            fontWeight: FontWeight.w700,
                             fontSize: 22,
                             color: Colors.black87),
                         textAlign: TextAlign.center,
@@ -181,7 +187,7 @@ class _ExchangeRateState extends State<ExchangeRate> {
                   //   height: 10,
                   // ),
                   Text(
-                    '기준시점 : ${widget.fourER[currentIndex].date!}',
+                    '기준 시점 : ${widget.economyNews[currentIndex].date!}',
                     style: const TextStyle(
                         fontFamily: "StarDust",
                         fontSize: 15,
@@ -195,6 +201,9 @@ class _ExchangeRateState extends State<ExchangeRate> {
             )
           ],
         ),
+        const SizedBox(
+          height: 5,
+        )
       ],
     );
   }

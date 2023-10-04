@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/constants/default_setting.dart';
 import 'package:richminime/screens/closet.dart';
 import 'package:richminime/screens/exchange_rate.dart';
-import 'package:richminime/screens/interest_rate.dart';
+import 'package:richminime/screens/economy_news.dart';
 import 'package:richminime/services/miniroom_service.dart';
 import 'package:richminime/services/outer_service.dart';
 import 'package:simple_shadow/simple_shadow.dart';
@@ -47,21 +47,16 @@ class _MiniRoomState extends State<MiniRoom> {
     }
   }
 
-  // TV더블탭 >> 기준금리 받기
-  String? irName, irIndex, irValue, irDate, irUnit;
+  // TV더블탭 >> 기준금리 및 뉴스 받기
+  late List<financeInfoModel> economyNews;
 
   getIR() async {
-    final Future<financeInfoModel?> ir = OuterService.getInterestRate();
+    final List<financeInfoModel> en = await OuterService.getEconomyNews();
 
     try {
-      financeInfoModel? financeData = await ir;
+      List<financeInfoModel> financeData = en;
       // 데이터를 사용할 수 있음
-      irName = financeData?.name;
-      irIndex = financeData?.index;
-      irValue = financeData?.value;
-      irDate = financeData?.date;
-      irUnit = financeData?.unit;
-
+      economyNews = financeData;
       // 이제 데이터를 사용할 수 있습니다.
     } catch (e) {
       // 오류 처리
@@ -153,12 +148,8 @@ class _MiniRoomState extends State<MiniRoom> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => InterestRate(
-                    name: irName,
-                    index: irIndex,
-                    value: irValue,
-                    date: irDate,
-                    unit: irUnit,
+                  builder: (context) => EconomyNews(
+                    economyNews: economyNews,
                   ),
                 ),
               );

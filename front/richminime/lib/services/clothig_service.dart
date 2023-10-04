@@ -56,12 +56,6 @@ class ClothingService {
       url,
       headers: headers,
     );
-    // Map<String, dynamic> requestBody = {
-    //   "clothingId": clothingId,
-    // };
-
-    // // 데이터를 JSON 문자열로 변환
-    // String requestBodyJson = jsonEncode(requestBody);
 
     print(response.statusCode);
     print('응답은요 ${response.body}');
@@ -80,12 +74,12 @@ class ClothingService {
       return msg;
     }
     //에러 핸들
-    return '구매 실패';
+    return '띠용- 구매 실패!';
   }
 
-  // 옷 팔기(삭제)
-  Future sellClothing(int clothingId) async {
-    final url = Uri.parse('$baseUrl/clothing/my/$clothingId');
+  // 옷 판매(삭제)
+  Future sellClothing(int userClothingId) async {
+    final url = Uri.parse('$baseUrl/clothing/my/$userClothingId');
     final token = await storage.read(key: "accessToken");
     final headers = {
       'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
@@ -96,11 +90,16 @@ class ClothingService {
     );
     print(response.statusCode);
     if (response.statusCode == 200) {
-      //삭제된 옷장 재 렌더링(response로 보내줌)
+      Map<String, dynamic> responseData = json.decode(response.body);
+      int sellPrice = responseData['sellPrice'];
+      int balance = responseData['balance'];
+      await storage.write(key: 'balance', value: balance.toString());
+
+      return '$sellPrice 코인에 판매되었습니다.\n잔액 : $balance 코인';
     } else if (response.statusCode == 401 || response.statusCode == 500) {
-      return sellClothing(clothingId);
+      return sellClothing(userClothingId);
     }
-    throw Error();
+    return '띠용- 판매 실패!';
   }
 
   // 내가 소유한 옷 전체 불러오기-my
