@@ -20,16 +20,23 @@ public class Room {
     @Column(name = "room_id")
     private Long roomId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
+
+    @Column(name = "item_type")
+    private String itemType;
+
 
     public void chageItem(Item item){
         this.item = item;
     }
 
+    public void chageItemType(String itemType){
+        this.itemType = itemType;
+    }
 }

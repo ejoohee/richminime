@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/room")
 @RequiredArgsConstructor
@@ -16,7 +18,7 @@ public class RoomController {
 
     private final RoomService roomService;
     @GetMapping
-    public ResponseEntity<RoomResDto> findRoom(){
+    public ResponseEntity<List<RoomResDto>> findRoom(){
         return ResponseEntity.ok(roomService.findRoom());
     }
     @PutMapping
