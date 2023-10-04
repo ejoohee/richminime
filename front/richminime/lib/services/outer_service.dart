@@ -48,28 +48,30 @@ class OuterService {
     return erInstances;
   }
 
-  static Future<financeInfoModel?> getInterestRate() async {
+  static Future<List<financeInfoModel>> getEconomyNews() async {
     print('들어왔어염');
-
+    List<financeInfoModel> enInstances = [];
     final url = Uri.parse(
-        'https://ecos.bok.or.kr/api/KeyStatisticList/DR84EM8D125149QBK68A/json/kr/51/51');
+        'https://ecos.bok.or.kr/api/KeyStatisticList/DR84EM8D125149QBK68A/json/kr/51/67');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         print('응답들어왔어염');
 
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
-        print(responseBody.toString());
         // "row" 값을 추출하고 출력
-        final row = responseBody['KeyStatisticList']['row'][0];
-        print(row.toString());
-        final exchangeRate = financeInfoModel.fromJson(row);
-        return exchangeRate;
+        final rows = responseBody['KeyStatisticList']['row'];
+        print(rows.toString());
+        for (var row in rows) {
+          enInstances.add(financeInfoModel.fromJson(row));
+        }
+
+        return enInstances;
       }
     } catch (e) {
       print('에러 발생: $e');
-      return null;
+      return enInstances;
     }
-    return null;
+    return enInstances;
   }
 }

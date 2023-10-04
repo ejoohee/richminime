@@ -168,7 +168,7 @@ class InteriorService {
   }
 
   // 아이템 판매(삭제)
-  Future sellTheme(int itemId) async {
+  Future<String> sellItem(int itemId) async {
     final url = Uri.parse('$baseUrl/item/my/$itemId');
     final token = await storage.read(key: "accessToken");
     final headers = {
@@ -179,12 +179,21 @@ class InteriorService {
       url,
       headers: headers,
     );
-    if (response.statusCode == 201) {
-      print(jsonDecode(response.body));
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseData = json.decode(response.body);
+      int sellPrice = responseData['sellPrice'];
+      int balance = responseData['balance'];
+      await storage.write(key: 'balance', value: balance.toString());
+
+      return '$sellPrice 코인에 판매되었습니다.\n잔액 : $balance 코인';
     } else if (response.statusCode == 401) {
-      return sellTheme(itemId);
+      return sellItem(itemId);
+    } else if (response.statusCode == 403) {
+      Map<String, dynamic> responseData = json.decode(response.body);
+      String msg = responseData['msg'];
+      return msg;
     }
-    throw Error();
+    return '띠용- 판매 실패!';
   }
 
   // 아이템 구매
@@ -218,6 +227,6 @@ class InteriorService {
       return msg;
     }
     //에러 핸들
-    return '구매 실패';
+    return '띠용- 구매 실패!';
   }
 }
