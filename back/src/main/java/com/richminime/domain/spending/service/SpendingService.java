@@ -31,8 +31,6 @@ public interface SpendingService {
 
     void updateDaySpending(User user, int month, int day, Date startDate, Date endDate);
 
-    // 회원가입 초기에 사용함
-    // 그저께 가져와서 redis에 저장함(회원가입 당시엔 redis에 저장된게 없어서)
     void initDaySpending(User user, int month, int day, Date startDate, Date endDate);
 
 
