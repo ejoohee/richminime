@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:richminime/constants/default_setting.dart';
 import 'package:richminime/models/interior_theme_model.dart';
 import 'package:richminime/services/interior_service.dart';
 import 'package:richminime/widgets/appbar_back_home.dart';
@@ -15,7 +16,6 @@ class _InteriorStoreState extends State<InteriorStore> {
   final List<String> categories = ["벽지장판", "러그", "가구"];
   int selectedCategoryIndex = 0; // 선택된 카테고리 인덱스
 
-  int selectedIndex = 0;
   String miniRoomImgLink = '';
   final InteriorService interiorService = InteriorService();
   List<InteriorThemeModel> itemList = [];
@@ -34,9 +34,13 @@ class _InteriorStoreState extends State<InteriorStore> {
   Future<void> loadItemData() async {
     try {
       final loadedItemList = await interiorService.getAllItems();
-      setState(() {
-        itemList = loadedItemList;
-      });
+      if (mounted) {
+        setState(() {});
+      }
+      itemList = loadedItemList;
+      sortedItemList = itemList
+          .where((item) => item.itemType == categories[selectedCategoryIndex])
+          .toList();
     } catch (e) {
       // 에러 처리
       print("Error loading item data: $e");
@@ -51,7 +55,58 @@ class _InteriorStoreState extends State<InteriorStore> {
   }
 
   // 테마 사기
-  applyTheme() {}
+  onBuyTap() {
+    InteriorThemeModel item = sortedItemList[tappedIndex];
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('${item.price}코인!'),
+          content: const Text(
+            '구매하시겠습니까?',
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                getBuyResponse(item.itemId!);
+              },
+              child: const Text('넹'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 구매 확인 메세지창
+  getBuyResponse(int itemId) async {
+    final response = await interiorService.buyItem(itemId);
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            response,
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,30 +135,31 @@ class _InteriorStoreState extends State<InteriorStore> {
                             Flexible(
                               fit: FlexFit.tight,
                               flex: 1,
-                              child: Stack(children: [
-                                Container(
-                                  clipBehavior: Clip.hardEdge,
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 7, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.3),
-                                    borderRadius: BorderRadius.circular(7),
-                                  ),
-                                  child: const Center(
-                                    child: Text(
-                                      '전',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
+                              child: Container(
+                                clipBehavior: Clip.hardEdge,
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 7, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(7),
+                                  image: selectedCategoryIndex == 0
+                                      ? DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(
+                                            sortedItemList[tappedIndex]
+                                                .itemImg!,
+                                          ))
+                                      : null,
                                 ),
-                                Center(
-                                    child: Image.network(
-                                  sortedItemList[tappedIndex].itemImg ?? '',
-                                  fit: BoxFit.cover,
-                                ))
-                              ]),
+                                child: selectedCategoryIndex != 0
+                                    ? Center(
+                                        child: Image.network(
+                                          sortedItemList[tappedIndex].itemImg!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : null,
+                              ),
                             ),
                             Flexible(
                               fit: FlexFit.tight,
@@ -118,7 +174,7 @@ class _InteriorStoreState extends State<InteriorStore> {
                                     '<${sortedItemList[tappedIndex].itemName}>',
                                     style: const TextStyle(
                                       color: Colors.black,
-                                      fontSize: 20,
+                                      fontSize: 15,
                                     ),
                                   ),
                                   const SizedBox(
@@ -142,13 +198,13 @@ class _InteriorStoreState extends State<InteriorStore> {
                                       child: SingleChildScrollView(
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 15, vertical: 8),
+                                              horizontal: 12, vertical: 8),
                                           child: Text(
-                                            '<${sortedItemList[tappedIndex].itemInfo}>',
+                                            '${sortedItemList[tappedIndex].itemInfo}',
                                             overflow: TextOverflow
                                                 .clip, // Overflow 발생 시 글 내용을 자르지 않고 표시
                                             style: const TextStyle(
-                                              fontSize: 17,
+                                              fontSize: 13,
                                             ),
                                           ),
                                         ),
@@ -165,7 +221,7 @@ class _InteriorStoreState extends State<InteriorStore> {
                                     borderRadius: BorderRadius.circular(5),
                                     child: InkWell(
                                         splashColor: Colors.white54,
-                                        onTap: () {},
+                                        onTap: onBuyTap,
                                         borderRadius: BorderRadius.circular(5),
                                         child: const Padding(
                                           padding: EdgeInsets.symmetric(
@@ -224,32 +280,58 @@ class _InteriorStoreState extends State<InteriorStore> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () => themeTap(index),
-                          child: Container(
-                            clipBehavior: Clip.hardEdge,
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 3, horizontal: 10),
-                            width: 150,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(5),
-                              border: tappedIndex == index
-                                  ? Border.all(width: 3, color: Colors.white38)
-                                  : null,
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 5,
-                                  offset: const Offset(10, 3),
-                                  color: Colors.black.withOpacity(0.3),
-                                )
-                              ],
-                            ),
-                            child: Center(
-                              child: Image.network(
-                                sortedItemList[index].itemImg ??
-                                    '', // 이미지 URL을 itemList에서 가져오기
-                                fit: BoxFit.cover, // 이미지가 컨테이너에 맞게 확대/축소
+                          child: Stack(
+                            alignment: Alignment.bottomCenter,
+                            children: [
+                              Container(
+                                clipBehavior: Clip.hardEdge,
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 3, horizontal: 10),
+                                width: 150,
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context).cardColor,
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: tappedIndex == index
+                                        ? Border.all(
+                                            width: 3, color: Colors.white54)
+                                        : null,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        blurRadius: 5,
+                                        offset: const Offset(10, 3),
+                                        color: Colors.black.withOpacity(0.3),
+                                      )
+                                    ],
+                                    image: selectedCategoryIndex == 0
+                                        ? DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: NetworkImage(
+                                              sortedItemList[index].itemImg!,
+                                            ))
+                                        : DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: AssetImage(
+                                                DefaultSetting.emptyRoom),
+                                          )),
                               ),
-                            ),
+                              if (selectedCategoryIndex != 0)
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Center(
+                                      child: Image.network(
+                                        sortedItemList[index]
+                                            .itemImg!, // 이미지 URL을 itemList에서 가져오기
+
+                                        width: 90,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    )
+                                  ],
+                                ),
+                            ],
                           ),
                         );
                       },
@@ -294,6 +376,7 @@ class _InteriorStoreState extends State<InteriorStore> {
             onPress: () {
               setState(() {
                 selectedCategoryIndex = index; // 카테고리 선택 시 인덱스 업데이트
+                tappedIndex = 3000000;
                 final selectedCategory = categories[selectedCategoryIndex];
                 sortedItemList = itemList
                     .where((item) => item.itemType == selectedCategory)

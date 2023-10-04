@@ -18,6 +18,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         // 기존 테마 설정
+        fontFamily: 'Dunggeunmo',
         useMaterial3: true,
         colorScheme: ColorScheme.fromSwatch(
           backgroundColor: const Color(0xFFEEEBE3),
