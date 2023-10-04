@@ -45,6 +45,7 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(() -> new RoomItemNotFoundException("아이템을 찾을 수 없음",404L));
 
         return RoomResDto.builder()
+                .roomId(item.getItemId())
                 .imgURL(item.getItemImg())
                 .build();
     }
@@ -59,10 +60,11 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(() -> new RoomNotFoundException("룸을 찾을 수 없음",404L));
         Item item;
         if(dto.getItemId() == room.getItem().getItemId()){  //갈아끼울 테마(Item)과 이미 착용하고 있는 테마가 같을 시 기본 테마 적용
-            item = Item.builder().itemId(0L).build();
+            item = Item.builder().itemId(100000L).build();
             room.chageItem(item);
             return RoomResDto.builder()
-                    .imgURL("url 프론트에서 처리 바람")
+                    .roomId(item.getItemId())
+                    .imgURL("defaultData")
                     .build();
         }
 
@@ -72,6 +74,7 @@ public class RoomServiceImpl implements RoomService {
         room.chageItem(item);   //dirty checking
 
         return RoomResDto.builder()
+                .roomId(item.getItemId())
                 .imgURL(item.getItemImg())
                 .build();
     }

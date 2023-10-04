@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CharacterResDto {
 
-
+    private Long clothingId;
     private String imgApplyURL;
 
 

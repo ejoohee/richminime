@@ -62,7 +62,9 @@ logging:
       apache.tiles: INFO
     root: INFO
     com.samsung.security: DEBUG
--server:
+server:
+  error:
+    include-stacktrace: never
   servlet:
     encoding:
       enabled: true
@@ -91,3 +93,5 @@ codef:
   auth-header: 'Basic MjFjZTRiYTgtNTUzNy00NTRmLTg3YmUtN2RhYWQyOGVjYjFmOjA0MTZmODdjLWI4YTYtNGJjMS05ZDM2LTJlYTgwOTVlMTNjNA=='
 gpt:
   api-key: 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
+
+

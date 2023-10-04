@@ -440,14 +440,14 @@ public class UserServiceImpl implements UserService {
 
         Character character = Character.builder()
                 .user(user)
-                .clothing(Clothing.builder().clothingId(101L).build())      //회원가입시 Clothing 팬티룩 착용
+                .clothing(Clothing.builder().clothingId(100000L).build())      //회원가입시 Clothing 팬티룩 착용
                 .build();
         characterRepository.save(character);
         //회원가입 시 그에 맞는 테마 기본정보 생성
 
         roomRepository.save(Room.builder().
                 user(user)
-                .item(Item.builder().itemId(0L).build()) //회원가입시 Room 기본테마(Id = 0, 프론트에서 인식) 적용
+                .item(Item.builder().itemId(100000L).build()) //회원가입시 Room 기본테마(Id = 100000, 프론트에서 인식) 적용
                 .build());
 
 

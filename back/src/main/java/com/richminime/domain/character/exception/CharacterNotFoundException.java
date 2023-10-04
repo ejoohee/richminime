@@ -1,8 +1,11 @@
 package com.richminime.domain.character.exception;
 
 import com.richminime.global.exception.NotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class CharacterNotFoundException extends NotFoundException {
+@ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "캐릭터를 찾을 수 없음")
+public class CharacterNotFoundException extends RuntimeException {
     private final Long errorCode;
     public CharacterNotFoundException(){
         this.errorCode = 200L;
@@ -16,4 +19,7 @@ public class CharacterNotFoundException extends NotFoundException {
         super(message);
         this.errorCode = errorCode;
     }
+/*    public CharacterNotFoundException(){
+
+    }*/
 }
