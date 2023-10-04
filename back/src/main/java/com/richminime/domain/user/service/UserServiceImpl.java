@@ -3,6 +3,7 @@ package com.richminime.domain.user.service;
 import com.richminime.domain.character.domain.Character;
 import com.richminime.domain.character.repository.CharacterRepository;
 import com.richminime.domain.clothing.domain.Clothing;
+import com.richminime.domain.item.domain.Item;
 import com.richminime.domain.room.domain.Room;
 import com.richminime.domain.room.repository.RoomRepository;
 import com.richminime.domain.spending.service.SpendingService;
@@ -444,7 +445,10 @@ public class UserServiceImpl implements UserService {
         characterRepository.save(character);
         //회원가입 시 그에 맞는 테마 기본정보 생성
 
-        roomRepository.save(Room.builder().user(user).roomId(0L).build());     //회원가입시 Room 기본테마(Id = 0, 프론트에서 인식) 적용
+        roomRepository.save(Room.builder().
+                user(user)
+                .item(Item.builder().itemId(0L).build()) //회원가입시 Room 기본테마(Id = 0, 프론트에서 인식) 적용
+                .build());
 
 
         // 회원가입 성공하면 월 소비내역 초기값 저장하는 메서드 호출
