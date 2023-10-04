@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.richminime.domain.item.constant.ItemExceptionMessage.*;
-import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
-import static com.richminime.global.constant.ExceptionMessage.*;
+//import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
+//import static com.richminime.global.constant.ExceptionMessage.*;
 
 @Slf4j
 @Service
@@ -103,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[아이템 서비스] 로그인 유저를 찾을 수 없습니다.");
-                    return new ItemUserNotFoundException(USER_NOT_FOUND.getMessage());
+                    return new ItemUserNotFoundException(ITEM_USER_NOT_FOUND.getMessage());
                 });
 
         if(loginUser.getUserType().equals(UserType.ROLE_ADMIN))
@@ -126,7 +126,7 @@ public class ItemServiceImpl implements ItemService {
         // 관리자 유저인지 확인
         if(!isAdmin()){
             log.error("[테마 상점 테마 등록] 관리자 회원만 테마를 등록할 수 있습니다.");
-            throw new ItemUserNotFoundException(AUTHORIZATION_FAILED.getMessage());
+            throw new ItemUserNotFoundException(ITEM_AUTHORIZATION_FAILED.getMessage());
         }
 
         Item item = Item.builder()
@@ -158,7 +158,7 @@ public class ItemServiceImpl implements ItemService {
         // 관리자 유저인지 확인
         if(!isAdmin()){
             log.error("[테마 상점 테마 삭제] 관리자 회원만 테마를 삭제할 수 있습니다.");
-            throw new ItemUserNotFoundException(AUTHORIZATION_FAILED.getMessage());
+            throw new ItemUserNotFoundException(ITEM_AUTHORIZATION_FAILED.getMessage());
         }
         
         Item item = itemRepository.findItemByItemId(itemId)
@@ -186,7 +186,7 @@ public class ItemServiceImpl implements ItemService {
         // 관리자 유저 확인
         if(!isAdmin()){
             log.error("[테마 상점 테마 수정] 관리자 회원만 테마를 수정할 수 있습니다.");
-            throw new ItemUserNotFoundException(AUTHORIZATION_FAILED.getMessage());
+            throw new ItemUserNotFoundException(ITEM_AUTHORIZATION_FAILED.getMessage());
         }
         
         Item item = itemRepository.findItemByItemId(itemId)
