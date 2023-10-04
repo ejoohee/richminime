@@ -74,7 +74,7 @@ public class UserClothingServiceImpl implements UserClothingService {
 
         long newBalance = user.getBalance() - clothing.getPrice();
         if (newBalance < 0) {
-            throw new InsufficientBalanceException(INSUFFICINET_BALANCE.getMessage());
+            throw new InsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
         }
 
         BankBook bankBook = BankBook.builder()
