@@ -35,10 +35,11 @@ class _ClosetState extends State<Closet> {
     try {
       final loadedClothingList =
           await clothingService.getMyAllClothings(selectedCategory);
-      setState(() {
-        myClothingList = loadedClothingList;
-        sortedClothingList = myClothingList;
-      });
+      if (mounted) {
+        setState(() {});
+      }
+      myClothingList = loadedClothingList;
+      sortedClothingList = myClothingList;
     } catch (e) {
       // 에러 처리
       print("Error loading clothing data: $e");

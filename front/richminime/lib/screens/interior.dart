@@ -25,17 +25,15 @@ class _InteriorState extends State<Interior> {
   void initState() {
     super.initState();
     loadItemData();
-    sortedItemList = myItemList
-        .where((item) => item.itemType == categories[selectedCategoryIndex])
-        .toList();
   }
 
   Future<void> loadItemData() async {
     try {
-      final loadedItemList = await interiorService.getAllItems();
-      setState(() {
-        myItemList = loadedItemList;
-      });
+      final loadedItemList = await interiorService.getMyAllItems();
+      if (mounted) {
+        setState(() {});
+      }
+      myItemList = loadedItemList;
       sortedItemList = myItemList
           .where((item) => item.itemType == categories[selectedCategoryIndex])
           .toList();

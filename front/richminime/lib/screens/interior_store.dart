@@ -33,9 +33,10 @@ class _InteriorStoreState extends State<InteriorStore> {
   Future<void> loadItemData() async {
     try {
       final loadedItemList = await interiorService.getAllItems();
-      setState(() {
-        itemList = loadedItemList;
-      });
+      if (mounted) {
+        setState(() {});
+      }
+      itemList = loadedItemList;
       sortedItemList = itemList
           .where((item) => item.itemType == categories[selectedCategoryIndex])
           .toList();

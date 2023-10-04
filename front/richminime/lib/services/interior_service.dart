@@ -167,9 +167,9 @@ class InteriorService {
     throw Error();
   }
 
-  // 테마 판매(삭제)
+  // 아이템 판매(삭제)
   Future sellTheme(int itemId) async {
-    final url = Uri.parse('$baseUrl/item/my$itemId');
+    final url = Uri.parse('$baseUrl/item/my/$itemId');
     final token = await storage.read(key: "accessToken");
     final headers = {
       'Authorization': 'Bearer $token', // accessToken을 헤더에 추가

@@ -30,10 +30,11 @@ class _ClothingStoreState extends State<ClothingStore> {
     try {
       final loadedClothingList =
           await clothingService.getAllClothings(selectedCategory);
-      setState(() {
-        clothingList = loadedClothingList;
-        sortedClothingList = clothingList;
-      });
+      if (mounted) {
+        setState(() {});
+      }
+      clothingList = loadedClothingList;
+      sortedClothingList = clothingList;
     } catch (e) {
       // 에러 처리
       print("Error loading clothing data: $e");
@@ -80,10 +81,6 @@ class _ClothingStoreState extends State<ClothingStore> {
                 flex: 5,
                 child: Container(
                   margin: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade400.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
                   child: Center(
                       child: isNewImg
                           ? Image.network(selectedImage)

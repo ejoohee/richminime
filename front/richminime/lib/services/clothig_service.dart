@@ -74,10 +74,7 @@ class ClothingService {
     print(response.statusCode);
     print(response.body);
     if (response.statusCode == 200) {
-      // message, data형태로 담겨있는 response를 우선 responseBody로 받은 다음
-      final Map<String, dynamic> responseBody = jsonDecode(response.body);
-      // 거기서 data만 뽑아서 clothing에 담아줌.
-      final List<dynamic> clothings = responseBody['data'];
+      final List<dynamic> clothings = jsonDecode(response.body);
       print(clothings);
       for (var clothing in clothings) {
         clothingInstances.add(ClothingModel.fromJson(clothing));
@@ -87,7 +84,7 @@ class ClothingService {
     } else if (response.statusCode == 401 || response.statusCode == 500) {
       return getAllClothings(clothingType);
     }
-    throw Error();
+    return clothingInstances;
   }
 
   // 옷 구매
@@ -112,14 +109,21 @@ class ClothingService {
     print(response.statusCode);
     print('응답은요 ${response.body}');
     if (response.statusCode == 201) {
-      return '구매확정';
-      // '구매확정!\n잔액 : $balance 코인';
+      Map<String, dynamic> responseData = json.decode(response.body);
+      int balance = responseData['balance'];
+      // 스토리지 업데이트
+      await storage.write(key: 'balance', value: balance.toString());
+      return '구매확정!\n잔액 : $balance 코인';
     } else if (response.statusCode == 401 || response.statusCode == 500) {
       return buyClothing(clothingId);
-    } else {
-      // 409 에러 처리..(중복)
-      return '구매 실패';
+    } else if (response.statusCode == 403) {
+      Map<String, dynamic> responseData = json.decode(response.body);
+      String msg = responseData['msg'];
+
+      return msg;
     }
+    //에러 핸들
+    return '구매 실패';
   }
 
   // 옷 팔기(삭제)
@@ -161,10 +165,7 @@ class ClothingService {
     print('응답은요 : ${response.body}');
 
     if (response.statusCode == 200) {
-      // message, data형태로 담겨있는 response를 우선 responseBody로 받은 다음
-      final Map<String, dynamic> responseBody = jsonDecode(response.body);
-      // 거기서 data만 뽑아서 clothing에 담아줌.
-      final List<dynamic> clothings = responseBody['data'];
+      final List<dynamic> clothings = jsonDecode(response.body);
       for (var clothing in clothings) {
         myClothingInstances.add(UserClothingModel.fromJson(clothing));
       }
