@@ -62,9 +62,9 @@ public class User {
 //    @OneToOne(mappedBy = "user")
     private Character character;
     //user 엔티티가 삭제 즉 회원탈퇴하면 그에 상응하는 room 엔티티도 삭제됨
-    @OneToOne(mappedBy = "user",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
 //    @OneToOne(mappedBy = "user")
-    private Room room;
+    private List<Room> rooms = new ArrayList<>();
 
     @Column(name = "clothing_count", columnDefinition = "integer default 0")
     private Integer clothingCount;
