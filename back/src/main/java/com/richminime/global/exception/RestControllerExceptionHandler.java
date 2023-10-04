@@ -73,4 +73,11 @@ public class RestControllerExceptionHandler {
                 .body(MessageDto.msg(feedbackException.getMessage()));
     }
 
+    // 쥬희꺼
+    @ExceptionHandler(ClothingException.class)
+    public ResponseEntity<MessageDto> handleClothingException(ClothingException clothingException) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(MessageDto.msg(clothingException.getMessage()));
+    }
+
 }
