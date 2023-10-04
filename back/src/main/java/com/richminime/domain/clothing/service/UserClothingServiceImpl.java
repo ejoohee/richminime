@@ -10,15 +10,14 @@ import com.richminime.domain.clothing.domain.Clothing;
 import com.richminime.domain.clothing.domain.UserClothing;
 import com.richminime.domain.clothing.dto.AddUserClothingResDto;
 import com.richminime.domain.clothing.dto.DeleteUserClothingResDto;
-import com.richminime.domain.clothing.dto.UserClothingReqDto;
 import com.richminime.domain.clothing.dto.UserClothingResDto;
 import com.richminime.domain.clothing.exception.ClothingDuplicatedException;
+import com.richminime.domain.clothing.exception.ClothingInsufficientBalanceException;
 import com.richminime.domain.clothing.exception.ClothingNotFoundException;
+import com.richminime.domain.clothing.exception.ClothingUserNotFoundException;
 import com.richminime.domain.user.domain.User;
-import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.exception.ForbiddenException;
-import com.richminime.global.exception.InsufficientBalanceException;
 import com.richminime.global.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,7 @@ public class UserClothingServiceImpl implements UserClothingService {
     private User getLoggedInUser() {
         String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
         return userRepository.findByEmail(loggedInUserEmail)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new ClothingUserNotFoundException(USER_NOT_FOUND.getMessage()));
     }
 
     private void checkUserOwnership(User loggedInUser, User targetUser) {
@@ -74,7 +73,7 @@ public class UserClothingServiceImpl implements UserClothingService {
 
         long newBalance = user.getBalance() - clothing.getPrice();
         if (newBalance < 0) {
-            throw new InsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
+            throw new ClothingInsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
         }
 
         BankBook bankBook = BankBook.builder()

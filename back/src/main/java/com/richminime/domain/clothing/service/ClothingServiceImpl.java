@@ -7,6 +7,7 @@ import com.richminime.domain.clothing.dto.ClothingReqDto;
 import com.richminime.domain.clothing.dto.ClothingResDto;
 import com.richminime.domain.clothing.dto.ClothingUpdateReqDto;
 import com.richminime.domain.clothing.exception.ClothingNotFoundException;
+import com.richminime.domain.clothing.exception.ClothingUserNotFoundException;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.domain.UserType;
 import com.richminime.domain.user.exception.UserNotFoundException;
@@ -34,7 +35,7 @@ public class ClothingServiceImpl implements ClothingService {
     private User getLoggedInUser() {
         String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
         return userRepository.findByEmail(loggedInUserEmail)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new ClothingUserNotFoundException(USER_NOT_FOUND.getMessage()));
     }
 
     private void checkAdminAuthority(User user) {
