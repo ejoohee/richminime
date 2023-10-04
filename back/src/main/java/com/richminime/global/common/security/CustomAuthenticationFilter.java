@@ -47,15 +47,20 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             // 로그아웃 여부 확인
             // 로그아웃 한 상태면 해당 액세스 토큰은 만료되지 않았어도 유효하지 않음
             checkLogout(accessToken);
-            String id = jwtUtil.getUsername(accessToken);
-            if (id != null) {
-                UserDetails userDetails = customUserDetailService.loadUserByUsername(id);
-                // 액세스 토큰 생성 시 사용된 이메일 아이디와 현재 이메일 아이디가 일치하는지 확인
-                equalsUsernameFromTokenAndUserDetails(userDetails.getUsername(), id);
-                // 액세스 토큰의 유효성 검증
-                validateAccessToken(accessToken, userDetails);
-                // securityContextHolder에 인증된 회원의 정보를 저장
-                processSecurity(request, userDetails);
+            try {
+                String id = jwtUtil.getUsername(accessToken);
+                if (id != null) {
+                    UserDetails userDetails = customUserDetailService.loadUserByUsername(id);
+                    // 액세스 토큰 생성 시 사용된 이메일 아이디와 현재 이메일 아이디가 일치하는지 확인
+                    equalsUsernameFromTokenAndUserDetails(userDetails.getUsername(), id);
+                    // 액세스 토큰의 유효성 검증
+                    validateAccessToken(accessToken, userDetails);
+                    // securityContextHolder에 인증된 회원의 정보를 저장
+                    processSecurity(request, userDetails);
+                }
+            } catch(Exception e) {
+                // jwt 만료 등 예외가 발생할 때 다음 필터로 넘어감
+                filterChain.doFilter(request, response);
             }
         }
         // 다음 순서 필터로 넘어가기
