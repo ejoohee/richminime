@@ -16,11 +16,13 @@ import com.richminime.domain.user.repository.LogoutAccessTokenRedisRepository;
 import com.richminime.domain.user.repository.RefreshTokenRedisRepository;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
+import com.richminime.global.common.codef.dto.request.DateDto;
 import com.richminime.global.common.codef.dto.response.FindCardListResDto;
 import com.richminime.global.common.jwt.JwtExpirationEnums;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.exception.NotFoundException;
 import com.richminime.global.exception.TokenException;
+import com.richminime.global.util.date.DateUtil;
 import com.richminime.global.util.jwt.JWTUtil;
 import com.richminime.global.util.rsa.RSAUtil;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +54,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -86,30 +89,21 @@ public class UserServiceImpl implements UserService {
     @Scheduled(cron = "0 0 1 * * *") // 매달 1일 자정에 실행
     public void updateUsersMonthSpending() {
         // codef로 전 달 소비내역 모두 불러오기
-        // 어제 날짜 구하기 (시스템 시계, 시스템 타임존)
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-
-        // 연도, 월, 일
-        int year = yesterday.getYear();
-        int month = yesterday.getMonthValue();
-        // 해당 년 월의 마지막 날을 가져오기
-        YearMonth yearMonth = YearMonth.of(year, month);
-        int lastDay = yearMonth.lengthOfMonth();
-        StringBuilder startDate = new StringBuilder();
-        StringBuilder endDate = new StringBuilder();
-        // 달이 10 미만이라면 앞에 0을 붙여줘야 함
-        if(month < 10) {
-            startDate.append(year).append(0).append(month).append("01");
-            endDate.append(year).append(0).append(month).append(lastDay);
-        }else {
-            startDate.append(year).append(month).append("01");
-            endDate.append(year).append(month).append(lastDay);
-        }
+        // 저번 달의 첫 날을 가져옴
+        LocalDate firstDayOfLastMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+        DateDto dateDto = DateUtil.getYearMonthDay(firstDayOfLastMonth);
+        String startDate = DateUtil.parseDateToString(dateDto);
+        // 저번 달의 마지막 날을 가져옴
+        LocalDate lastDayOfLastMonth = firstDayOfLastMonth.with(TemporalAdjusters.lastDayOfMonth());
+        dateDto = DateUtil.getYearMonthDay(lastDayOfLastMonth);
+        String endDate = DateUtil.parseDateToString(dateDto);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         List<User> userList = userRepository.findAll();
+        log.info("startDate-------------------------->{}", startDate);
+        log.info("endDate-------------------------->{}", endDate);
         for (User user : userList) {
             try {
-                spendingService.updateMonthSpending(user, month, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
+                spendingService.updateMonthSpending(user, dateDto.getMonth(), sdf.parse(startDate), sdf.parse(endDate));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
@@ -123,45 +117,19 @@ public class UserServiceImpl implements UserService {
      */
     @Scheduled(cron = "0 0 0 * * *")
     public void addUsersDaySpending() {
-        // 오늘 날짜 확인
-        // 어제 날짜 구하기 (시스템 시계, 시스템 타임존)
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-
-        // 연도, 월, 일
-        int year = yesterday.getYear();
-        int month = yesterday.getMonthValue();
-        int day = yesterday.getDayOfMonth();
-
-        StringBuilder startDate = new StringBuilder();
-        StringBuilder endDate = new StringBuilder();
-        startDate.append(year);
-        endDate.append(year);
-
-        // 달이 10 미만이라면 앞에 0을 붙여줘야 함
-        if(month < 10) {
-            startDate.append(0).append(month);
-            endDate.append(0).append(month);
-        }else {
-            startDate.append(month);
-            endDate.append(month);
-        }
-        // 일이 10 미만이라면 앞에 0을 붙여줘야 함
-        if(day < 10) {
-            startDate.append(0).append(day);
-            endDate.append(0).append(day);
-        }else {
-            startDate.append(day);
-            endDate.append(day);
-        }
+        // 어제 날짜
+        LocalDate time = DateUtil.getMinusTimeFromNow(1);
+        DateDto dateDto = DateUtil.getYearMonthDay(time);
+        String startDate = DateUtil.parseDateToString(dateDto);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         List<User> userList = userRepository.findAll();
-
+        log.info("startDate-------------------------->{}", startDate);
+        log.info("endDate-------------------------->{}", startDate);
         for (User user : userList) {
             try {
-                spendingService.addSpending(user, startDate.toString(), endDate.toString());
-                spendingService.updateDaySpending(user, month, day, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
-            } catch (ParseException e) {
-                continue;
+                spendingService.addSpending(user, startDate, startDate);
+                // 일 소비내역은 시작기간 종료기간이 모두 동일함
+                spendingService.updateDaySpending(user, dateDto.getMonth(), dateDto.getDay(), sdf.parse(startDate), sdf.parse(startDate));
             } catch (Exception e) {
                 continue;
             }
@@ -180,45 +148,19 @@ public class UserServiceImpl implements UserService {
      *    전 날의 금액 총합을 가져와서 balance 갱신
      */
     public void addUserMonthSpending(User user) throws Exception {
-        // codef로 전 달 소비내역 모두 불러오기
-        // 어제 날짜 구하기 (시스템 시계, 시스템 타임존)
-        LocalDate yesterday = LocalDate.now().minusDays(1);
+        // codef로 소비내역 불러오기
+        // 저번달 1일 ~ 어제 날짜 까지
+        // 저번 달의 첫 날을 가져옴
+        LocalDate firstDayOfLastMonth = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+        DateDto dateDto = DateUtil.getYearMonthDay(firstDayOfLastMonth);
+        String startDate = DateUtil.parseDateToString(dateDto);
+        LocalDate yesterDay = DateUtil.getMinusTimeFromNow(1);
+        dateDto = DateUtil.getYearMonthDay(yesterDay);
+        String endDate = DateUtil.parseDateToString(dateDto);
 
-        // 연도, 월, 일
-        int year = yesterday.getYear();
-        int month = yesterday.getMonthValue();
-        int day = yesterday.getDayOfMonth();
-
-        StringBuilder startDate = new StringBuilder();
-        StringBuilder endDate = new StringBuilder();
-
-        int sy = year, ey = year, sm = month - 1, em = month, sd = 1, ed = day; // 시작 년월일, 끝 년월일
-        if(month == 1) {
-            // month가 1월이면 그 전달은 12월, 즉 year도 작년이 되어야 함
-            sy = year - 1;
-            sm = 12;
-        }
-        if(sm < 10) {
-            // 전 달이 10 미만이라면 앞에 0을 붙여줘야 함
-            startDate.append(year).append(0).append(sm).append(0).append(sd);
-        }else {
-            startDate.append(year).append(sm).append(0).append(sd);
-        }
-        // 달이 10 미만이라면 앞에 0을 붙여줘야 함
-        if(em < 10) {
-            endDate.append(year).append(0).append(em);
-        }else {
-            endDate.append(year).append(em);
-        }
-        // 일이 10 미만이라면 앞에 0을 붙여줘야 함
-        if(ed < 10) {
-            endDate.append(0).append(ed);
-        }else {
-            endDate.append(ed);
-        }
-        log.info("startDate-------------------------->{}", startDate.toString());
-        log.info("endDate-------------------------->{}", endDate.toString());
-        spendingService.addSpending(user, startDate.toString(), endDate.toString());
+        log.info("startDate-------------------------->{}", startDate);
+        log.info("endDate-------------------------->{}", endDate);
+        spendingService.addSpending(user, startDate, endDate);
     }
 
     @Transactional(readOnly = true)
@@ -473,7 +415,7 @@ public class UserServiceImpl implements UserService {
             addUserRequest.getNickname() == null || addUserRequest.getNickname().equals(""))
             throw new IllegalArgumentException(UserExceptionMessage.SIGN_UP_NOT_VALID.getMessage());
         ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
-//        // 이메일 인증 여부 확인
+        // 이메일 인증 여부 확인
         String checkResult = (String) valueOperations.get(addUserRequest.getEmail());
         if(checkResult == null || !checkResult.equals("이메일 인증 완료"))
             throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
@@ -518,64 +460,20 @@ public class UserServiceImpl implements UserService {
 
     void initUserDaySpending(User user){
         // 그저제 날짜 구하기 (시스템 시계, 시스템 타임존)
-        LocalDate time = LocalDate.now().minusDays(2);
+        LocalDate time = DateUtil.getMinusTimeFromNow(2);
         // 연도, 월, 일
-        int year = time.getYear();
-        int month = time.getMonthValue();
-        int day = time.getDayOfMonth();
-        StringBuilder startDate = new StringBuilder();
-        StringBuilder endDate = new StringBuilder();
-        startDate.append(year);
-        endDate.append(year);
-
-        // 달이 10 미만이라면 앞에 0을 붙여줘야 함
-        if(month < 10) {
-            startDate.append(0).append(month);
-            endDate.append(0).append(month);
-        }else {
-            startDate.append(month);
-            endDate.append(month);
-        }
-        // 일이 10 미만이라면 앞에 0을 붙여줘야 함
-        if(day < 10) {
-            startDate.append(0).append(day);
-            endDate.append(0).append(day);
-        }else {
-            startDate.append(day);
-            endDate.append(day);
-        }
+        DateDto dateDto = DateUtil.getYearMonthDay(time);
+        // 시작일
+        String startDate = DateUtil.parseDateToString(dateDto);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         try {
             // 그저께 소비내역 데이터 저장
-            spendingService.initDaySpending(user, month, day, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
-            // 어제 소비내역 데이터와 비교하여 분석 데이터 저장
-            time = LocalDate.now().minusDays(1);
-            // 연도, 월, 일
-            year = time.getYear();
-            month = time.getMonthValue();
-            day = time.getDayOfMonth();
-            startDate = new StringBuilder();
-            endDate = new StringBuilder();
-            startDate.append(year);
-            endDate.append(year);
-
-            // 달이 10 미만이라면 앞에 0을 붙여줘야 함
-            if(month < 10) {
-                startDate.append(0).append(month);
-                endDate.append(0).append(month);
-            }else {
-                startDate.append(month);
-                endDate.append(month);
-            }
-            // 일이 10 미만이라면 앞에 0을 붙여줘야 함
-            if(day < 10) {
-                startDate.append(0).append(day);
-                endDate.append(0).append(day);
-            }else {
-                startDate.append(day);
-                endDate.append(day);
-            }
-            spendingService.updateDaySpending(user, month, day, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
+            spendingService.initDaySpending(user, dateDto.getMonth(), dateDto.getDay(), sdf.parse(startDate), sdf.parse(startDate));
+            // 어제 날짜
+            time = DateUtil.getMinusTimeFromNow(1);
+            dateDto = DateUtil.getYearMonthDay(time);
+            String endDate = DateUtil.parseDateToString(dateDto);
+            spendingService.updateDaySpending(user, dateDto.getMonth(), dateDto.getDay(), sdf.parse(startDate), sdf.parse(startDate));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
