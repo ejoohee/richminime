@@ -6,6 +6,7 @@ import 'package:richminime/screens/analysis.dart';
 import 'package:richminime/screens/bankbook.dart';
 import 'package:richminime/screens/closet.dart';
 import 'package:richminime/screens/clothing_store.dart';
+import 'package:richminime/screens/gpt.dart';
 import 'package:richminime/screens/interior.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:richminime/screens/interior_store.dart';
@@ -32,7 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarHomeScreen(),
+      appBar: AppBarHomeScreen(
+        currentPageIndex: currentPageIndex,
+      ),
       body: Center(
         child: Column(
           children: [
@@ -130,7 +133,11 @@ class _HomeScreenState extends State<HomeScreen> {
             CircularMenuItem(
               icon: MyFlutterApp.gpt,
               onTap: () {
-                // Star 아이콘을 클릭할 때 수행할 작업
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Gpt()), // 옷장 페이지로 이동
+                );
               },
               color: Colors.blue[300],
               iconSize: 50,

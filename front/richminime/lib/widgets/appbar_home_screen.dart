@@ -5,7 +5,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/services/user_service.dart';
 
 class AppBarHomeScreen extends StatelessWidget implements PreferredSizeWidget {
-  const AppBarHomeScreen({Key? key}) : super(key: key);
+  final int? currentPageIndex;
+  const AppBarHomeScreen({required this.currentPageIndex, Key? key})
+      : super(key: key);
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
