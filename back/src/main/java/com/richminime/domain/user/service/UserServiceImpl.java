@@ -74,6 +74,8 @@ public class UserServiceImpl implements UserService {
     private final CharacterRepository characterRepository;
     private final RoomRepository roomRepository;
 
+    private Random random;
+
     @Value("${rsa.public-key}")
     private String publicKey;
 
@@ -277,7 +279,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void sendEmailCode(String email) {
         // 임의의 authKey 생성
-        Random random = new Random();
+        if(random == null) random = new Random();
         String authKey = String.valueOf(random.nextInt(888888) + 111111);
 
         String subject = "리치미니미 회원가입 인증번호";
