@@ -12,6 +12,7 @@ import com.richminime.domain.item.dto.UserItemResDto;
 import com.richminime.domain.item.exception.ItemDuplicatedException;
 import com.richminime.domain.item.exception.ItemInsufficientBalanceException;
 import com.richminime.domain.item.exception.ItemNotFoundException;
+import com.richminime.domain.item.exception.ItemUserNotFoundException;
 import com.richminime.domain.item.repository.ItemRepository;
 import com.richminime.domain.item.repository.UserItemRepository;
 import com.richminime.domain.user.domain.User;
@@ -30,8 +31,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.richminime.domain.item.constant.ItemExceptionMessage.*;
-import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
-import static com.richminime.global.constant.ExceptionMessage.*;
 
 @Slf4j
 @Service
@@ -55,7 +54,7 @@ public class UserItemServiceImpl implements UserItemService {
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[유저아이템 서비스] 로그인 유저를 찾을 수 없습니다.");
-                    return new UserNotFoundException(USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(ITEM_USER_NOT_FOUND.getMessage());
                 });
 
         return loginUser;
@@ -119,7 +118,7 @@ public class UserItemServiceImpl implements UserItemService {
         // UserItem의 User와 loginUser가 동일한지 체크
         if(!userItem.getUser().getEmail().equals(email)) {
             log.error("[소유한 테마 상세 조회] 로그인 유저가 소유한 테마만 상세조회 가능합니다.");
-            throw new ForbiddenException();
+            throw new ItemUserNotFoundException(USERITEM_AUTHORIZATION_FAILED.getMessage());
         }
 
         log.info("[소유한 테마 상세 조회] 테마 상세 조회 완료.");
@@ -143,7 +142,7 @@ public class UserItemServiceImpl implements UserItemService {
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[테마 구매] 로그인 사용자 없음");
-                    return new UserNotFoundException(USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(ITEM_USER_NOT_FOUND.getMessage());
                 });
 
         // 보유하고 있는 테마인지 확인
@@ -173,7 +172,7 @@ public class UserItemServiceImpl implements UserItemService {
         // 잔액 부족이면 구매 불가
         if(newBalance < 0){
             log.error("[테마 구매하기] 잔액이 부족해 구매할 수 없습니다.");
-            throw new ItemInsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
+            throw new ItemInsufficientBalanceException(ITEM_INSUFFICIENT_BALANCE.getMessage());
         }
 
         log.info("[테마 구매하기] 테마 구매 가능 !!");
@@ -204,25 +203,25 @@ public class UserItemServiceImpl implements UserItemService {
 
     /**
      * 소유한 테마 판매하기
-     * @param userItemId
+     * @param itemId
      */
     @Transactional
     @Override
-    public DeleteUserItemResDto deleteUserItem(Long userItemId) {
-        log.info("[테마 판매하기] 소유한 테마 판매 요청. userItemId : {}", userItemId);
+    public DeleteUserItemResDto deleteUserItem(Long itemId) {
+        log.info("[테마 판매하기] 소유한 테마 판매 요청. itemId : {}", itemId);
 
         User loginUser = getLoginUser();
 
-        UserItem userItem = userItemRepository.findById(userItemId)
+        UserItem userItem = userItemRepository.findByUser_UserIdAndItem_ItemId(loginUser.getUserId(), itemId)
                 .orElseThrow(() -> {
                     log.error("[테마 판매하기] 테마를 찾을 수 없습니다.");
-                    return new ItemNotFoundException(ITEM_NOT_FOUND.getMessage());
+                    return new ItemNotFoundException(USERITEM_NOT_FOUND.getMessage());
                 });
 
         // 로그인 유저와 테마 소유자가 동일한지 체크
         if(!loginUser.getUserId().equals(userItem.getUser().getUserId())) {
             log.error("[테마 판매하기] 로그인 유저와 테마 소유자가 일치하지 않습니다. 판매 불가.");
-            throw new ForbiddenException();
+            throw new ItemUserNotFoundException(USERITEM_AUTHORIZATION_FAILED.getMessage());
         }
 
         Long saleAmount = Math.round(userItem.getItem().getPrice() * 0.4);

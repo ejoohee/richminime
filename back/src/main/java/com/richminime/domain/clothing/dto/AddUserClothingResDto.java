@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UserClothingResDto {
+public class AddUserClothingResDto {
     private final Long userClothingId;
     private final Long clothingId;
     private final String clothingType;
@@ -15,17 +15,19 @@ public class UserClothingResDto {
     private final String clothingInfo;
     private final String clothingName;
     private final long price;
+    private final long balance;
 
-    public static UserClothingResDto entityToDto(UserClothing userClothing) {
-        return UserClothingResDto.builder()
+    public static AddUserClothingResDto entityToDto(UserClothing userClothing) {
+        return AddUserClothingResDto.builder()
                 .userClothingId(userClothing.getUserClothingId())
                 .clothingId(userClothing.getClothing().getClothingId())
                 .clothingName(userClothing.getClothing().getClothingName())
                 .clothingType(userClothing.getClothing().getClothingType().getValue())
                 .clothingImg(userClothing.getClothing().getClothingImg())
                 .clothingApplyImg(userClothing.getClothing().getClothingApplyImg())
-                .clothingInfo(userClothing.getClothing().getClothingInfo())
+                .clothingInfo(userClothing.getClothing().getClothingImg())
                 .price(userClothing.getClothing().getPrice())
+                .balance(userClothing.getUser().getBalance())
                 .build();
     }
 }

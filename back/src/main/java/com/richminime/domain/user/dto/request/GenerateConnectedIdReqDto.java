@@ -13,7 +13,5 @@ public class GenerateConnectedIdReqDto {
 
     private String organization;
 
-    private String cardNumber;
-
 
 }

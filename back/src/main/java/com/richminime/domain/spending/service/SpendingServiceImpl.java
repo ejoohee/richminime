@@ -21,6 +21,7 @@ import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.common.codef.CodefWebClient;
 import com.richminime.global.common.codef.dto.request.FindSpendingListReqDto;
 import com.richminime.global.exception.NotFoundException;
+import com.richminime.global.util.date.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -174,13 +175,13 @@ public class SpendingServiceImpl implements SpendingService {
             totalAmount += spending.getCost();
             spendingDto.addAmount(amount);
         }
-
+        LocalDate yesterday = DateUtil.getMinusTimeFromNow(1);
         return MonthSpendingPattern.builder()
                 .email(email)
                 .month(month)
                 .spendingAmountList(spendingAmountList)
                 .totalAmount(totalAmount)
-                .expiration(getMonthExpritation())
+                .expiration(DateUtil.getMonthExpiration(yesterday))
                 .build();
     }
 
@@ -276,13 +277,14 @@ public class SpendingServiceImpl implements SpendingService {
         Long newBalance = user.getBalance() + deposit;
         user.updateBalance(newBalance);
         // 적립내역 backbook에 저장
+        StringBuilder sb = new StringBuilder();
         BankBook bankBook = BankBook.builder()
                 .userId(user.getUserId())
                 .amount(deposit)
                 .date(LocalDate.now())
                 .balance(newBalance)
                 .transactionType(TransactionType.getTransactionType("적립"))
-                .summary(null)
+                .summary(sb.append("코인 적립").toString())
                 .build();
 
         bankBookRepository.save(bankBook);
@@ -295,27 +297,7 @@ public class SpendingServiceImpl implements SpendingService {
         DaySpendingPattern daySpendingPattern = analyzeDaySpending(todaySpendingList, user.getEmail(), month, day);
         daySpendingPatternRedisRepository.save(daySpendingPattern);
     }
-
-    /**
-     * 현재 달의 마지막날 까지가 redis에 존재하는 유효기간
-     * 그 값을 반환
-     * @return
-     */
-    private Long getMonthExpritation(){
-        // 어제 날짜 구하기 (시스템 시계, 시스템 타임존)
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-
-        // 연도, 월, 일
-        int year = yesterday.getYear();
-        int month = yesterday.getMonthValue();
-
-        // 해당 년 월의 마지막 날을 가져오기
-        YearMonth yearMonth = YearMonth.of(year, month);
-        int lastDay = yearMonth.lengthOfMonth();
-
-        // 한 달의 일수 * 1일 시간단위
-        return lastDay * TimeEnums.DAY_TIME_VALUE.getValue();
-    }
+    
 
     /**
      * 현재 로그인한 회원 아이디(이메일)을 반환

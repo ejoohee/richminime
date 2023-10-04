@@ -4,8 +4,14 @@ import com.richminime.domain.user.repository.LogoutAccessTokenRedisRepository;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.exception.security.SecurityExceptionMessage;
 import com.richminime.global.util.jwt.JWTUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springdoc.api.ErrorMessage;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -21,6 +27,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
@@ -47,7 +54,19 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             // 로그아웃 여부 확인
             // 로그아웃 한 상태면 해당 액세스 토큰은 만료되지 않았어도 유효하지 않음
             checkLogout(accessToken);
-            String id = jwtUtil.getUsername(accessToken);
+            String id = null;
+            try {
+                id = jwtUtil.getUsername(accessToken);
+                log.info("필터 id------------------------------>{}", id);
+            }catch (ExpiredJwtException e) {
+                // 토큰 만료
+                log.info("토큰 만료=========================================");
+                setResponse(response, HttpStatus.UNAUTHORIZED,"만료된 토큰입니다.");
+            } catch(SignatureException e) {
+                // 토큰이 유효하지 않음
+                log.info("토큰 유효하지 않음=========================================");
+                setResponse(response, HttpStatus.UNAUTHORIZED,"유효하지 않은 토큰입니다.");
+            }
             if (id != null) {
                 UserDetails userDetails = customUserDetailService.loadUserByUsername(id);
                 // 액세스 토큰 생성 시 사용된 이메일 아이디와 현재 이메일 아이디가 일치하는지 확인
@@ -92,6 +111,19 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
         usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+    }
+
+    /**
+     * 토큰 관련 에러 처리
+     * @param response
+     * @param errorMessage
+     * @throws RuntimeException
+     * @throws IOException
+     */
+    private void setResponse(HttpServletResponse response, HttpStatus httpStatus, String errorMessage) throws RuntimeException, IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(httpStatus.value());
+        response.getWriter().print(errorMessage);
     }
 
 }
