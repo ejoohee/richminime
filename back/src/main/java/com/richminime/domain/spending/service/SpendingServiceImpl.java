@@ -134,6 +134,7 @@ public class SpendingServiceImpl implements SpendingService {
             // 분석된 일일 소비패턴 데이터가 redis에 존재하지 않음
             // 다시 계산해서 저장
             initDaySpending();
+            daySpendingPattern = daySpendingPatternRedisRepository.findById(email);
         }
         spendingAmountList = daySpendingPattern.get().getSpendingAmountList();
 

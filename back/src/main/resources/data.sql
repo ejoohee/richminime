@@ -1,4 +1,4 @@
-/*
+
 
 insert into users
 (user_id, email, password, nickname, connected_id, organization_code, card_number, user_type, balance)
@@ -254,4 +254,4 @@ values
     ('1001', '2500', '45500', '2023-09-26', '일상 생활에서 편안하게 착용 가능한 싸피 바지', '구매', '100001'),
     ('1002', '2500', '47500', '2023-09-26', '항공 승무원을 위한 전용 스튜어디스 유니폼', '구매', '100000');
 
- */
+
