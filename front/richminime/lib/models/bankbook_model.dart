@@ -17,7 +17,7 @@ class BankbookModel {
   BankbookModel.fromJson(Map<String, dynamic> json) {
     bankBookId = json['bankBookId'];
     amount = json['amount'];
-    date = json['date'];
+    date = DateTime.parse(json['date']);
     balance = json['balance'];
     transactionType = json['transactionType'];
     summary = json['summary'];

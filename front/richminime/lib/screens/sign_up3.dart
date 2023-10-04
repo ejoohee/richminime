@@ -14,35 +14,10 @@ class SignUp3 extends StatefulWidget {
   State<SignUp3> createState() => _SignUp3State();
 }
 
-class CardNumberInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    String newText = newValue.text.replaceAll('-', '');
-    if (newText.length > 4) {
-      newText =
-          '${newText.substring(0, 4)}-${newText.substring(4, newText.length)}';
-    }
-    if (newText.length > 9) {
-      newText =
-          '${newText.substring(0, 9)}-${newText.substring(9, newText.length)}';
-    }
-    if (newText.length > 14) {
-      newText =
-          '${newText.substring(0, 14)}-${newText.substring(14, newText.length)}';
-    }
-
-    return TextEditingValue(
-      text: newText,
-      selection: TextSelection.collapsed(offset: newText.length),
-    );
-  }
-}
-
 class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
   TextEditingController cardEmailController = TextEditingController();
   TextEditingController cardPasswordController = TextEditingController();
-  TextEditingController cardNumController = TextEditingController();
+
   late AnimationController _controller;
   late Animation<double> _animation;
   double percent = 0.5;
@@ -92,15 +67,13 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
     });
     String id = cardEmailController.text;
     String password = cardPasswordController.text;
-    String cardNumber = cardNumController.text;
     String organization = widget.code;
     print(id);
     print(password);
-    print(cardNumber);
     print(organization);
     final userService = UserService();
-    final response = await userService.getConnectedId(
-        id, password, organization, cardNumber);
+    final response =
+        await userService.getConnectedId(id, password, organization);
     print(response);
     setState(() {
       isLoading = false; // 로딩 완료
@@ -113,7 +86,6 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
           builder: (context) => SignUp4(
             uuid: response.split(" ")[1],
             organization: widget.code,
-            cardNumber: cardNumController.text,
           ),
         ),
       );
@@ -182,22 +154,6 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
                             labelText: '비밀번호',
                             fillColor: Color(0xFFFFFDFD),
                             filled: true,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: cardNumController,
-                          keyboardType: TextInputType.number,
-                          maxLength: 19,
-                          inputFormatters: [CardNumberInputFormatter()],
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
-                            labelText: '카드번호',
-                            fillColor: Color(0xFFFFFDFD),
-                            filled: true,
-                            counterText: "",
                           ),
                         ),
                         const SizedBox(height: 20),

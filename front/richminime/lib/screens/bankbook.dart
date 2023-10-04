@@ -1,9 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:richminime/interceptor/interceptor.dart';
 import 'package:richminime/models/bankbook_model.dart';
 import 'package:richminime/services/bankbook_service.dart';
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:richminime/widgets/appbar_back_home.dart';
 
 class BankBook extends StatefulWidget {
   const BankBook({super.key});
@@ -14,26 +18,39 @@ class BankBook extends StatefulWidget {
 
 class _BankBookState extends State<BankBook> {
   late Future<List<BankbookModel>> transactions;
+  final storage = const FlutterSecureStorage();
 
   @override
   void initState() {
     super.initState();
-    transactions = BankbookService().getAllTransactions();
+    transactions = BankbookService().getAllBankBookList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppBarBackHome(title: "통장"),
       body: Column(
         children: [
           Container(
             margin: const EdgeInsets.all(40),
-            child: const Text(
-              "잔액 : ",
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.w500,
-              ),
+            child: FutureBuilder<String?>(
+              future: storage.read(key: "balance"),
+              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return Text(
+                    "잔액 : ${snapshot.data} 코인",
+                    style: const TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  );
+                }
+              },
             ),
           ),
           Expanded(
@@ -52,11 +69,36 @@ class _BankBookState extends State<BankBook> {
                     itemBuilder: (context, index) {
                       BankbookModel transaction = snapshot.data![index];
                       return Container(
-                        color: Colors.white,
-                        child: ListTile(
-                          title: Text({transaction.summary}.toString()),
-                          subtitle: Text(
-                              '날짜: ${transaction.date}, 금액: ${transaction.amount}, 잔액: ${transaction.balance}, 타입: ${transaction.transactionType}'),
+                        padding: const EdgeInsets.all(10),
+                        child: Card(
+                          color: (transaction.transactionType == "적립")
+                              ? Colors.green[200]
+                              : Colors.red[200],
+                          child: ListTile(
+                            isThreeLine: true,
+                            title: Text(DateFormat("yyyy-MM-dd")
+                                .format(transaction.date!)),
+                            subtitle: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('${transaction.summary}'),
+                                    Text(transaction.transactionType == "적립"
+                                        ? '+ ${transaction.amount}'
+                                        : '- ${transaction.amount}'),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text('잔액: ${transaction.balance}'),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
                         ),
                       );
                     },

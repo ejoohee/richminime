@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:richminime/models/interior_theme_model.dart';
 import 'package:richminime/services/interior_service.dart';
+import 'package:richminime/widgets/appbar_back_home.dart';
 
 class InteriorStore extends StatefulWidget {
   const InteriorStore({super.key});
@@ -55,6 +56,7 @@ class _InteriorStoreState extends State<InteriorStore> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppBarBackHome(title: "가구 가게"),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         child: Padding(

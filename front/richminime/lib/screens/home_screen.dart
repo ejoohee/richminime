@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:richminime/icons/my_flutter_app_icons.dart';
 import 'package:richminime/miniroom/mini_room.dart';
 import 'package:richminime/models/bankbook_model.dart';
 import 'package:richminime/screens/analysis.dart';
@@ -8,6 +9,7 @@ import 'package:richminime/screens/clothing_store.dart';
 import 'package:richminime/screens/interior.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:richminime/screens/interior_store.dart';
+import 'package:richminime/widgets/appbar_home_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,20 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.question_mark_rounded),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            );
-          },
-        ),
-      ),
+      appBar: const AppBarHomeScreen(),
       body: Center(
         child: Column(
           children: [
@@ -64,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               destinations: <Widget>[
                 const NavigationDestination(
-                  icon: Icon(Icons.explore),
+                  icon: Icon(Icons.checkroom),
                   label: '옷장',
                 ),
                 currentPageIndex != 1
@@ -80,8 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         label: '',
                       ),
                 const NavigationDestination(
-                  selectedIcon: Icon(Icons.bookmark),
-                  icon: Icon(Icons.bookmark_border),
+                  selectedIcon: Icon(Icons.chair),
+                  icon: Icon(Icons.chair_outlined),
                   label: '테마',
                 ),
               ],
@@ -111,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const ClothingStore()), // 옷장 페이지로 이동
                 );
               },
-              color: Colors.blue,
+              color: Colors.purple,
               iconSize: 50,
             ),
             CircularMenuItem(
@@ -127,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
               iconSize: 50,
             ),
             CircularMenuItem(
-              icon: Icons.person_search_rounded,
+              icon: Icons.pie_chart,
               onTap: () {
                 Navigator.push(
                   context,
@@ -139,11 +128,11 @@ class _HomeScreenState extends State<HomeScreen> {
               iconSize: 50,
             ),
             CircularMenuItem(
-              icon: Icons.message_rounded,
+              icon: MyFlutterApp.gpt,
               onTap: () {
                 // Star 아이콘을 클릭할 때 수행할 작업
               },
-              color: Colors.purple,
+              color: Colors.blue[300],
               iconSize: 50,
             ),
             CircularMenuItem(

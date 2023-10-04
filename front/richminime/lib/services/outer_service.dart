@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:richminime/constants/api.dart';
-import 'package:richminime/constants/outer_key.dart';
 
 class financeInfoModel {
   String? name;
