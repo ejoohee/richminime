@@ -79,11 +79,11 @@ public class RoomServiceImpl implements RoomService {
                             .itemType(item.getItemType().getValue())
                             .build();
                 } else {                                       //아이디가 같으면 ->  기본 셋팅으로
-                    if(item.getItemType().equals("벽지장판")){
+                    if(item.getItemType().getValue().equals("벽지장판")){
                         room.chageItem(Item.builder().itemId(100000L).build());
-                    } else if (item.getItemType().equals("가구")) {
+                    } else if (item.getItemType().getValue().equals("가구")) {
                         room.chageItem(Item.builder().itemId(100001L).build());
-                    } else if (item.getItemType().equals("러그")) {
+                    } else if (item.getItemType().getValue().equals("러그")) {
                         room.chageItem(Item.builder().itemId(100002L).build());
                     }
                     return RoomResDto.builder()
