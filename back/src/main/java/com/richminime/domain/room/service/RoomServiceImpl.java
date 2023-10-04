@@ -87,7 +87,7 @@ public class RoomServiceImpl implements RoomService {
                         room.chageItem(Item.builder().itemId(100002L).build());
                     }
                     return RoomResDto.builder()
-                            .itemId(100000L)
+                            .itemId(room.getItem().getItemId())
                             .imgURL("defaultData")
                             .itemType("defaultData")
                             .build();
