@@ -159,9 +159,9 @@ public class UserServiceImpl implements UserService {
                 spendingService.addSpending(user, startDate.toString(), endDate.toString());
                 spendingService.updateDaySpending(user, month, day, sdf.parse(startDate.toString()), sdf.parse(endDate.toString()));
             } catch (ParseException e) {
-                throw new RuntimeException(e);
+                continue;
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                continue;
             }
         }
     }
@@ -473,7 +473,7 @@ public class UserServiceImpl implements UserService {
         ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
 //        // 이메일 인증 여부 확인
         String checkResult = (String) valueOperations.get(addUserRequest.getEmail());
-        if(!checkResult.equals("이메일 인증 완료"))
+        if(checkResult == null || !checkResult.equals("이메일 인증 완료"))
             throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = getConnectedIdByUUID(UUID.fromString(addUserRequest.getUuid()));
