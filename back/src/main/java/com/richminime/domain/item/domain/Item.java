@@ -1,5 +1,6 @@
 package com.richminime.domain.item.domain;
 
+import com.richminime.domain.item.constant.ItemType;
 import com.richminime.domain.item.dto.ItemUpdateReqDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Item {
 
-    // itemId, itemName, itemType, itemImg, itemInfo, price\
     @Id @GeneratedValue
     @Column(name = "item_id")
     private Long itemId;

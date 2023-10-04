@@ -11,4 +11,6 @@ public class ReissueTokenResDto {
 
     private String accessToken;
 
+    private String refreshToken;
+
 }

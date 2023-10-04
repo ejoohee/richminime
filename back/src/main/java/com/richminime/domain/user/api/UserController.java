@@ -4,7 +4,6 @@ import com.richminime.domain.user.dto.request.*;
 import com.richminime.domain.user.dto.response.*;
 import com.richminime.domain.user.service.UserService;
 import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
-import com.richminime.global.dto.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +38,7 @@ public class UserController {
             description = "필요한 정보를 입력하여 회원 가입합니다."
     )
     @PostMapping
-    public ResponseEntity<Void> addUser(@RequestBody AddUserReqDto addUserRequest) {
+    public ResponseEntity<Void> addUser(@RequestBody @Valid AddUserReqDto addUserRequest) {
         userService.addUser(addUserRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -53,7 +53,7 @@ public class UserController {
             description = "회원 가입 시 해당 이메일로 이미 가입한 회원이 있는지 검사합니다."
     )
     @GetMapping("/check-login-email")
-    public ResponseEntity<CheckEmailResDto> checkEmail(@RequestParam(name = "email") String email) {
+    public ResponseEntity<CheckResDto> checkEmail(@RequestParam(name = "email") String email) {
         return ResponseEntity.ok().body(userService.checkEmail(email));
     }
 
@@ -72,8 +72,17 @@ public class UserController {
             description = "입력한 코드가 전송한 인증 코드와 일치하는지 검사합니다."
     )
     @PostMapping("/check-email-code")
-    public ResponseEntity<CheckEmailResDto> checkEmailCode(@RequestBody CheckEmailCodeReqDto checkEmailCodeReqDto) {
+    public ResponseEntity<CheckResDto> checkEmailCode(@RequestBody CheckEmailCodeReqDto checkEmailCodeReqDto) {
         return ResponseEntity.ok().body(userService.checkEmailCode(checkEmailCodeReqDto));
+    }
+
+    @Operation(
+            summary = "카드 유효성 검사",
+            description = "입력한 코드가 전송한 인증 코드와 일치하는지 검사합니다."
+    )
+    @PostMapping("/check-card")
+    public ResponseEntity<CheckResDto> checkCardNumber(@RequestBody CheckCardNumberReqDto checkCardNumberReqDto) {
+        return ResponseEntity.ok().body(userService.checkCardNumber(checkCardNumberReqDto));
     }
 
     @Operation(
@@ -82,10 +91,6 @@ public class UserController {
     )
     @PostMapping("/connected-id")
     public ResponseEntity<GenerateConnectedIdResDto> generateConnectedId(@RequestBody GenerateConnectedIdReqDto generateConnectedIdRequest) {
-        log.info("기관코드" + " " +generateConnectedIdRequest.getOrganization());
-        log.info("아이디" + " " + generateConnectedIdRequest.getId());
-        log.info("비밀번호" + " " + generateConnectedIdRequest.getPassword());
-        log.info("카드번호" + " " + generateConnectedIdRequest.getCardNumber());
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.generateConnectedId(generateConnectedIdRequest));
     }
 
@@ -111,12 +116,7 @@ public class UserController {
     )
     @PostMapping("/login")
     public ResponseEntity<LoginResDto> login(@RequestBody LoginReqDto loginRequest) {
-        Map<String, Object> map = userService.login(loginRequest);
-        LoginResDto loginResDto = (LoginResDto) map.get("accessToken");
-        String refreshToken = (String) map.get("refreshToken");
-        return ResponseEntity.ok()
-                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure")
-                .body(loginResDto);
+        return ResponseEntity.ok().body(userService.login(loginRequest));
     }
 
     @Operation(
@@ -124,8 +124,8 @@ public class UserController {
             description = "로그아웃 합니다."
     )
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestParam(name = "email") String email, @RequestHeader("Authorization") String accessToken) {
-        userService.logout(email, accessToken.substring(JwtHeaderUtilEnums.GRANT_TYPE.getValue().length()));
+    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String accessToken) {
+        userService.logout(accessToken.substring(JwtHeaderUtilEnums.GRANT_TYPE.getValue().length()));
         return ResponseEntity.ok().build();
     }
 
@@ -193,12 +193,8 @@ public class UserController {
     )
     @PostMapping("/reissue-token")
     public ResponseEntity<ReissueTokenResDto> reissueToken(@RequestHeader("Authorization") String accessToken, @RequestHeader("Refresh-Token") String refreshToken) {
-        Map<String, Object> map = userService.reissueToken(accessToken, refreshToken);
-        ReissueTokenResDto reissueResDto = (ReissueTokenResDto) map.get("accessToken");
-       refreshToken = (String) map.get("refreshToken");
         return ResponseEntity.ok()
-                .header("Set-Cookie", jwtCookieName + "=" + refreshToken + "; HttpOnly; Max-Age=" + 1000L * 60 * 60 * 24 + "; SameSite=None; Secure")
-                .body(reissueResDto);
+                .body(userService.reissueToken(accessToken, refreshToken));
     }
 
     @Operation(

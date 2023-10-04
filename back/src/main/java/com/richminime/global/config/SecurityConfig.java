@@ -53,11 +53,12 @@ public class SecurityConfig {
         return http.antMatcher("/**")
                 .authorizeRequests()
                 // 토큰 인증 없이도 접근 가능한 api
-                .antMatchers(HttpMethod.POST, "/user", "/user/login", "/user/send-email-code", "/user/check-email-code", "/user/connected-id", "/user/reissue-token").permitAll()
+                .antMatchers(HttpMethod.POST, "/user", "/user/login", "/user/send-email-code", "/user/check-email-code", "/user/connected-id", "/user/check-card", "/user/reissue-token").permitAll()
                 .antMatchers(HttpMethod.GET, "/user/check-login-email", "/user/email").permitAll()
                 .antMatchers("/h2-console/**",
                         "/favicon.ico",
-//                        "/item/**",
+                        "/item/**", // 임시
+                        "/feedback/**", // 임시
                         "/error",
                         "/swagger-ui/**",
                         "/swagger-resources/**",
@@ -70,6 +71,9 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/item").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/item/*").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/item/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/feedback").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/feedback/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/feedback/*").hasRole("ADMIN")
                 .antMatchers("/**").hasRole("USER")
                 .and()
                 // HTTP 기본 인증을 사용하지 않도록 설정

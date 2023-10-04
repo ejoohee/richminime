@@ -12,7 +12,10 @@ import java.util.Objects;
 @Component
 public class SecurityUtils {
 
-    public String getLoggedInUserEmail() {
+    private Authentication authentication;
+    private CustomUserDetails userPrincipal;
+
+    private void getAuthentication() {
         try {
             Authentication authentication = Objects.requireNonNull(SecurityContextHolder
                     .getContext()
@@ -22,30 +25,57 @@ public class SecurityUtils {
                 authentication = null;
             }
 
-            //이메일정보
-            return authentication.getName();
+            this.authentication = authentication;
+            this.userPrincipal = (CustomUserDetails) authentication.getPrincipal();
         } catch (NullPointerException e) {
             throw new ForbiddenException();
         }
+    }
+
+    public String getLoggedInUserEmail() {
+//        try {
+////            Authentication authentication = Objects.requireNonNull(SecurityContextHolder
+////                    .getContext()
+////                    .getAuthentication());
+////
+////            if (authentication instanceof AnonymousAuthenticationToken) {
+////                authentication = null;
+////            }
+//
+//            getAuthentication();
+//
+//            //이메일정보
+//            return authentication.getName();
+//        } catch (NullPointerException e) {
+//            throw new ForbiddenException();
+//        }
+//
+        getAuthentication();
+        return authentication.getName();
     }
 
     public Long getUserNo() {
-        try {
-            Authentication authentication = Objects.requireNonNull(SecurityContextHolder
-                    .getContext()
-                    .getAuthentication());
-
-            if (authentication instanceof AnonymousAuthenticationToken) {
-                authentication = null;
-            }
-
-            CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
-
-            // userId(번호)
-            return userPrincipal.getUserId();
-        } catch (NullPointerException e) {
-            throw new ForbiddenException();
-        }
+//        try {
+////            Authentication authentication = Objects.requireNonNull(SecurityContextHolder
+////                    .getContext()
+////                    .getAuthentication());
+////
+////            if (authentication instanceof AnonymousAuthenticationToken) {
+////                authentication = null;
+////            }
+////
+////            CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
+//
+//            getAuthentication();
+//
+//            // userId(번호)
+//            return userPrincipal.getUserId();
+//        } catch (NullPointerException e) {
+//            throw new ForbiddenException();
+//        }
+        getAuthentication();
+        return userPrincipal.getUserId();
     }
+
 }
 
