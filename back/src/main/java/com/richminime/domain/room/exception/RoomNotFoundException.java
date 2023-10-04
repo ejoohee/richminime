@@ -1,8 +1,11 @@
 package com.richminime.domain.room.exception;
 
 import com.richminime.global.exception.NotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class RoomNotFoundException extends NotFoundException {
+@ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "룸을 찾을 수 없음")
+public class RoomNotFoundException extends RuntimeException {
     private final Long errorCode;
     public RoomNotFoundException(){
         this.errorCode = 200L;
