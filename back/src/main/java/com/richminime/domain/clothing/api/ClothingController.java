@@ -40,9 +40,9 @@ public class ClothingController {
             description = "소유한 테마 중 선택한 옷을 구매합니다."
     )
     @PostMapping("/my")
-    public ResponseEntity<AddUserClothingResDto> addMyClothing(@RequestBody @Valid UserClothingReqDto userClothingReqDto) {
+    public ResponseEntity<AddUserClothingResDto> addMyClothing(@RequestParam(required = true) Long clothingId) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(userClothingService.addMyClothing(userClothingReqDto));
+                .body(userClothingService.addMyClothing(clothingId));
     }
 
     //관리자 수정

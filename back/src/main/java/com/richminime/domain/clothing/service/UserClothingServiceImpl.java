@@ -56,10 +56,9 @@ public class UserClothingServiceImpl implements UserClothingService {
 
     @Transactional
     @Override
-    public AddUserClothingResDto addMyClothing(UserClothingReqDto userClothingReqDto) {
+    public AddUserClothingResDto addMyClothing(Long clothingId) {
         User user = getLoggedInUser();
 
-        Long clothingId = userClothingReqDto.getClothingId();
         Clothing clothing = clothingRepository.findById(clothingId)
                 .orElseThrow(() -> new ClothingNotFoundException(CLOTHING_NOT_FOUND.getMessage()));
 

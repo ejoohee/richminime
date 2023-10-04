@@ -24,7 +24,7 @@ public class UserClothingResDto {
                 .clothingType(userClothing.getClothing().getClothingType().getValue())
                 .clothingImg(userClothing.getClothing().getClothingImg())
                 .clothingApplyImg(userClothing.getClothing().getClothingApplyImg())
-                .clothingInfo(userClothing.getClothing().getClothingImg())
+                .clothingInfo(userClothing.getClothing().getClothingInfo())
                 .price(userClothing.getClothing().getPrice())
                 .build();
     }
