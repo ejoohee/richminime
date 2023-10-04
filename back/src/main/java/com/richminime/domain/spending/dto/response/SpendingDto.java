@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Builder
-public class SpendingDto implements Serializable {
+public class SpendingDto implements Serializable, Comparable<SpendingDto> {
 
     String category;
 
@@ -22,4 +22,9 @@ public class SpendingDto implements Serializable {
         this.amount += amount;
     }
 
+    @Override
+    public int compareTo(SpendingDto o) {
+        // amount를 기준으로 내림차순 정렬
+        return Long.compare(o.amount, this.amount);
+    }
 }
