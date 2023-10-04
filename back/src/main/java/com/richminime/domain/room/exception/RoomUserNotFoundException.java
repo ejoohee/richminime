@@ -2,18 +2,19 @@ package com.richminime.domain.room.exception;
 
 import com.richminime.global.exception.NotFoundException;
 
-public class RoomNotFoundException extends NotFoundException {
+public class RoomUserNotFoundException extends NotFoundException {
     private final Long errorCode;
-    public RoomNotFoundException(){
+    public RoomUserNotFoundException(){
         this.errorCode = 200L;
     }
-    public RoomNotFoundException(String message) {
+    public RoomUserNotFoundException(String message) {
         super(message);
         this.errorCode = 200L;
     }
 
-    public RoomNotFoundException(String message, Long errorCode) {
+    public RoomUserNotFoundException(String message, Long errorCode) {
         super(message);
         this.errorCode = errorCode;
     }
 }
+

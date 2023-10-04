@@ -52,7 +52,7 @@ public class PromptServiceImpl implements PromptService {
                 messages.add(assistantMessage);
             }
         }
-        userMessage = new Message("user",dto.getRequest());
+        userMessage = new Message("user",dto.getRequest() + "글자수는 50글자 내외로 해줘");
         messages.add(userMessage);
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model","gpt-3.5-turbo");
