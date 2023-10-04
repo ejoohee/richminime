@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.richminime.domain.item.constant.ItemExceptionMessage.*;
-import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
-import static com.richminime.global.constant.ExceptionMessage.*;
+//import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
+//import static com.richminime.global.constant.ExceptionMessage.*;
 
 @Slf4j
 @Service
@@ -55,7 +55,7 @@ public class UserItemServiceImpl implements UserItemService {
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[유저아이템 서비스] 로그인 유저를 찾을 수 없습니다.");
-                    return new UserNotFoundException(USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(ITEM_AUTHORIZATION_FAILED.getMessage());
                 });
 
         return loginUser;
@@ -143,7 +143,7 @@ public class UserItemServiceImpl implements UserItemService {
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[테마 구매] 로그인 사용자 없음");
-                    return new UserNotFoundException(USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(ITEM_USER_NOT_FOUND.getMessage());
                 });
 
         // 보유하고 있는 테마인지 확인
@@ -173,7 +173,7 @@ public class UserItemServiceImpl implements UserItemService {
         // 잔액 부족이면 구매 불가
         if(newBalance < 0){
             log.error("[테마 구매하기] 잔액이 부족해 구매할 수 없습니다.");
-            throw new ItemInsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
+            throw new ItemInsufficientBalanceException(ITEM_INSUFFICIENT_BALANCE.getMessage());
         }
 
         log.info("[테마 구매하기] 테마 구매 가능 !!");
