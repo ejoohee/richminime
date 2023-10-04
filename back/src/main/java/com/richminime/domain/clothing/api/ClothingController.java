@@ -7,7 +7,6 @@ import com.richminime.domain.clothing.dto.*;
 import com.richminime.domain.clothing.service.ClothingService;
 import com.richminime.domain.clothing.service.UserClothingService;
 import com.richminime.global.dto.MessageDto;
-import com.richminime.global.dto.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,11 +29,9 @@ public class ClothingController {
             description = "관리자 사용자가 옷 상점에 새로운 옷을 등록합니다."
     )
     @PostMapping("")
-    public ResponseEntity<MessageDto> addClothing(@RequestBody @Valid ClothingReqDto clothingReqDto) {
-        clothingService.addClothing(clothingReqDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(MessageDto.msg(
-                ClothingResponseMessage.ADD_CLOTHING.getMessage()
-        ));
+    public ResponseEntity<ClothingResDto> addClothing(@RequestBody @Valid ClothingReqDto clothingReqDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(clothingService.addClothing(clothingReqDto));
     }
 
     //유저 구매
@@ -43,11 +40,9 @@ public class ClothingController {
             description = "소유한 테마 중 선택한 옷을 구매합니다."
     )
     @PostMapping("/my")
-    public ResponseEntity<MessageDto> addMyClothing(@RequestBody @Valid UserClothingReqDto userClothingReqDto) {
-        userClothingService.addMyClothing(userClothingReqDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(MessageDto.msg(
-                ClothingResponseMessage.ADD_MY_CLOTHING.getMessage()
-        ));
+    public ResponseEntity<AddUserClothingResDto> addMyClothing(@RequestParam(required = true) Long clothingId) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userClothingService.addMyClothing(clothingId));
     }
 
     //관리자 수정
@@ -56,13 +51,9 @@ public class ClothingController {
             description = "관리자 사용자가 옷 상점에 등록된 옷을 수정합니다."
     )
     @PutMapping("")
-    public ResponseEntity<ResponseDto<ClothingResDto>> updateClothing(@RequestBody @Valid ClothingUpdateReqDto clothingUpdateReqDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDto.create(
-                        ClothingResponseMessage.UPDATE_CLOTHING.getMessage(),
-                        clothingService.updateClothing(clothingUpdateReqDto)
-                )
-        );
+    public ResponseEntity<ClothingResDto> updateClothing(@RequestBody @Valid ClothingUpdateReqDto clothingUpdateReqDto) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(clothingService.updateClothing(clothingUpdateReqDto));
     }
 
     //관리자 삭제
@@ -84,11 +75,9 @@ public class ClothingController {
             description = "소유한 테마 중 선택한 옷을 판매합니다."
     )
     @DeleteMapping("/my/{userClothingId}")
-    public ResponseEntity<MessageDto> deleteMyClothing(@PathVariable("userClothingId") Long userClothingId) {
-        userClothingService.deleteMyClothing(userClothingId);
-        return ResponseEntity.status(HttpStatus.OK).body(MessageDto.msg(
-                ClothingResponseMessage.DELETE_MY_CLOTHING.getMessage()
-        ));
+    public ResponseEntity<DeleteUserClothingResDto> deleteMyClothing(@PathVariable("userClothingId") Long userClothingId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userClothingService.deleteMyClothing(userClothingId));
     }
 
     //상점 상세보기
@@ -97,13 +86,9 @@ public class ClothingController {
             description = "옷 상점에 등록된 옷 중 선택한 옷을 상세 조회합니다."
     )
     @GetMapping("/{clothingId}")
-    public ResponseEntity<ResponseDto<ClothingResDto>> findOneClothing(@PathVariable Long clothingId) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDto.create(
-                        ClothingResponseMessage.FIND_ONE_CLOTHING.getMessage(),
-                        clothingService.findOneClothing(clothingId)
-                )
-        );
+    public ResponseEntity<ClothingResDto> findOneClothing(@PathVariable Long clothingId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(clothingService.findOneClothing(clothingId));
     }
 
     //상점 타입별 전체보기
@@ -112,12 +97,9 @@ public class ClothingController {
             description = "선택한 방법으로 옷 리스트를 조회합니다."
     )
     @GetMapping("")
-    public ResponseEntity<ResponseDto<List<ClothingResDto>>> findAllClothingByType(@RequestParam(required = false) ClothingType clothingType) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDto.create(ClothingResponseMessage.FIND_ALL_CLOTHING.getMessage(),
-                        clothingService.findAllClothingByType(clothingType)
-                )
-        );
+    public ResponseEntity<List<ClothingResDto>> findAllClothingByType(@RequestParam(required = false) ClothingType clothingType) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(clothingService.findAllClothingByType(clothingType));
     }
 
     //유저 소유 옷 타입별 전체보기
@@ -126,11 +108,8 @@ public class ClothingController {
             description = "선택한 방법으로 옷 리스트를 조회합니다."
     )
     @GetMapping("/my")
-    public ResponseEntity<ResponseDto<List<UserClothingResDto>>> findAllMyClothingByType(@RequestParam(required = false) ClothingType clothingType) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseDto.create(ClothingResponseMessage.FIND_ALL_MY_CLOTHING.getMessage(),
-                        userClothingService.findAllMyClothingByType(clothingType)
-                )
-        );
+    public ResponseEntity<List<UserClothingResDto>> findAllMyClothingByType(@RequestParam(required = false) ClothingType clothingType) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userClothingService.findAllMyClothingByType(clothingType));
     }
 }
