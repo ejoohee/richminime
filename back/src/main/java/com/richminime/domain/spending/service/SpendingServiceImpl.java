@@ -283,7 +283,7 @@ public class SpendingServiceImpl implements SpendingService {
                 .date(LocalDate.now())
                 .balance(newBalance)
                 .transactionType(TransactionType.getTransactionType("적립"))
-                .summary(sb.append(newBalance).append("코인 적립").toString())
+                .summary(sb.append(deposit).append("코인 적립").toString())
                 .build();
 
         bankBookRepository.save(bankBook);
