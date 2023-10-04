@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:richminime/models/clothing_model.dart';
 import 'package:richminime/services/clothig_service.dart';
+import 'package:richminime/widgets/appbar_back_home.dart';
 import 'package:richminime/widgets/clothing_store_selected.dart';
 
 class ClothingStore extends StatefulWidget {
@@ -70,6 +71,7 @@ class _ClothingStoreState extends State<ClothingStore> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppBarBackHome(title: "옷 가게"),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         child: Padding(

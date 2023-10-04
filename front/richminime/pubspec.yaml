@@ -46,6 +46,10 @@ dependencies:
   circular_menu: ^2.0.1
   simple_shadow: ^0.3.1
   animated_text_kit: ^4.2.2
+  mask_text_input_formatter: ^2.5.0
+  fl_chart: ^0.63.0
+  intl: ^0.18.1
+  flutter_svg: ^2.0.7
 
   # credit_card_input_form: ^2.3.0
 
@@ -70,6 +74,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   fonts:
+    - family: MyFlutterApp
+      fonts:
+        - asset: assets/fonts/MyFlutterApp.ttf
     - family: Dunggeunmo
       fonts:
         - asset: assets/fonts/NeoDunggeunmoPro-Regular.ttf
@@ -107,6 +114,8 @@ flutter:
     - assets/images/miniroom/tv_default.png
     - assets/images/miniroom/globe_default.png
     - assets/images/miniroom/closet_default.png
+    - assets/images/minime/gpt.png
+    - assets/images/icon/gpt.svg
       #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

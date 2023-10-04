@@ -12,62 +12,31 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:richminime/interceptor/interceptor.dart';
 
 const String baseUrl = Api.BASE_URL;
 const storage = FlutterSecureStorage();
 
-class HttpInterceptor implements InterceptorContract {
-  @override
-  Future<RequestData> interceptRequest({required RequestData data}) async {
-    final token = await storage.read(key: "accessToken");
-    if (token != null) {
-      data.headers["Authorization"] = "Bearer $token";
-    }
-    return data;
-  }
-
-  @override
-  Future<ResponseData> interceptResponse({required ResponseData data}) async {
-    if (data.statusCode == 401) {
-      String? accessToken = await storage.read(key: "accessToken");
-      var cj = CookieJar();
-      List<Cookie> cookies = await cj.loadForRequest(Uri.parse(baseUrl));
-      String? refreshToken;
-      for (var cookie in cookies) {
-        if (cookie.name == 'refresh_token') {
-          refreshToken = cookie.value;
-          break;
-        }
-      }
-      final url = Uri.parse('$baseUrl/user/reissue-token');
-      final response = await http.post(
-        url,
-        headers: {
-          "Authorization": "Bearer $accessToken",
-          "Refresh-Token": "$refreshToken",
-        },
-      );
-
-      if (response.statusCode == 200) {
-        Map<String, dynamic> responseBody = json.decode(response.body);
-        String? newAccessToken =
-            responseBody['accessToken']; // Adjust this according to your API
-
-        // Update the stored access token
-        await storage.write(key: "accessToken", value: newAccessToken);
-
-        // Retry the original request with the new access token
-        data.headers?["Authorization"] = "Bearer $newAccessToken";
-        // Here you should re-execute the original request.
-        // This part depends on your HTTP client's implementation.
-      }
-    }
-    return data;
-  }
-}
-
 class UserService {
   final client = InterceptedClient.build(interceptors: [HttpInterceptor()]);
+
+  Future<bool> logout() async {
+    final url = Uri.parse('$baseUrl/user/logout');
+    final accessToken = await storage.read(key: "accessToken");
+    final response = await client.post(url, headers: {
+      "Authorization": "Bearer $accessToken",
+    });
+    print(accessToken);
+    print(response.body);
+    if (response.statusCode == 200) {
+      await storage.deleteAll();
+      return true;
+    } else if (response.statusCode == 401 || response.statusCode == 500) {
+      return logout();
+    }
+
+    throw Error();
+  }
 
   Future<bool> login(String email, String password) async {
     final url = Uri.parse('$baseUrl/user/login');
@@ -100,8 +69,8 @@ class UserService {
     return false;
   }
 
-  Future<String> getConnectedId(String id, String password, String organization,
-      String cardNumber) async {
+  Future<String> getConnectedId(
+      String id, String password, String organization) async {
     final url = Uri.parse('$baseUrl/user/connected-id');
     final response = await http.post(
       url,
@@ -111,11 +80,10 @@ class UserService {
           "id": id,
           "password": password,
           "organization": organization,
-          "cardNumber": cardNumber,
         },
       ),
     );
-
+    print(response.body);
     if (response.statusCode == 201) {
       final uuid = jsonDecode(response.body)['uuid'];
       return "uuid $uuid";
@@ -200,6 +168,8 @@ class UserService {
         },
       ),
     );
+    print(cardNumber);
+    print(response.body);
     if (response.statusCode == 201) {
       return "true";
     } else {

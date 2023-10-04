@@ -1,27 +1,57 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:richminime/screens/login.dart';
 import 'package:richminime/screens/sign_up.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:richminime/services/user_service.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class SignUp4 extends StatefulWidget {
   final String organization;
-  final String cardNumber;
   final String uuid;
-  const SignUp4(
-      {required this.organization,
-      required this.cardNumber,
-      required this.uuid,
-      Key? key})
+  const SignUp4({required this.organization, required this.uuid, Key? key})
       : super(key: key);
   @override
   State<SignUp4> createState() => _SignUp4State();
 }
 
+class CardNumberInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    String newText = newValue.text.replaceAll('-', '');
+    if (newText.length > 4) {
+      newText =
+          '${newText.substring(0, 4)}-${newText.substring(4, newText.length)}';
+    }
+    if (newText.length > 9) {
+      newText =
+          '${newText.substring(0, 9)}-${newText.substring(9, newText.length)}';
+    }
+    if (newText.length > 14) {
+      newText =
+          '${newText.substring(0, 14)}-${newText.substring(14, newText.length)}';
+    }
+
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+  }
+}
+
 class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
+  final maskFormatter = MaskTextInputFormatter(
+    mask: '****-****-****-****',
+    //입력된 숫자를 *로 표시하는 마스크
+
+    filter: {"*": RegExp('[0-9]')},
+    type: MaskAutoCompletionType.eager,
+  ); //
+
   bool isLoading = false;
   bool isEmailVerified = false;
   final _formKey = GlobalKey<FormState>(); // Form 위젯에 키를 할당하여 유효성 검사에 사용
@@ -54,7 +84,7 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
   TextEditingController cardNickNameController = TextEditingController();
   TextEditingController verificationController = TextEditingController();
   TextEditingController cardPasswordConfirmController = TextEditingController();
-
+  TextEditingController cardNumController = TextEditingController();
   final userService = UserService();
   String enteredCode = "";
 
@@ -209,7 +239,7 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
     String password = cardPasswordController.text;
     String nickname = cardNickNameController.text;
     String organization = widget.organization;
-    String cardNumber = widget.cardNumber;
+    String cardNumber = maskFormatter.getUnmaskedText();
     String uuid = widget.uuid;
     if (!isEmailVerified) {
       showDialog(
@@ -243,8 +273,23 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
           ),
         );
       } else {
-        AlertDialog(
-          title: Text(response),
+        if (!context.mounted) return;
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('알림'),
+              content: const Text('카드번호를 확인해주세요.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('확인'),
+                ),
+              ],
+            );
+          },
         );
       }
     }
@@ -386,6 +431,28 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                               labelText: '비밀번호 확인',
                               fillColor: Color(0xFFFFFDFD),
                               filled: true,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: cardNumController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return '카드번호를 입력해주세요.';
+                              }
+                              return null;
+                            },
+                            keyboardType: TextInputType.number,
+                            maxLength: 19,
+                            inputFormatters: [maskFormatter],
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 10),
+                              labelText: '카드번호',
+                              fillColor: Color(0xFFFFFDFD),
+                              filled: true,
+                              counterText: "",
                             ),
                           ),
                           const SizedBox(height: 10),
