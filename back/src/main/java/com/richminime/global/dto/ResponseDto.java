@@ -11,14 +11,11 @@ import lombok.NoArgsConstructor;
 public class ResponseDto<T> {
 
     private String msg;
-    private T data;
+//    private T data;
 
     public static <T> ResponseDto<T> create(String msg) {
-        return new ResponseDto<>(msg, null);
+        return new ResponseDto<>(msg);
     }
 
-    public static <T> ResponseDto<T> create(String msg, T data) {
-        return new ResponseDto<>(msg, data);
-    }
 }
 

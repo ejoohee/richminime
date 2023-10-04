@@ -1,10 +1,10 @@
 package com.richminime.domain.clothing.exception;
 
-import com.richminime.global.exception.DuplicatedException;
+import com.richminime.global.exception.ClothingException;
 
-public class ClothingDuplicatedException extends DuplicatedException {
+public class ClothingDuplicatedException extends ClothingException {
     public ClothingDuplicatedException() {
-        super();
+        super("이미 옷이 존재합니다.");
     }
 
     public ClothingDuplicatedException(String message) {

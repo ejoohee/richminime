@@ -276,13 +276,14 @@ public class SpendingServiceImpl implements SpendingService {
         Long newBalance = user.getBalance() + deposit;
         user.updateBalance(newBalance);
         // 적립내역 backbook에 저장
+        StringBuilder sb = new StringBuilder();
         BankBook bankBook = BankBook.builder()
                 .userId(user.getUserId())
                 .amount(deposit)
                 .date(LocalDate.now())
                 .balance(newBalance)
                 .transactionType(TransactionType.getTransactionType("적립"))
-                .summary(null)
+                .summary(sb.append(deposit).append("코인 적립").toString())
                 .build();
 
         bankBookRepository.save(bankBook);
