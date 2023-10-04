@@ -103,9 +103,9 @@ public class ItemController {
             summary = "로그인 사용자가 소유한 테마 판매하기",
             description = "소유한 테마 중 선택한 테마를 판매합니다."
     )
-    @DeleteMapping("/my/{userItemId}")
-    public ResponseEntity<DeleteUserItemResDto> deleteUserItem(@PathVariable Long userItemId) {
-        return ResponseEntity.ok(userItemService.deleteUserItem(userItemId));
+    @DeleteMapping("/my/{itemId}")
+    public ResponseEntity<DeleteUserItemResDto> deleteUserItem(@PathVariable Long itemId) {
+        return ResponseEntity.ok(userItemService.deleteUserItem(itemId));
     }
 
 }

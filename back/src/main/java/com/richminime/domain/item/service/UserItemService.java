@@ -21,6 +21,6 @@ public interface UserItemService {
     AddUserItemResDto addUserItem(Long itemId);
 
     // 6. 소유한 테마 판매하기
-    DeleteUserItemResDto deleteUserItem(Long userItemId);
+    DeleteUserItemResDto deleteUserItem(Long itemId);
 
 }
