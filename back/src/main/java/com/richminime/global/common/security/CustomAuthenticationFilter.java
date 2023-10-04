@@ -5,6 +5,7 @@ import com.richminime.global.common.jwt.JwtHeaderUtilEnums;
 import com.richminime.global.exception.security.SecurityExceptionMessage;
 import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
@@ -49,6 +51,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             checkLogout(accessToken);
             try {
                 String id = jwtUtil.getUsername(accessToken);
+                log.info("필터 id------------------------------>{}", id);
                 if (id != null) {
                     UserDetails userDetails = customUserDetailService.loadUserByUsername(id);
                     // 액세스 토큰 생성 시 사용된 이메일 아이디와 현재 이메일 아이디가 일치하는지 확인
@@ -60,6 +63,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
                 }
             } catch(Exception e) {
                 // jwt 만료 등 예외가 발생할 때 다음 필터로 넘어감
+                log.info("토큰 필터에서 에러남=========================================");
                 filterChain.doFilter(request, response);
             }
         }

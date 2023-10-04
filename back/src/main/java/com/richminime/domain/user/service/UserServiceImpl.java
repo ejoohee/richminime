@@ -417,8 +417,8 @@ public class UserServiceImpl implements UserService {
         ValueOperations<String, Object> valueOperations= redisTemplate.opsForValue();
         // 이메일 인증 여부 확인
         String checkResult = (String) valueOperations.get(addUserRequest.getEmail());
-        if(checkResult == null || !checkResult.equals("이메일 인증 완료"))
-            throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
+//        if(checkResult == null || !checkResult.equals("이메일 인증 완료"))
+//            throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
         // uuid에 해당하는 커넥티드 아이디 가져오기
         String connectedId = getConnectedIdByUUID(UUID.fromString(addUserRequest.getUuid()));
         String organizationCode = addUserRequest.getOrganization();
@@ -442,17 +442,17 @@ public class UserServiceImpl implements UserService {
 
 
         // 회원가입 성공하면 월 소비내역 초기값 저장하는 메서드 호출
-        try {
-            addUserMonthSpending(user);
-        } catch (Exception e) {
-            // 카드번호에 문제가 있는 상황
-            // 회원가입을 취소
-            userRepository.deleteById(user.getUserId());
-            throw new RuntimeException(e);
-        }
-        // 일일 소비패턴 분석(초기값)
-        // 어제랑 그저께를 비교
-        initUserDaySpending(user);
+//        try {
+//            addUserMonthSpending(user);
+//        } catch (Exception e) {
+//            // 카드번호에 문제가 있는 상황
+//            // 회원가입을 취소
+//            userRepository.deleteById(user.getUserId());
+//            throw new RuntimeException(e);
+//        }
+//        // 일일 소비패턴 분석(초기값)
+//        // 어제랑 그저께를 비교
+//        initUserDaySpending(user);
         // 회원가입 무사 완료 시
         // 커넥티드 아이디 정보 삭제
         connectedIdMap.remove(UUID.fromString(addUserRequest.getUuid()));
@@ -511,6 +511,7 @@ public class UserServiceImpl implements UserService {
      */
     private String getLoginId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null) throw new TokenException("토큰에서 로그인 정보를 가져올 수 없습니다.");
         UserDetails principal = (UserDetails) authentication.getPrincipal();
         return principal.getUsername();
     }

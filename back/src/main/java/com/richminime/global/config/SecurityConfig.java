@@ -75,6 +75,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.PUT, "/feedback/*").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/feedback/*").hasRole("ADMIN")
                 .antMatchers("/**").hasRole("USER")
+                // 그 외에는 모두 토큰 기반 인증이 필요함
+                .anyRequest().authenticated()
                 .and()
                 // HTTP 기본 인증을 사용하지 않도록 설정
                 .httpBasic().disable()
