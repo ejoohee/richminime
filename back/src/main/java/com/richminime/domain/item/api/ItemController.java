@@ -20,7 +20,7 @@ public class ItemController {
 
     private final ItemService itemService;
     private final UserItemService userItemService;
-    private final String ACCESS_TOKEN = "AccessToken";
+//    private final String ACCESS_TOKEN = "AccessToken";
 
     @Operation(
             summary = "테마 상점에 등록된 테마 전체 또는 카테고리별 조회",
@@ -46,9 +46,9 @@ public class ItemController {
             description = "관리자 사용자가 테마 상점에 새로운 테마를 등록합니다."
     )
     @PostMapping
-    public ResponseEntity<ItemResDto> addItem(@RequestHeader(ACCESS_TOKEN) String token, @RequestBody ItemReqDto itemReqDto) {
+    public ResponseEntity<ItemResDto> addItem(@RequestBody ItemReqDto itemReqDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(itemService.addItem(token, itemReqDto));
+                .body(itemService.addItem(itemReqDto));
     }
 
     @Operation(
@@ -56,8 +56,8 @@ public class ItemController {
             description = "관리자 사용자가 테마 상점에 등록된 테마를 삭제합니다."
     )
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<MessageDto> deleteItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long itemId) {
-        itemService.deleteItem(token, itemId);
+    public ResponseEntity<MessageDto> deleteItem(@PathVariable Long itemId) {
+        itemService.deleteItem(itemId);
         return ResponseEntity.ok(MessageDto.msg("DELETE SUCCESS"));
     }
 
@@ -66,8 +66,8 @@ public class ItemController {
             description = "관리자 사용자가 테마 상점에 등록된 테마를 수정합니다."
     )
     @PutMapping("/{itemId}")
-    public ResponseEntity<ItemResDto> updateItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long itemId, @RequestBody ItemUpdateReqDto itemUpdateReqDto) {
-        return ResponseEntity.ok(itemService.updateItem(token, itemId, itemUpdateReqDto));
+    public ResponseEntity<ItemResDto> updateItem(@PathVariable Long itemId, @RequestBody ItemUpdateReqDto itemUpdateReqDto) {
+        return ResponseEntity.ok(itemService.updateItem(itemId, itemUpdateReqDto));
     }
 
     // 유저별 기능
@@ -76,8 +76,8 @@ public class ItemController {
             description = "선택한 방법으로 테마 리스트를 조회합니다."
     )
     @GetMapping("/my")
-    public ResponseEntity<List<UserItemResDto>> findAllUserItemByCondition(@RequestHeader(ACCESS_TOKEN) String token, @RequestParam(required = false) ItemType itemType) {
-        return ResponseEntity.ok(userItemService.findAllUserItemByType(token, itemType));
+    public ResponseEntity<List<UserItemResDto>> findAllUserItemByCondition(@RequestParam(required = false) ItemType itemType) {
+        return ResponseEntity.ok(userItemService.findAllUserItemByType(itemType));
     }
 
     @Operation(
@@ -85,8 +85,8 @@ public class ItemController {
             description = "소유한 테마 중 선택한 테마를 상세 조회합니다."
     )
     @GetMapping("/my/{userItemId}")
-    public ResponseEntity<UserItemResDto> findUserItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long userItemId) {
-        return ResponseEntity.ok(userItemService.findUserItem(token, userItemId));
+    public ResponseEntity<UserItemResDto> findUserItem(@PathVariable Long userItemId) {
+        return ResponseEntity.ok(userItemService.findUserItem(userItemId));
     }
 
     @Operation(
@@ -94,8 +94,9 @@ public class ItemController {
             description = "테마 상점에서 선택한 테마를 구매합니다.(미소유 시)"
     )
     @PostMapping("/my/{itemId}")
-    public ResponseEntity<AddUserItemResDto> addUserItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long itemId) {
-        return ResponseEntity.ok(userItemService.addUserItem(token, itemId));
+    public ResponseEntity<AddUserItemResDto> addUserItem(@PathVariable Long itemId) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userItemService.addUserItem(itemId));
     }
 
     @Operation(
@@ -103,8 +104,8 @@ public class ItemController {
             description = "소유한 테마 중 선택한 테마를 판매합니다."
     )
     @DeleteMapping("/my/{userItemId}")
-    public ResponseEntity<DeleteUserItemResDto> deleteUserItem(@RequestHeader(ACCESS_TOKEN) String token, @PathVariable Long userItemId) {
-        return ResponseEntity.ok(userItemService.deleteUserItem(token, userItemId));
+    public ResponseEntity<DeleteUserItemResDto> deleteUserItem(@PathVariable Long userItemId) {
+        return ResponseEntity.ok(userItemService.deleteUserItem(userItemId));
     }
 
 }

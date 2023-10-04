@@ -83,7 +83,7 @@ public class UserClothingServiceImpl implements UserClothingService {
                 .date(LocalDate.now())
                 .balance(newBalance)
                 .transactionType(TransactionType.getTransactionType("구매"))
-                .summary(clothing.getClothingInfo())
+                .summary(clothing.getClothingName() + " 구매")
                 .build();
 
         bankBookRepository.save(bankBook);
@@ -120,7 +120,7 @@ public class UserClothingServiceImpl implements UserClothingService {
                 .date(LocalDate.now())
                 .balance(newBalance)
                 .transactionType(TransactionType.getTransactionType("판매"))
-                .summary(userClothing.getClothing().getClothingInfo())
+                .summary(userClothing.getClothing().getClothingName() + " 판매")
                 .build();
 
         bankBookRepository.save(bankBook);

@@ -10,6 +10,7 @@ import com.richminime.domain.item.dto.AddUserItemResDto;
 import com.richminime.domain.item.dto.DeleteUserItemResDto;
 import com.richminime.domain.item.dto.UserItemResDto;
 import com.richminime.domain.item.exception.ItemDuplicatedException;
+import com.richminime.domain.item.exception.ItemInsufficientBalanceException;
 import com.richminime.domain.item.exception.ItemNotFoundException;
 import com.richminime.domain.item.repository.ItemRepository;
 import com.richminime.domain.item.repository.UserItemRepository;
@@ -17,7 +18,6 @@ import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.exception.ForbiddenException;
-import com.richminime.global.exception.InsufficientBalanceException;
 import com.richminime.global.util.SecurityUtils;
 import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -43,14 +43,14 @@ public class UserItemServiceImpl implements UserItemService {
     private final UserRepository userRepository;
     private final BankBookRepository bankBookRepository;
     private final SecurityUtils securityUtils;
-    private final JWTUtil jwtUtil;
+//    private final JWTUtil jwtUtil;
 
     /**
      * 로그인 유저를 반환하는 메서드
      * @return loginUser
      */
-    private User getLoginUser(String token) {
-        String email = jwtUtil.getUsername(token);
+    private User getLoginUser() {
+        String email = securityUtils.getLoggedInUserEmail();
 
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
@@ -67,11 +67,11 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public List<UserItemResDto> findAllUserItem(String token) {
-        String email = jwtUtil.getUsername(token);
+    public List<UserItemResDto> findAllUserItem() {
+        String email = securityUtils.getLoggedInUserEmail();
         log.info("[소유한 테마 전체 조회] 사용자가 소유한 테마 전체 조회, userEmail : {}", email);
 
-        User loginUser = getLoginUser(token);
+        User loginUser = getLoginUser();
 
         return userItemRepository.findAllByUser_UserId(loginUser.getUserId()).stream()
                 .map(userItem -> UserItemResDto.entityToDto(userItem))
@@ -85,14 +85,14 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public List<UserItemResDto> findAllUserItemByType(String token, ItemType itemType) {
+    public List<UserItemResDto> findAllUserItemByType(ItemType itemType) {
         if(itemType == null)
-            return findAllUserItem(token);
+            return findAllUserItem();
 
-        String email = jwtUtil.getUsername(token);
+        String email = securityUtils.getLoggedInUserEmail();
         log.info("[소유한 테마 카테고리별 조회] 사용자가 소유한 테마 조건별 조회. email : {}, 카테고리 : {}", email, itemType);
 
-        User loginUser = getLoginUser(token);
+        User loginUser = getLoginUser();
 
         return userItemRepository.findAllByUser_UserIdAndItem_ItemType(loginUser.getUserId(), itemType).stream()
                 .map(userItem -> UserItemResDto.entityToDto(userItem))
@@ -106,8 +106,8 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public UserItemResDto findUserItem(String token, Long userItemId) {
-        String email = jwtUtil.getUsername(token);
+    public UserItemResDto findUserItem(Long userItemId) {
+        String email = securityUtils.getLoggedInUserEmail();
         log.info("[소유한 테마 상세 조회] 사용자가 선택한 소유테마 상세 조회 요청. email : {}, userItemId : {}", email, userItemId);
 
         UserItem userItem = userItemRepository.findById(userItemId)
@@ -133,14 +133,21 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public AddUserItemResDto addUserItem(String token, Long itemId) {
-        User loginUser = getLoginUser(token);
-        Long loginUserId = loginUser.getUserId();
+    public AddUserItemResDto addUserItem(Long itemId) {
+//        User loginUser = getLoginUser(token);
+//        Long loginUserId = loginUser.getUserId();
+        String email = securityUtils.getLoggedInUserEmail();
 
-        log.info("[테마 구매하기] 테마 구매 요청. userId : {}, itemId : {}", loginUserId, itemId);
+        log.info("[테마 구매하기] 테마 구매 요청. email : {}, itemId : {}", email, itemId);
+
+        User loginUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[테마 구매] 로그인 사용자 없음");
+                    return new UserNotFoundException(USER_NOT_FOUND.getMessage());
+                });
 
         // 보유하고 있는 테마인지 확인
-        Boolean alreadyOwned = userItemRepository.existsByUser_UserIdAndItem_ItemId(loginUserId, itemId);
+        Boolean alreadyOwned = userItemRepository.existsByUser_UserIdAndItem_ItemId(loginUser.getUserId(), itemId);
 
         // 보유중이면 구매 불가
         if(alreadyOwned) {
@@ -166,18 +173,18 @@ public class UserItemServiceImpl implements UserItemService {
         // 잔액 부족이면 구매 불가
         if(newBalance < 0){
             log.error("[테마 구매하기] 잔액이 부족해 구매할 수 없습니다.");
-            throw new InsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
+            throw new ItemInsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
         }
 
         log.info("[테마 구매하기] 테마 구매 가능 !!");
 
         BankBook bankBook = BankBook.builder()
-                .userId(loginUserId)
+                .userId(loginUser.getUserId())
                 .amount(item.getPrice())
                 .date(LocalDate.now())
                 .balance(newBalance)
                 .transactionType(TransactionType.getTransactionType("구매"))
-                .summary(item.getItemInfo())
+                .summary(item.getItemName() + " 구매")
                 .build();
 
         bankBookRepository.save(bankBook);
@@ -201,10 +208,10 @@ public class UserItemServiceImpl implements UserItemService {
      */
     @Transactional
     @Override
-    public DeleteUserItemResDto deleteUserItem(String token, Long userItemId) {
+    public DeleteUserItemResDto deleteUserItem(Long userItemId) {
         log.info("[테마 판매하기] 소유한 테마 판매 요청. userItemId : {}", userItemId);
 
-        User loginUser = getLoginUser(token);
+        User loginUser = getLoginUser();
 
         UserItem userItem = userItemRepository.findById(userItemId)
                 .orElseThrow(() -> {
@@ -227,7 +234,7 @@ public class UserItemServiceImpl implements UserItemService {
                 .date(LocalDate.now())
                 .balance(newBalance)
                 .transactionType(TransactionType.getTransactionType("판매"))
-                .summary(userItem.getItem().getItemInfo())
+                .summary(userItem.getItem().getItemName() + " 판매")
                 .build();
 
         bankBookRepository.save(bankBook);

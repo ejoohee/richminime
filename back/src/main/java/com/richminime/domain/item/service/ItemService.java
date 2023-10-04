@@ -15,10 +15,10 @@ public interface ItemService {
 
     List<ItemResDto> findAllItemByType(ItemType itemType);
 
-    ItemResDto addItem(String token, ItemReqDto itemReqDto);
+    ItemResDto addItem(ItemReqDto itemReqDto);
 
-    void deleteItem(String token, Long itemId);
+    void deleteItem(Long itemId);
 
-    ItemResDto updateItem(String token, Long itemId, ItemUpdateReqDto itemReqDto);
+    ItemResDto updateItem(Long itemId, ItemUpdateReqDto itemReqDto);
 
 }

@@ -5,12 +5,12 @@ import com.richminime.domain.feedback.constant.FeedbackType;
 import com.richminime.domain.feedback.dto.FeedbackReqDto;
 import com.richminime.domain.feedback.dto.FeedbackResDto;
 import com.richminime.domain.feedback.exception.FeedbackNotFoundException;
+import com.richminime.domain.feedback.exception.FeedbackUserNotFoundException;
 import com.richminime.domain.feedback.repository.FeedbackRepository;
 import com.richminime.domain.spending.dto.response.FindDaySpendingResDto;
 import com.richminime.domain.spending.service.SpendingService;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.domain.UserType;
-import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.util.SecurityUtils;
 import com.richminime.global.util.jwt.JWTUtil;
@@ -41,15 +41,15 @@ public class FeedbackServiceImpl implements FeedbackService {
      * @return
      */
     @Override
-    public FeedbackResDto findFeedback(String token) {
-        String email = jwtUtil.getUsername(token);
+    public FeedbackResDto findFeedback() {
+        String email = securityUtils.getLoggedInUserEmail();
 
         log.info("[피드백 추천] 로그인 유저 반환. email : {}", email);
 
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[피드백 추천] 로그인 유저를 찾을 수 없습니다.");
-                    return new UserNotFoundException(USER_NOT_FOUND.getMessage());
+                    return new FeedbackUserNotFoundException(USER_NOT_FOUND.getMessage());
                 });
 
         // 스펜딩 불러오기
@@ -74,13 +74,13 @@ public class FeedbackServiceImpl implements FeedbackService {
      * 로그인 유저가 관리자인지 체크합니다.
      * @return
      */
-    private boolean isAdmin(String token) {
-        String email = jwtUtil.getUsername(token);
+    private boolean isAdmin() {
+        String email = securityUtils.getLoggedInUserEmail();
 
         User loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[피드백 서비스] 로그인 유저를 찾을 수 없습니다.");
-                    return new UserNotFoundException(USER_NOT_FOUND.getMessage());
+                    return new FeedbackUserNotFoundException(USER_NOT_FOUND.getMessage());
                 });
 
         if(loginUser.getUserType().equals(UserType.ROLE_ADMIN))
@@ -97,12 +97,12 @@ public class FeedbackServiceImpl implements FeedbackService {
      */
     @Transactional
     @Override
-    public FeedbackResDto addFeedback(String token, FeedbackReqDto feedbackReqDto) {
+    public FeedbackResDto addFeedback(FeedbackReqDto feedbackReqDto) {
         log.info("[피드백 등록] 피드백 등록 요청.");
 
-        if(!isAdmin(token)) {
+        if(!isAdmin()) {
             log.error("[피드백 등록] 관리자 회원만 피드백 등록이 가능합니다.");
-            throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
+            throw new FeedbackUserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         };
 
         Feedback feedback = Feedback.builder()
@@ -123,12 +123,12 @@ public class FeedbackServiceImpl implements FeedbackService {
      */
     @Transactional
     @Override
-    public FeedbackResDto updateFeedback(String token, Long feedbackId, FeedbackReqDto feedbackReqDto) {
+    public FeedbackResDto updateFeedback(Long feedbackId, FeedbackReqDto feedbackReqDto) {
         log.info("[피드백 수정] 피드백 수정 요청. feedbackId : {}", feedbackId);
 
-        if(!isAdmin(token)) {
+        if(!isAdmin()) {
             log.error("[피드백 수정] 관리자 회원만 피드백 수정이 가능합니다.");
-            throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
+            throw new FeedbackUserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         };
 
         Feedback feedback = feedbackRepository.findById(feedbackId)
@@ -151,12 +151,12 @@ public class FeedbackServiceImpl implements FeedbackService {
      */
     @Transactional
     @Override
-    public void deleteFeedback(String token, Long feedbackId) {
+    public void deleteFeedback(Long feedbackId) {
         log.info("[피드백 삭제] 피드백 삭제 요청. feedbackId : {]", feedbackId);
 
-        if(!isAdmin(token)) {
+        if(!isAdmin()) {
             log.error("[피드백 삭제] 관리자 회원만 피드백 삭제가 가능합니다.");
-            throw new UserNotFoundException(AUTHORIZATION_FAILED.getMessage());
+            throw new FeedbackUserNotFoundException(AUTHORIZATION_FAILED.getMessage());
         };
 
         Feedback feedback = feedbackRepository.findById(feedbackId)
