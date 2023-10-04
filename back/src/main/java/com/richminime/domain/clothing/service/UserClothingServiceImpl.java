@@ -44,12 +44,12 @@ public class UserClothingServiceImpl implements UserClothingService {
     private User getLoggedInUser() {
         String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
         return userRepository.findByEmail(loggedInUserEmail)
-                .orElseThrow(() -> new ClothingUserNotFoundException(USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new ClothingUserNotFoundException(CLOTHING_USER_NOT_FOUND.getMessage()));
     }
 
     private void checkUserOwnership(User loggedInUser, User targetUser) {
         if (!loggedInUser.getUserId().equals(targetUser.getUserId())) {
-            throw new ForbiddenException();
+            throw new ForbiddenException(CLOTHING_AUTHORIZATION_FAILED.getMessage());
         }
     }
 
@@ -73,7 +73,7 @@ public class UserClothingServiceImpl implements UserClothingService {
 
         long newBalance = user.getBalance() - clothing.getPrice();
         if (newBalance < 0) {
-            throw new ClothingInsufficientBalanceException(INSUFFICIENT_BALANCE.getMessage());
+            throw new ClothingInsufficientBalanceException(CLOTHING_INSUFFICIENT_BALANCE.getMessage());
         }
 
         BankBook bankBook = BankBook.builder()

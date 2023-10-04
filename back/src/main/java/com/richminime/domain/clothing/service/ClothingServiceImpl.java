@@ -10,7 +10,6 @@ import com.richminime.domain.clothing.exception.ClothingNotFoundException;
 import com.richminime.domain.clothing.exception.ClothingUserNotFoundException;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.domain.UserType;
-import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
 import com.richminime.global.exception.ForbiddenException;
 import com.richminime.global.util.SecurityUtils;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.richminime.domain.clothing.constant.ClothingExceptionMessage.CLOTHING_NOT_FOUND;
-import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
+import static com.richminime.domain.clothing.constant.ClothingExceptionMessage.CLOTHING_USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +34,7 @@ public class ClothingServiceImpl implements ClothingService {
     private User getLoggedInUser() {
         String loggedInUserEmail = securityUtils.getLoggedInUserEmail();
         return userRepository.findByEmail(loggedInUserEmail)
-                .orElseThrow(() -> new ClothingUserNotFoundException(USER_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new ClothingUserNotFoundException(CLOTHING_USER_NOT_FOUND.getMessage()));
     }
 
     private void checkAdminAuthority(User user) {
