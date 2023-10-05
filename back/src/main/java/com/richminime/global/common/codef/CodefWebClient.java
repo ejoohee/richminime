@@ -24,10 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonException;
-import javax.json.JsonObject;
+import javax.json.*;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -137,8 +134,10 @@ public class CodefWebClient {
     }
 
     private List<FindCardListResDto> parseCardListFromJson(String jsonResponse) {
-        JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
-        try {
+        JsonObject jsonObject = null;
+        try (StringReader stringReader = new StringReader(jsonResponse);
+                 JsonReader jsonReader = Json.createReader(stringReader)) {
+            jsonObject = jsonReader.readObject();
             // 반환받은 데이터가 리스트 형태(복수 건)
             JsonArray jsonArray = jsonObject.getJsonArray("data");
             return jsonArray.stream().map(json -> {
@@ -169,7 +168,13 @@ public class CodefWebClient {
     }
 
     public String parseConnectedIdFromJson(String jsonResponse) {
-        JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
+        JsonObject jsonObject = null;
+        try (StringReader stringReader = new StringReader(jsonResponse);
+             JsonReader jsonReader = Json.createReader(stringReader)) {
+            jsonObject = jsonReader.readObject();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return jsonObject.getJsonObject("data").getString("connectedId");
     }
 
@@ -200,46 +205,52 @@ public class CodefWebClient {
      * @return
      */
     private List<Spending> parseSpendingListFromJson(String jsonResponse, Long userId) {
-        JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
-        // 응답 코드가 에러코드인 경우 - code : CF-13101
-        if(jsonObject.getJsonObject("result").getString("code").equals(CodefErrorCode.CARD_NO_INVALID.getCode())){
-            // 카드번호가 유효하지 않음 -> 커넥티드 아이디로 등록한 계정에서 접근할 수 있는 카드가 아님
-            throw new NotFoundException(UserExceptionMessage.CARD_CHECK_FAILED.getMessage());
+        JsonObject jsonObject = null;
+        try (StringReader stringReader = new StringReader(jsonResponse);
+             JsonReader jsonReader = Json.createReader(stringReader)) {
+            jsonObject = jsonReader.readObject();
+            // 응답 코드가 에러코드인 경우 - code : CF-13101
+            if (jsonObject.getJsonObject("result").getString("code").equals(CodefErrorCode.CARD_NO_INVALID.getCode())) {
+                // 카드번호가 유효하지 않음 -> 커넥티드 아이디로 등록한 계정에서 접근할 수 있는 카드가 아님
+                throw new NotFoundException(UserExceptionMessage.CARD_CHECK_FAILED.getMessage());
+            }
+            JsonArray jsonArray = jsonObject.getJsonArray("data");
+            List<Spending> spendingList = new ArrayList<>();
+            return jsonArray.stream().map(json -> {
+                        JsonObject jsonObject1 = Json.createObjectBuilder()
+                                .add("index", json)
+                                .build();
+                        jsonObject1 = jsonObject1.getJsonObject("index");
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                        Date date;
+                        try {
+                            date = sdf.parse(jsonObject1.getString("resUsedDate"));
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        // 한국 원 단위가 아닌 경우 소수점이 들어오는 경우가 발생할 수 있음 (ex : USD)
+                        Long amount = null;
+                        if (CountryCode.USD.getCode().equals(jsonObject1.getString("resAccountCurrency"))) {
+                            // 달러 단위
+                            Double tmp = Double.valueOf(jsonObject1.getString("resUsedAmount"));
+                            amount = (long) (tmp * 1000);
+                        }
+                        if (CountryCode.KRW.getCode().equals(jsonObject1.getString("resAccountCurrency"))) {
+                            // 원 단위
+                            amount = Long.valueOf(jsonObject1.getString("resUsedAmount"));
+                        }
+                        return Spending.builder()
+                                .userId(userId)
+                                .category(jsonObject1.getString("resMemberStoreType"))
+                                .cost(amount)
+                                .spentDate(date)
+                                .storeNo(Long.valueOf(jsonObject1.getString("resMemberStoreNo")))
+                                .build();
+                    })
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        JsonArray jsonArray = jsonObject.getJsonArray("data");
-        List<Spending> spendingList = new ArrayList<>();
-        return jsonArray.stream().map(json -> {
-                    JsonObject jsonObject1 = Json.createObjectBuilder()
-                            .add("index", json)
-                            .build();
-                    jsonObject1 = jsonObject1.getJsonObject("index");
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-                    Date date;
-                    try {
-                        date = sdf.parse(jsonObject1.getString("resUsedDate"));
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                    // 한국 원 단위가 아닌 경우 소수점이 들어오는 경우가 발생할 수 있음 (ex : USD)
-                    Long amount = null;
-                    if(CountryCode.USD.getCode().equals(jsonObject1.getString("resAccountCurrency"))) {
-                        // 달러 단위
-                        Double tmp = Double.valueOf(jsonObject1.getString("resUsedAmount"));
-                        amount = (long) (tmp * 1000);
-                    }
-                    if(CountryCode.KRW.getCode().equals(jsonObject1.getString("resAccountCurrency"))){
-                        // 원 단위
-                        amount = Long.valueOf(jsonObject1.getString("resUsedAmount"));
-                    }
-                    return Spending.builder()
-                            .userId(userId)
-                            .category(jsonObject1.getString("resMemberStoreType"))
-                            .cost(amount)
-                            .spentDate(date)
-                            .storeNo(Long.valueOf(jsonObject1.getString("resMemberStoreNo")))
-                            .build();
-                })
-                .collect(Collectors.toList());
     }
 
 

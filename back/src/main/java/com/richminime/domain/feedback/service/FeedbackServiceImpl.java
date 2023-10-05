@@ -55,8 +55,10 @@ public class FeedbackServiceImpl implements FeedbackService {
                     return new FeedbackUserNotFoundException(USER_NOT_FOUND.getMessage());
                 });
 
+        log.info("[피드백 추천] findDaySpending 불러오기 요청");
         // 스펜딩 불러오기
         FindDaySpendingResDto daySpending = spendingService.findDaySpending();
+        log.info("[피드백 추천] findDaySpending 불러오기 성공 !! 긍/부정 : {}", daySpending.getLessSpent());
 
         // 전날 == 전전날 소비가 같을 때
         if(daySpending.getLessSpent() == null) {
