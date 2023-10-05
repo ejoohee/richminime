@@ -19,7 +19,6 @@ class BankbookService {
       "Authorization": "Bearer $accessToken",
     });
 
-    print(response.body);
     if (response.statusCode == 200) {
       final List<dynamic> decodedData = jsonDecode(response.body);
       for (var bankbook in decodedData) {

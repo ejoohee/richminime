@@ -58,7 +58,7 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
+    _setupTextControllerListeners();
     _controller = AnimationController(
       duration: const Duration(seconds: 1), // 애니메이션의 지속시간
       vsync: this,
@@ -82,14 +82,43 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
   TextEditingController verificationController = TextEditingController();
   TextEditingController cardPasswordConfirmController = TextEditingController();
   TextEditingController cardNumController = TextEditingController();
+  TextEditingController cardNumController1 = TextEditingController();
+  TextEditingController cardNumController2 = TextEditingController();
+  TextEditingController cardNumController3 = TextEditingController();
+  TextEditingController cardNumController4 = TextEditingController();
   final userService = UserService();
   String enteredCode = "";
+  void _setupTextControllerListeners() {
+    cardNumController1.addListener(() {
+      if (cardNumController1.text.length == 4) {
+        FocusScope.of(context).nextFocus(); // 다음 포커스로 이동
+      }
+    });
+
+    cardNumController2.addListener(() {
+      if (cardNumController2.text.length == 4) {
+        FocusScope.of(context).nextFocus(); // 다음 포커스로 이동
+      }
+    });
+
+    cardNumController3.addListener(() {
+      if (cardNumController3.text.length == 4) {
+        FocusScope.of(context).nextFocus(); // 다음 포커스로 이동
+      }
+    });
+
+    cardNumController4.addListener(() {
+      if (cardNumController4.text.length == 4) {
+        FocusScope.of(context).nextFocus();
+      }
+    });
+  }
 
   onCheckCodeTap() async {
     enteredCode = verificationController.text;
     final email = cardEmailController.text;
     final response = await userService.checkCode(email, enteredCode);
-    print(response);
+
     if (response == "true") {
       setState(() {
         isEmailVerified = true; // 인증 성공 시 변수를 true로 설정
@@ -236,7 +265,10 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
     String password = cardPasswordController.text;
     String nickname = cardNickNameController.text;
     String organization = widget.organization;
-    String cardNumber = maskFormatter.getUnmaskedText();
+    String cardNumber = cardNumController1.text +
+        cardNumController2.text +
+        cardNumController3.text +
+        cardNumController4.text;
     String uuid = widget.uuid;
     if (!isEmailVerified) {
       showDialog(
@@ -259,9 +291,15 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
       return; // 이메일이 인증되지 않았으면 더 이상 진행하지 않음
     }
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true; // 로딩 시작
+      });
       final response = await userService.signUp(
           email, password, nickname, organization, cardNumber, uuid);
       if (response == "true") {
+        setState(() {
+          isLoading = false; // 로딩 시작
+        });
         if (!context.mounted) return;
         Navigator.push(
           context,
@@ -332,60 +370,63 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                       key: _formKey,
                       child: Column(
                         children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  controller: cardEmailController,
-                                  readOnly: isEmailVerified,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return '이메일을 입력하세요.';
-                                    } else if (!emailRegex.hasMatch(value)) {
-                                      return '유효한 이메일을 입력하세요.';
-                                    }
-                                    return null;
-                                  },
-                                  style: TextStyle(
-                                    color: isEmailVerified
-                                        ? Colors.green
-                                        : null, // 여기에서 조건에 따라 색상을 설정
-                                  ),
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 10),
-                                    labelText: '이메일',
-                                    fillColor: Color(0xFFFFFDFD),
-                                    filled: true,
+                          SizedBox(
+                            height: 60,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: cardEmailController,
+                                    readOnly: isEmailVerified,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return '이메일을 입력하세요.';
+                                      } else if (!emailRegex.hasMatch(value)) {
+                                        return '유효한 이메일을 입력하세요.';
+                                      }
+                                      return null;
+                                    },
+                                    style: TextStyle(
+                                      color: isEmailVerified
+                                          ? Colors.green
+                                          : null, // 여기에서 조건에 따라 색상을 설정
+                                    ),
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 10, horizontal: 10),
+                                      labelText: '이메일',
+                                      fillColor: Color(0xFFFFFDFD),
+                                      filled: true,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              GestureDetector(
-                                onTap: onVarificationButtonTap,
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  width: 80,
-                                  height: 60,
-                                  decoration:
-                                      const BoxDecoration(color: Colors.white),
+                                GestureDetector(
+                                  onTap: onVarificationButtonTap,
                                   child: Container(
-                                    padding: const EdgeInsets.all(5),
+                                    alignment: Alignment.center,
+                                    width: 80,
+                                    height: 60,
                                     decoration: const BoxDecoration(
-                                      color: Color(0xFFFFBEBE),
-                                    ),
-                                    child: const Text(
-                                      "인증",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
+                                        color: Colors.white),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFFFFBEBE),
+                                      ),
+                                      child: const Text(
+                                        "인증",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 10),
                           TextFormField(
@@ -431,25 +472,113 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          TextFormField(
-                            controller: cardNumController,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return '카드번호를 입력해주세요.';
-                              }
-                              return null;
-                            },
-                            keyboardType: TextInputType.number,
-                            maxLength: 19,
-                            inputFormatters: [maskFormatter],
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 10),
-                              labelText: '카드번호',
-                              fillColor: Color(0xFFFFFDFD),
-                              filled: true,
-                              counterText: "",
+                          SizedBox(
+                            height: 60,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  child: Container(
+                                    padding: const EdgeInsets.only(left: 10),
+                                    height: 60,
+                                    width: 80,
+                                    alignment: Alignment.centerLeft,
+                                    color: Colors.white,
+                                    child: const Text('카드번호',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                        )),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: cardNumController1,
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 4,
+                                    decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.only(
+                                        left: 10,
+                                        top: 20,
+                                        bottom: 20,
+                                      ),
+                                      counterText: "",
+                                      fillColor: Colors.grey[50],
+                                      filled: true,
+                                      border: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.zero,
+                                        borderSide: BorderSide.none,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextFormField(
+                                    obscureText: true,
+                                    controller: cardNumController2,
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 4,
+                                    decoration: const InputDecoration(
+                                      contentPadding: EdgeInsets.only(
+                                        left: 10,
+                                        top: 20,
+                                        bottom: 20,
+                                      ),
+                                      counterText: "",
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.zero,
+                                        borderSide: BorderSide.none,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextFormField(
+                                    obscureText: true,
+                                    controller: cardNumController3,
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 4,
+                                    decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.only(
+                                        left: 10,
+                                        top: 20,
+                                        bottom: 20,
+                                      ),
+                                      counterText: "",
+                                      fillColor: Colors.grey[50],
+                                      filled: true,
+                                      border: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.zero,
+                                        borderSide: BorderSide.none,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: cardNumController4,
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 4,
+                                    decoration: const InputDecoration(
+                                      contentPadding: EdgeInsets.only(
+                                        left: 10,
+                                        top: 20,
+                                        bottom: 20,
+                                      ),
+                                      counterText: "",
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.zero,
+                                        borderSide: BorderSide.none,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -505,10 +634,30 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
             ),
           ),
           if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: const Center(
-                child: CircularProgressIndicator(),
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Colors.pink[100],
+                        backgroundColor: Colors.black.withOpacity(0.5),
+                        strokeWidth: 5.0,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        '1분 정도 소요될 수 있습니다.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
         ],

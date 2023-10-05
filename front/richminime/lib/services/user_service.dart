@@ -18,8 +18,7 @@ class UserService {
     final response = await client.post(url, headers: {
       "Authorization": "Bearer $accessToken",
     });
-    print(accessToken);
-    print(response.body);
+
     if (response.statusCode == 200) {
       await storage.deleteAll();
       return true;
@@ -112,6 +111,7 @@ class UserService {
       headers: {"Content-Type": "application/x-www-form-urlencoded"},
     );
 
+    print(response.body);
     if (response.statusCode == 200) {
       return "true";
     } else {
@@ -145,6 +145,12 @@ class UserService {
 
   Future<String> signUp(String email, String password, String nickname,
       String organization, String cardNumber, String uuid) async {
+    print(email);
+    print(password);
+    print(nickname);
+    print(organization);
+    print(cardNumber);
+    print(uuid);
     final url = Uri.parse("$baseUrl/user");
     final response = await http.post(
       url,
@@ -160,7 +166,7 @@ class UserService {
         },
       ),
     );
-    print(cardNumber);
+
     print(response.body);
     if (response.statusCode == 201) {
       return "true";
