@@ -1,6 +1,19 @@
 import "./App.css";
-
+import { Carousel } from "react-responsive-carousel";
+import imageData from "./imageData.js";
+import { useState } from "react";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 function App() {
+  const renderSlides = imageData.map((image) => (
+    <div key={image.alt}>
+      <img src={image.url} alt={image.alt} className="slice-img" />
+    </div>
+  ));
+  const [currentIndex, setCurrentIndex] = useState();
+  function handleChange(index) {
+    setCurrentIndex(index);
+  }
+
   return (
     <div className="app-card">
       <div className="app-card-images">
@@ -23,6 +36,7 @@ function App() {
             <p className="free">무료</p>
           </div>
         </div>
+
         <div className="app-card-bottom">
           <div className="app-rating">
             <div className="app-rating-1">5.0★</div>
@@ -42,11 +56,28 @@ function App() {
             <div className="app-available-1">전체이용가</div>
           </div>
         </div>
+
         <div className="download">
           <button className="download-button">다운로드</button>
         </div>
+        <div className="footer">
+          <div className="footer-1">
+            <h2>RichMinime 스크린샷</h2>
+            <Carousel
+              showArrows={true}
+              autoPlay={true}
+              infiniteLoop={true}
+              showThumbs={false}
+              selectedItem={imageData[currentIndex]}
+              onChange={handleChange}
+              className="slide-component"
+              showStatus={false}
+            >
+              {renderSlides}
+            </Carousel>
+          </div>
+        </div>
       </div>
-      <div className="footer"></div>
     </div>
   );
 }
