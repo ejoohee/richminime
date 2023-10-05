@@ -53,7 +53,7 @@ public class CharacterServiceImpl implements CharacterService{
 
         return CharacterResDto.builder()
                 .clothingId(clothing.getClothingId())
-                .imgApplyURL(clothing.getClothingApplyImg())
+                .clothingApplyImg(clothing.getClothingApplyImg())
                 .build();
     }
 
@@ -71,7 +71,7 @@ public class CharacterServiceImpl implements CharacterService{
             character.chageClothing(clothing);
             return CharacterResDto.builder()
                     .clothingId(clothing.getClothingId())
-                    .imgApplyURL("defaultData")
+                    .clothingApplyImg("defaultData")
                     .build();
         }
 
@@ -84,7 +84,7 @@ public class CharacterServiceImpl implements CharacterService{
 
         return CharacterResDto.builder()
                 .clothingId(clothing.getClothingId())
-                .imgApplyURL(clothing.getClothingApplyImg())
+                .clothingApplyImg(clothing.getClothingApplyImg())
                 .build();
     }
 }

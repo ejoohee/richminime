@@ -455,16 +455,24 @@ public class UserServiceImpl implements UserService {
                 .build();
         characterRepository.save(character);
         //회원가입 시 그에 맞는 테마 기본정보 생성
-        Room room = Room.builder().
+        Room room1 = Room.builder().
                 user(user)
                 .item(Item.builder().itemId(100000L).build()) //회원가입시 Room 기본테마(Id = 100000, 프론트에서 인식) 적용
                 .itemType("벽지장판")
                 .build();
-        roomRepository.save(room);
-        room.chageItemType("가구");
-        roomRepository.save(room);
-        room.chageItemType("러그");
-        roomRepository.save(room);
+        Room room2 = Room.builder().
+                user(user)
+                .item(Item.builder().itemId(100001L).build()) //회원가입시 Room 기본테마(Id = 100000, 프론트에서 인식) 적용
+                .itemType("가구")
+                .build();
+        Room room3 = Room.builder().
+                user(user)
+                .item(Item.builder().itemId(100002L).build()) //회원가입시 Room 기본테마(Id = 100000, 프론트에서 인식) 적용
+                .itemType("러그")
+                .build();
+        roomRepository.save(room1);
+        roomRepository.save(room2);
+        roomRepository.save(room3);
 
         // 회원가입 성공하면 월 소비내역 초기값 저장하는 메서드 호출
         try {

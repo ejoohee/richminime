@@ -1,4 +1,4 @@
-/*
+
 
 insert into users
 (user_id, email, password, nickname, connected_id, organization_code, card_number, user_type, balance)
@@ -11,6 +11,8 @@ insert into  clothing
 values ('100','공주룩', '파티', 'party_image.jpg', 'party_image_apply1.jpg', '파티나 특별한 날에 어울리는 공주룩 원피스', '2000'),
        ('101','싸피복', '일상', 'sample_pants.jpg', 'sample_pants_apply.jpg', '일상 생활에서 편안하게 착용 가능한 싸피 바지', '2500'),
        ('102','스튜어디스', '직업', 'work_shirt.jpg', 'work_shirt_apply.jpg', '항공 승무원을 위한 전용 스튜어디스 유니폼', '3000');
+
+
 
 insert into user_clothing
 (user_clothing_id, clothing_id, user_id)
@@ -262,4 +264,3 @@ values
     ('1002', '2500', '47500', '2023-09-26', '항공 승무원을 위한 전용 스튜어디스 유니폼', '구매', '100000');
 
 
-*/

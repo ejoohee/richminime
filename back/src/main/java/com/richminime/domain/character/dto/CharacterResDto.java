@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class CharacterResDto {
 
     private Long clothingId;
-    private String imgApplyURL;
+    private String clothingApplyImg;
 
 
 
