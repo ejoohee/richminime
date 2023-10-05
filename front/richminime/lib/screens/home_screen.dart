@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const NavigationDestination(
                   selectedIcon: Icon(Icons.chair),
                   icon: Icon(Icons.chair_outlined),
-                  label: '테마',
+                  label: '가구 보관함',
                 ),
               ],
             ),
