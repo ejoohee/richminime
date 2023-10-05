@@ -52,7 +52,7 @@ public class RoomServiceImpl implements RoomService {
 
                     return RoomResDto.builder()
                             .itemId(item.getItemId())
-                            .imgURL(item.getItemImg())
+                            .itemImg(item.getItemImg())
                             .itemType(item.getItemType().getValue())
                             .build();
                 })
@@ -75,7 +75,7 @@ public class RoomServiceImpl implements RoomService {
                     room.chageItem(Item.builder().itemId(dto.getItemId()).build());           //room의 정보를 업데이트
                     return RoomResDto.builder()
                             .itemId(item.getItemId())
-                            .imgURL(item.getItemImg())
+                            .itemImg(item.getItemImg())
                             .itemType(item.getItemType().getValue())
                             .build();
                 } else {                                       //아이디가 같으면 ->  기본 셋팅으로
@@ -88,7 +88,7 @@ public class RoomServiceImpl implements RoomService {
                     }
                     return RoomResDto.builder()
                             .itemId(room.getItem().getItemId())
-                            .imgURL("defaultData")
+                            .itemImg("defaultData")
                             .itemType("defaultData")
                             .build();
                 }

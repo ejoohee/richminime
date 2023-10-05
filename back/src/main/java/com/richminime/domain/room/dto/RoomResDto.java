@@ -7,6 +7,6 @@ import lombok.Data;
 @Builder
 public class RoomResDto {
     private Long itemId;
-    private String imgURL;
+    private String itemImg;
     private String itemType;
 }
