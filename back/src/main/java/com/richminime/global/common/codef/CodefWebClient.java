@@ -249,9 +249,26 @@ public class CodefWebClient {
                     })
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            // json 배열이 아닌 단일 객체 형태라서 에러가 난 경우
+            JsonObject jsonObject1 = jsonObject.getJsonObject("data");
+            List<Spending> spendingList = new ArrayList<>();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            Date date;
+            try {
+                date = sdf.parse(jsonObject1.getString("resUsedDate"));
+            } catch (ParseException pe) {
+                throw new RuntimeException(pe);
+            }
+            spendingList.add(
+                    Spending.builder()
+                            .userId(userId)
+                            .category(jsonObject1.getString("resMemberStoreType"))
+                            .cost(Long.valueOf(jsonObject1.getString("resUsedAmount")))
+                            .spentDate(date)
+                            .storeNo(Long.valueOf(jsonObject1.getString("resMemberStoreNo")))
+                            .build()
+            );
+            return spendingList;
         }
     }
-
-
 }
