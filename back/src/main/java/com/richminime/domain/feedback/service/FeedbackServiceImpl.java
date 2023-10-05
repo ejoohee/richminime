@@ -23,7 +23,6 @@ import javax.transaction.Transactional;
 import static com.richminime.domain.feedback.constant.FeedbackExceptionMessage.*;
 import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
 import static com.richminime.global.constant.ExceptionMessage.*;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor

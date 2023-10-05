@@ -49,8 +49,9 @@ spring:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
   redis:
-    host: j9A704.p.ssafy.io
+    host: redis
     port: 6379
+    password: dbsud1004
 logging:
   level:
     org:
