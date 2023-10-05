@@ -1,11 +1,23 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // 패키지 임포트
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/screens/bankbook.dart';
-import 'package:richminime/screens/home_screen.dart'; // HomeScreen 임포트
+import 'package:richminime/screens/home_screen.dart';
 import 'package:richminime/screens/login.dart';
 import 'package:richminime/screens/sign_up.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
+
+  assetsAudioPlayer.open(
+    Audio("assets/audios/background.mp3"),
+    loopMode: LoopMode.single,
+    autoStart: true,
+    showNotification: false,
+  );
+
   runApp(const App());
 }
 
@@ -17,7 +29,6 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        // 기존 테마 설정
         fontFamily: 'Dunggeunmo',
         useMaterial3: true,
         colorScheme: ColorScheme.fromSwatch(
@@ -25,24 +36,21 @@ class App extends StatelessWidget {
           cardColor: const Color(0xFFFFBEBE),
         ),
         textTheme: const TextTheme(
-            bodyLarge: TextStyle(
-          color: Color(0xFFEEb4a2),
-        )),
+          bodyLarge: TextStyle(
+            color: Color(0xFFEEb4a2),
+          ),
+        ),
       ),
       home: const Login(),
       // home: FutureBuilder<String?>(
-      //   // FutureBuilder를 사용하여 SecureStorage에서 토큰을 읽어옵니다.
       //   future: storage.read(key: "accessToken"),
       //   builder: (context, snapshot) {
-      //     // 토큰이 있는 경우
       //     if (snapshot.connectionState == ConnectionState.done) {
       //       if (snapshot.hasData && snapshot.data != null) {
-      //         return const HomeScreen(); // HomeScreen으로 이동
+      //         return const HomeScreen();
       //       }
-      //       // 토큰이 없는 경우
-      //       return const Login(); // Login 화면으로 이동
+      //       return const Login();
       //     }
-      //     // 토큰을 읽어오는 동안 로딩 인디케이터를 표시합니다.
       //     return const CircularProgressIndicator();
       //   },
       // ),

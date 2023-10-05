@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_secure_storage: ^9.0.0
-
+  flutter_native_splash: ^2.3.3
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -50,6 +50,8 @@ dependencies:
   fl_chart: ^0.63.0
   intl: ^0.18.1
   flutter_svg: ^2.0.7
+  marquee: ^2.2.3
+  assets_audio_player: ^3.1.1
 
   # credit_card_input_form: ^2.3.0
 
@@ -116,8 +118,11 @@ flutter:
     - assets/images/miniroom/closet_default.png
     - assets/images/minime/gpt.png
     - assets/images/icon/gpt.svg
+    - assets/audios/background.mp3
       #   - images/a_dot_ham.jpeg
-
+flutter_native_splash:
+  color: "000000"
+  image: assets/images/logo/logo.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
