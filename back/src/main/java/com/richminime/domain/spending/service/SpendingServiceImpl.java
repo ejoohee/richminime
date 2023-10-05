@@ -199,6 +199,8 @@ public class SpendingServiceImpl implements SpendingService {
         int cnt = 0;
         for (Spending spending : spendingList) {
             category = spending.getCategory();
+            // 전자상거래 PG -> 기타로 통일
+            if(category.contains("PG")) category = "기타";
             idx = map.get(category);
             if(idx == null) {
                 // 처음 등장한 유형인 경우
@@ -248,6 +250,8 @@ public class SpendingServiceImpl implements SpendingService {
         int cnt = 0;
         for (Spending spending : todaySpendingList) {
             category = spending.getCategory();
+            // 전자상거래 PG -> 기타로 통일
+            if(category.contains("PG")) category = "기타";
             idx = map.get(category);
             if(idx == null) {
                 // 처음 등장한 유형인 경우
