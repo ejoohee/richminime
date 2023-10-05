@@ -33,13 +33,12 @@ class _AnalysisState extends State<Analysis> {
 
   final List<Color> colorList = [
     Colors.red,
-    Colors.blue,
-    Colors.green,
-    Colors.yellow,
-    Colors.pink,
-    Colors.blueGrey,
-    Colors.purple,
     Colors.orange,
+    Colors.yellow,
+    Colors.green,
+    Colors.blue,
+    Colors.indigo,
+    Colors.purple,
   ];
 
   @override

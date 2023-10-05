@@ -350,16 +350,12 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                   percent: percent,
                   center: const Text('4/4'),
                   barRadius: const Radius.circular(16),
-                  progressColor: Colors.red[200],
+                  progressColor: Theme.of(context).cardColor,
                 ),
                 const SizedBox(height: 100),
                 Text(
                   '회원가입',
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w900,
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
-                  ),
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 20),
                 Container(
@@ -387,17 +383,24 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                                       }
                                       return null;
                                     },
-                                    style: TextStyle(
-                                      color: isEmailVerified
-                                          ? Colors.green
-                                          : null, // 여기에서 조건에 따라 색상을 설정
-                                    ),
-                                    decoration: const InputDecoration(
+                                    // style: TextStyle(
+                                    //   color: isEmailVerified
+                                    //       ? Colors.green
+                                    //       : null, // 여기에서 조건에 따라 색상을 설정
+                                    // ),
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+
+                                    decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 10),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 10),
                                       labelText: '이메일',
-                                      fillColor: Color(0xFFFFFDFD),
+                                      labelStyle: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                      fillColor: const Color(0xFFFFFDFD),
                                       filled: true,
                                     ),
                                   ),
@@ -412,15 +415,15 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                                         color: Colors.white),
                                     child: Container(
                                       padding: const EdgeInsets.all(5),
-                                      decoration: const BoxDecoration(
-                                        color: Color(0xFFFFBEBE),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: Theme.of(context).cardColor,
                                       ),
-                                      child: const Text(
+                                      child: Text(
                                         "인증",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15,
-                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
                                       ),
                                     ),
                                   ),
@@ -430,6 +433,7 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                           ),
                           const SizedBox(height: 10),
                           TextFormField(
+                            style: Theme.of(context).textTheme.bodySmall,
                             controller: cardPasswordController,
                             obscureText: true,
                             validator: (value) {
@@ -441,17 +445,20 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                               }
                               return null;
                             },
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 10),
                               labelText: '비밀번호',
-                              fillColor: Color(0xFFFFFDFD),
+                              labelStyle:
+                                  Theme.of(context).textTheme.labelSmall,
+                              fillColor: const Color(0xFFFFFDFD),
                               filled: true,
                             ),
                           ),
                           const SizedBox(height: 10),
                           TextFormField(
+                            style: Theme.of(context).textTheme.bodySmall,
                             controller: cardPasswordConfirmController,
                             obscureText: true,
                             validator: (value) {
@@ -462,12 +469,14 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                               }
                               return null;
                             },
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 10),
                               labelText: '비밀번호 확인',
-                              fillColor: Color(0xFFFFFDFD),
+                              labelStyle:
+                                  Theme.of(context).textTheme.labelSmall,
+                              fillColor: const Color(0xFFFFFDFD),
                               filled: true,
                             ),
                           ),
@@ -485,21 +494,25 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                                     width: 80,
                                     alignment: Alignment.centerLeft,
                                     color: Colors.white,
-                                    child: const Text('카드번호',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                        )),
+                                    child: Text(
+                                      '카드번호',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                    ),
                                   ),
                                 ),
                                 Expanded(
                                   child: TextFormField(
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
                                     controller: cardNumController1,
                                     keyboardType: TextInputType.number,
                                     maxLength: 4,
                                     decoration: InputDecoration(
                                       contentPadding: const EdgeInsets.only(
-                                        left: 10,
+                                        left: 5,
                                         top: 20,
                                         bottom: 20,
                                       ),
@@ -515,6 +528,9 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                                 ),
                                 Expanded(
                                   child: TextFormField(
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
                                     obscureText: true,
                                     controller: cardNumController2,
                                     keyboardType: TextInputType.number,
@@ -537,6 +553,9 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                                 ),
                                 Expanded(
                                   child: TextFormField(
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
                                     obscureText: true,
                                     controller: cardNumController3,
                                     keyboardType: TextInputType.number,
@@ -559,12 +578,15 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                                 ),
                                 Expanded(
                                   child: TextFormField(
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
                                     controller: cardNumController4,
                                     keyboardType: TextInputType.number,
                                     maxLength: 4,
                                     decoration: const InputDecoration(
                                       contentPadding: EdgeInsets.only(
-                                        left: 10,
+                                        left: 5,
                                         top: 20,
                                         bottom: 20,
                                       ),
@@ -583,6 +605,7 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                           ),
                           const SizedBox(height: 10),
                           TextFormField(
+                            style: Theme.of(context).textTheme.bodySmall,
                             controller: cardNickNameController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -592,12 +615,14 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                               }
                               return null;
                             },
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 10),
                               labelText: '닉네임',
-                              fillColor: Color(0xFFFFFDFD),
+                              labelStyle:
+                                  Theme.of(context).textTheme.labelSmall,
+                              fillColor: const Color(0xFFFFFDFD),
                               filled: true,
                             ),
                           ),
@@ -611,15 +636,14 @@ class _SignUp4State extends State<SignUp4> with SingleTickerProviderStateMixin {
                                   alignment: Alignment.center,
                                   width: 110,
                                   height: 50,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFFFBEBE),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).cardColor,
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     "다음",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                    ),
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
                                   ),
                                 ),
                               ),
