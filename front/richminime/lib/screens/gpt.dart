@@ -102,6 +102,7 @@ class _GptState extends State<Gpt> with SingleTickerProviderStateMixin {
                 width: double.maxFinite,
                 height: 300,
                 margin: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.background,
                   borderRadius: const BorderRadius.all(Radius.circular(5)),
@@ -152,9 +153,12 @@ class _GptState extends State<Gpt> with SingleTickerProviderStateMixin {
                           GestureDetector(
                             onTap: getAnswerFromGpt,
                             child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: Colors.blue[600],
+                              ),
                               padding: const EdgeInsets.all(5),
                               margin: const EdgeInsets.all(10),
-                              color: Colors.blue[600],
                               child: const Text(
                                 '질문하기',
                                 style: TextStyle(color: Colors.white),

@@ -1,17 +1,9 @@
-import "package:richminime/models/bankbook_model.dart";
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:richminime/constants/api.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:richminime/screens/home_screen.dart';
-import 'package:richminime/screens/login.dart';
-import 'package:richminime/screens/sign_up.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:cookie_jar/cookie_jar.dart';
 import 'package:richminime/interceptor/interceptor.dart';
 
 const String baseUrl = Api.BASE_URL;

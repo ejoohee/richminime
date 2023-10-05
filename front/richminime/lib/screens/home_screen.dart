@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:richminime/icons/my_flutter_app_icons.dart';
 import 'package:richminime/miniroom/mini_room.dart';
-import 'package:richminime/models/bankbook_model.dart';
 import 'package:richminime/screens/analysis.dart';
 import 'package:richminime/screens/bankbook.dart';
 import 'package:richminime/screens/closet.dart';

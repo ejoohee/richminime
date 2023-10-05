@@ -5,8 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:richminime/constants/api.dart';
 import 'package:richminime/models/interior_theme_model.dart';
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:cookie_jar/cookie_jar.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 const storage = FlutterSecureStorage();
 const String baseUrl = Api.BASE_URL;

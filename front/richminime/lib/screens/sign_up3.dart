@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:richminime/screens/sign_up4.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:richminime/services/user_service.dart';
@@ -114,16 +112,13 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
                   percent: percent,
                   center: const Text('3/4'),
                   barRadius: const Radius.circular(16),
-                  progressColor: Colors.red[200],
+                  progressColor: Theme.of(context).cardColor,
                 ),
                 const SizedBox(height: 100),
                 Text(
-                  '카드사 정보를 입력해주세요',
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w900,
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
-                  ),
+                  '카드사의 회원정보를\n입력해주세요',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
                 Container(
@@ -131,28 +126,43 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
                   child: SizedBox(
                     width: 300,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextField(
+                          style: Theme.of(context).textTheme.bodySmall,
                           controller: cardEmailController,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 10),
-                            labelText: '아이디',
-                            fillColor: Color(0xFFFFFDFD),
+                            labelText: '카드사 홈페이지 아이디',
+                            labelStyle: Theme.of(context).textTheme.labelSmall,
+                            fillColor: const Color(0xFFFFFDFD),
                             filled: true,
                           ),
                         ),
                         const SizedBox(height: 10),
                         TextField(
+                          style: Theme.of(context).textTheme.bodySmall,
                           controller: cardPasswordController,
                           obscureText: true,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 10),
-                            labelText: '비밀번호',
-                            fillColor: Color(0xFFFFFDFD),
+                            labelText: '카드사 홈페이지 비밀번호',
+                            labelStyle: Theme.of(context).textTheme.labelSmall,
+                            fillColor: const Color(0xFFFFFDFD),
                             filled: true,
                           ),
                         ),
@@ -163,15 +173,13 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
                             alignment: Alignment.center,
                             width: 110,
                             height: 50,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFFBEBE),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Theme.of(context).cardColor,
                             ),
-                            child: const Text(
+                            child: Text(
                               "다음",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
                           ),
                         ),

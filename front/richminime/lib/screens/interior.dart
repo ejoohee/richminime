@@ -29,7 +29,7 @@ class _InteriorState extends State<Interior> {
     loadItemData();
   }
 
-  loadItemData() async {
+  Future<void> loadItemData() async {
     try {
       final loadedItemList = await interiorService.getMyAllItems();
       if (mounted) {

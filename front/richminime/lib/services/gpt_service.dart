@@ -1,11 +1,7 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:richminime/constants/api.dart';
-import 'package:richminime/models/clothing_model.dart';
 import 'package:http_interceptor/http_interceptor.dart';
-import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:richminime/models/user_clothing_model.dart';
 import 'package:richminime/interceptor/interceptor.dart';
 
 const storage = FlutterSecureStorage();

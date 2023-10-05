@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:richminime/services/clothig_service.dart';
 
 class ClothingStoreSelected extends StatefulWidget {

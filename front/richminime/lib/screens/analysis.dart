@@ -3,7 +3,6 @@ import 'package:richminime/models/analysis_model.dart';
 import 'package:richminime/widgets/appbar_back_home.dart';
 import 'package:richminime/services/analysis_service.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
 
 class Analysis extends StatefulWidget {
   const Analysis({super.key});
