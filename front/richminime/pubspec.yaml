@@ -110,7 +110,7 @@ flutter:
     # images
     - assets/images/minime/default.png
     - assets/images/miniroom/princess_theme.jpg
-    - assets/images/miniroom/default.jpg
+    - assets/images/miniroom/default.png
     - assets/images/miniroom/handholdingmoneybag.png
     - assets/images/miniroom/coin.png
     - assets/images/miniroom/tv_default.png

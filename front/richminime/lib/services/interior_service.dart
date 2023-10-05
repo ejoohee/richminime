@@ -36,7 +36,6 @@ class HttpInterceptor implements InterceptorContract {
           "Refresh-Token": "$refreshToken",
         },
       );
-      print(response.body);
       if (response.statusCode == 200) {
         Map<String, dynamic> responseBody = json.decode(response.body);
         String? newAccessToken = responseBody['accessToken'];
@@ -67,13 +66,10 @@ class InteriorService {
       'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
     };
 
-    print('아이템받으러 간다잇');
     final response = await client.get(
       url,
       headers: headers,
     );
-    print('바디 : ${response.body}');
-    print('아이템받기 : ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final List<dynamic> themes = jsonDecode(response.body);
@@ -99,13 +95,10 @@ class InteriorService {
   //     'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
   //   };
 
-  //   print('아이템받으러 간다잇');
   //   final response = await http.get(
   //     url,
   //     headers: headers,
   //   );
-  //   print('바디 : ${response.body}');
-  //   print(response.statusCode);
 
   //   if (response.statusCode == 200) {
   //     final List<dynamic> themes = jsonDecode(response.body);
@@ -147,26 +140,6 @@ class InteriorService {
     return myInteriorInstances;
   }
 
-  // 테마 적용
-  Future applyTheme(int itemId) async {
-    final url = Uri.parse('$baseUrl/item/my$itemId');
-    final token = await storage.read(key: "accessToken");
-    final headers = {
-      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
-    };
-
-    final response = await http.put(
-      url,
-      headers: headers,
-    );
-    if (response.statusCode == 200) {
-      print(jsonDecode(response.body));
-    } else if (response.statusCode == 401) {
-      return applyTheme(itemId);
-    }
-    throw Error();
-  }
-
   // 아이템 판매(삭제)
   Future<String> sellItem(int itemId) async {
     final url = Uri.parse('$baseUrl/item/my/$itemId');
@@ -203,14 +176,10 @@ class InteriorService {
     final headers = {
       'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
     };
-    print(token);
     final response = await http.post(
       url,
       headers: headers,
     );
-    print(url);
-    print(response.statusCode);
-    print('응답은요 ${response.body}');
     if (response.statusCode == 201) {
       Map<String, dynamic> responseData = json.decode(response.body);
       int balance = responseData['balance'];
