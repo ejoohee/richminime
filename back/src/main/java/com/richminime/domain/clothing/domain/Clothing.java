@@ -23,6 +23,7 @@ public class Clothing {
     private String clothingName;
 
     @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
     private ClothingType clothingType;
 
     @Column(nullable = false)
