@@ -3,6 +3,7 @@ import 'package:richminime/screens/login.dart';
 import 'package:richminime/services/clothig_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/services/user_service.dart';
+import 'package:marquee/marquee.dart';
 
 class AppBarHomeScreen extends StatelessWidget implements PreferredSizeWidget {
   final int? currentPageIndex;
@@ -28,36 +29,93 @@ class AppBarHomeScreen extends StatelessWidget implements PreferredSizeWidget {
     final userService = UserService();
     return AppBar(
       backgroundColor: Theme.of(context).colorScheme.background,
-      leading: Builder(
-        builder: (BuildContext context) {
-          return IconButton(
-            icon: const Icon(Icons.star),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+      flexibleSpace: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return SafeArea(
+            child: Container(
+              padding:
+                  const EdgeInsets.only(left: 60), // IconButton의 크기와 비슷한 값으로 설정
+              alignment: Alignment.center,
+              child: FutureBuilder<String?>(
+                future: storage.read(key: "nickname"),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Text("로딩 중...");
+                  } else if (snapshot.hasError) {
+                    return const Text("에러 발생");
+                  } else {
+                    if (currentPageIndex == 1) {
+                      return Container(
+                        margin: const EdgeInsets.only(right: 50),
+                        child: Marquee(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          text: '${snapshot.data}님의 미니룸',
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: Colors.blue[200],
+                            fontWeight: FontWeight.bold,
+                          ),
+                          scrollAxis: Axis.horizontal,
+                          blankSpace: 50,
+                          velocity: 30,
+                          pauseAfterRound: const Duration(seconds: 1),
+                          startPadding: 10.0,
+                          accelerationDuration: const Duration(seconds: 1),
+                          decelerationDuration:
+                              const Duration(milliseconds: 500),
+                        ),
+                      );
+                    } else if (currentPageIndex == 0) {
+                      return Container(
+                        margin: const EdgeInsets.only(right: 50),
+                        child: Marquee(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          text: '${snapshot.data}님의 옷장',
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: Colors.blue[200],
+                            fontWeight: FontWeight.bold,
+                          ),
+                          scrollAxis: Axis.horizontal,
+                          blankSpace: 50,
+                          velocity: 30,
+                          pauseAfterRound: const Duration(seconds: 1),
+                          startPadding: 10.0,
+                          accelerationDuration: const Duration(seconds: 1),
+                          decelerationDuration:
+                              const Duration(milliseconds: 500),
+                        ),
+                      );
+                    } else {
+                      return Container(
+                        margin: const EdgeInsets.only(right: 50),
+                        child: Marquee(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          text: '${snapshot.data}님의 가구 보관함',
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: Colors.blue[200],
+                            fontWeight: FontWeight.bold,
+                          ),
+                          scrollAxis: Axis.horizontal,
+                          blankSpace: 50,
+                          velocity: 30,
+                          pauseAfterRound: const Duration(seconds: 1),
+                          startPadding: 10.0,
+                          accelerationDuration: const Duration(seconds: 1),
+                          decelerationDuration:
+                              const Duration(milliseconds: 500),
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+            ),
           );
         },
       ),
-      title: FutureBuilder<String?>(
-        future: storage.read(key: "nickname"),
-        builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text("로딩 중...");
-          } else if (snapshot.hasError) {
-            return const Text("에러 발생");
-          } else {
-            return Text(
-              '환영합니다. ${snapshot.data}님',
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            );
-          }
-        },
-      ),
-      centerTitle: true,
       actions: [
         IconButton(
           onPressed: () {

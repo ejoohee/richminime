@@ -10,6 +10,7 @@ import 'package:richminime/services/miniroom_service.dart';
 import 'package:richminime/services/outer_service.dart';
 import 'package:simple_shadow/simple_shadow.dart';
 import 'package:flutter/material.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 const storage = FlutterSecureStorage();
 
@@ -22,15 +23,31 @@ class MiniRoom extends StatefulWidget {
 
 class _MiniRoomState extends State<MiniRoom> {
   final MiniroomService miniroomService = MiniroomService();
+  String feedback = '';
   double posX = 150;
   double posY = 400;
 
   // 미니미 더블탭 >> 어제 소비에 대한 피드백
   bool isMinimeTapped = false;
-  showFeedback() {
-    setState(() {
-      isMinimeTapped = !isMinimeTapped;
-    });
+  showFeedback() async {
+    if (isMinimeTapped) {
+      setState(() {
+        isMinimeTapped = !isMinimeTapped;
+      });
+    } else {
+      final response = await miniroomService.requestFeedback();
+      if (response != 'false') {
+        feedback = response;
+        setState(() {
+          isMinimeTapped = !isMinimeTapped;
+        });
+      } else {
+        feedback = '서버에 문제가 생겼어요 !!!';
+        setState(() {
+          isMinimeTapped = !isMinimeTapped;
+        });
+      }
+    }
   }
 
   // 지구본 더블탭 >> 환율
@@ -338,13 +355,21 @@ class _MiniRoomState extends State<MiniRoom> {
                     ),
                     width: double.maxFinite, //가로 꽉 차게 설정
                     height: 100,
-                    child: const Center(
-                      child: Text(
-                        "나는 거지지롱~~",
-                        style: TextStyle(
-                          fontFamily: "StarDust",
-                          fontSize: 20,
-                        ),
+                    child: Center(
+                      child: AnimatedTextKit(
+                        animatedTexts: [
+                          TypewriterAnimatedText(
+                            feedback,
+                            textStyle: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                            speed: const Duration(milliseconds: 70),
+                          ),
+                        ],
+                        totalRepeatCount: 1,
+                        displayFullTextOnTap: true,
                       ),
                     ),
                   )

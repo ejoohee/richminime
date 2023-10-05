@@ -7,52 +7,10 @@ import 'package:http_interceptor/http_interceptor.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/models/room_item_model.dart';
+import 'package:richminime/interceptor/interceptor.dart';
 
 const storage = FlutterSecureStorage();
 const String baseUrl = Api.BASE_URL;
-
-class HttpInterceptor implements InterceptorContract {
-  @override
-  Future<RequestData> interceptRequest({required RequestData data}) async {
-    final token = await storage.read(key: "accessToken");
-    if (token != null) {
-      data.headers["Authorization"] = "Bearer $token";
-    }
-    return data;
-  }
-
-  @override
-  Future<ResponseData> interceptResponse({required ResponseData data}) async {
-    if (data.statusCode == 401 || data.statusCode == 500) {
-      String? accessToken = await storage.read(key: "accessToken");
-      String? refreshToken = await storage.read(key: "refreshToken");
-      print(accessToken);
-      print(refreshToken);
-      final url = Uri.parse('$baseUrl/user/reissue-token');
-      final response = await http.post(
-        url,
-        headers: {
-          "Authorization": "Bearer $accessToken",
-          "Refresh-Token": "$refreshToken",
-        },
-      );
-      print(response.body);
-      if (response.statusCode == 200) {
-        Map<String, dynamic> responseBody = json.decode(response.body);
-        String? newAccessToken = responseBody['accessToken'];
-        String? newRefreshToken = responseBody['refreshToken'];
-
-        await storage.write(key: "accessToken", value: newAccessToken);
-        await storage.write(key: "refreshToken", value: newRefreshToken);
-
-        final originalRequestData = data.request;
-        originalRequestData?.headers["Authorization"] =
-            "Bearer $newAccessToken";
-      }
-    }
-    return data;
-  }
-}
 
 class MiniroomService {
   final client = InterceptedClient.build(interceptors: [HttpInterceptor()]);
@@ -60,20 +18,20 @@ class MiniroomService {
   Future<String> requestFeedback() async {
     final url = Uri.parse('$baseUrl/feedback');
     final token = await storage.read(key: "accessToken");
-    final headers = {
-      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
-    };
-    final response = await http.get(
+    final response = await client.get(
       url,
-      headers: headers,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
     );
-
+    print(response.body);
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       final String feedback = responseData['content'];
       return feedback;
     } else if (response.statusCode == 401 || response.statusCode == 500) {
-      return requestFeedback();
+      requestFeedback();
+      return 'false';
     }
     throw Error();
   }
