@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:richminime/constants/default_setting.dart';
 import 'package:richminime/models/interior_theme_model.dart';
+import 'package:richminime/screens/home_screen.dart';
 import 'package:richminime/services/interior_service.dart';
 import 'package:richminime/services/miniroom_service.dart';
 
@@ -71,7 +72,10 @@ class _InteriorState extends State<Interior> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()),
+                        (Route<dynamic> route) => false);
                   },
                   child: const Text('확인'),
                 ),
@@ -106,7 +110,9 @@ class _InteriorState extends State<Interior> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    (Route<dynamic> route) => false);
                 getSellResponse(item.itemId!);
               },
               child: const Text('넹'),
@@ -134,7 +140,9 @@ class _InteriorState extends State<Interior> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    (Route<dynamic> route) => false);
               },
               child: const Text('확인'),
             ),
@@ -344,137 +352,153 @@ class _InteriorState extends State<Interior> {
                       tileMode: TileMode.mirror,
                     ).createShader(bounds);
                   },
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 5),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: sortedItemList.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () => themeTap(index),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Container(
-                                clipBehavior: Clip.hardEdge,
-                                margin: const EdgeInsets.all(3),
-                                //임시값
-                                width: 150,
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context).cardColor,
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: tappedIndex == index
-                                        ? Border.all(
-                                            width: 3, color: Colors.white38)
-                                        : null,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 5,
-                                        offset: const Offset(10, 3),
-                                        color: Colors.black.withOpacity(0.3),
-                                      )
-                                    ],
-                                    image: selectedCategoryIndex == 0
-                                        ? DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: NetworkImage(
-                                              sortedItemList[index].itemImg!,
-                                            ))
-                                        : DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: AssetImage(
-                                                DefaultSetting.emptyRoom),
-                                          )),
-                              ),
-                              if (selectedCategoryIndex != 0)
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                  child: sortedItemList.isEmpty
+                      ? const Center(
+                          child: Text('얼른 사줘잉'),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          child: ListView.separated(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 5),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: sortedItemList.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () => themeTap(index),
+                                child: Stack(
+                                  alignment: Alignment.center,
                                   children: [
-                                    Center(
-                                      child: Image.network(
-                                        sortedItemList[index]
-                                            .itemImg!, // 이미지 URL을 itemList에서 가져오기
-
-                                        width: 90,
-                                      ),
+                                    Container(
+                                      clipBehavior: Clip.hardEdge,
+                                      margin: const EdgeInsets.all(3),
+                                      //임시값
+                                      width: 150,
+                                      decoration: BoxDecoration(
+                                          color: Theme.of(context).cardColor,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          border: tappedIndex == index
+                                              ? Border.all(
+                                                  width: 3,
+                                                  color: Colors.white38)
+                                              : null,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              blurRadius: 5,
+                                              offset: const Offset(10, 3),
+                                              color:
+                                                  Colors.black.withOpacity(0.3),
+                                            )
+                                          ],
+                                          image: selectedCategoryIndex == 0
+                                              ? DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(
+                                                    sortedItemList[index]
+                                                        .itemImg!,
+                                                  ))
+                                              : DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: AssetImage(
+                                                      DefaultSetting.emptyRoom),
+                                                )),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    )
+                                    if (selectedCategoryIndex != 0)
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Center(
+                                            child: Image.network(
+                                              sortedItemList[index]
+                                                  .itemImg!, // 이미지 URL을 itemList에서 가져오기
+
+                                              width: 90,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          )
+                                        ],
+                                      ),
+                                    if (tappedIndex == index)
+                                      Container(
+                                        margin: const EdgeInsets.all(3),
+                                        width: 150,
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey.withOpacity(0.2),
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 20,
+                                                  vertical: 10,
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          3), // borderRadius를 3으로 설정합니다.
+                                                ),
+                                                elevation: 5,
+                                              ),
+                                              onPressed: onSellTap,
+                                              child: const Text(
+                                                '판매하기',
+                                                style: TextStyle(
+                                                    color: Colors.black54),
+                                              ),
+                                            ),
+                                            ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 20,
+                                                  vertical: 10,
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          3), // borderRadius를 3으로 설정합니다.
+                                                ),
+                                                elevation: 5,
+                                              ),
+                                              onPressed: () => showItem(index),
+                                              child: const Text(
+                                                '미리보기',
+                                                style: TextStyle(
+                                                    color: Colors.deepPurple),
+                                              ),
+                                            ),
+                                            IconButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  tappedIndex = 3000000;
+                                                });
+                                              },
+                                              icon: const Icon(
+                                                  Icons.close_rounded),
+                                            ),
+                                          ],
+                                        ),
+                                      )
                                   ],
                                 ),
-                              if (tappedIndex == index)
-                                Container(
-                                  margin: const EdgeInsets.all(3),
-                                  width: 150,
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 20,
-                                            vertical: 10,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                3), // borderRadius를 3으로 설정합니다.
-                                          ),
-                                          elevation: 5,
-                                        ),
-                                        onPressed: onSellTap,
-                                        child: const Text(
-                                          '판매하기',
-                                          style:
-                                              TextStyle(color: Colors.black54),
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 20,
-                                            vertical: 10,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                3), // borderRadius를 3으로 설정합니다.
-                                          ),
-                                          elevation: 5,
-                                        ),
-                                        onPressed: () => showItem(index),
-                                        child: const Text(
-                                          '미리보기',
-                                          style: TextStyle(
-                                              color: Colors.deepPurple),
-                                        ),
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            tappedIndex = 3000000;
-                                          });
-                                        },
-                                        icon: const Icon(Icons.close_rounded),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                            ],
+                              );
+                            },
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(width: 15),
                           ),
-                        );
-                      },
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(width: 15),
-                    ),
-                  ),
+                        ),
                 ),
               ),
             ],

@@ -17,6 +17,7 @@ class _GptState extends State<Gpt> with SingleTickerProviderStateMixin {
   Alignment _alignment = Alignment.topCenter;
   bool hasAnswer = false; // 답변을 받았는지 확인하는 변수
   String answer = ""; // 서버로부터 받은 답변을 저장할 변수
+  bool isLoading = false;
   TextEditingController questionController = TextEditingController();
   @override
   void initState() {
@@ -45,7 +46,11 @@ class _GptState extends State<Gpt> with SingleTickerProviderStateMixin {
 
   void getAnswerFromGpt() async {
     GptService gptService = GptService();
+    setState(() {
+      isLoading = true;
+    });
     final response = await gptService.getGpt(questionController.text);
+
     if (response != '서버 오류') {
       // JSON 응답을 파싱합니다.
       Map<String, dynamic> parsedResponse = jsonDecode(response);
@@ -56,11 +61,13 @@ class _GptState extends State<Gpt> with SingleTickerProviderStateMixin {
       setState(() {
         hasAnswer = true;
         answer = actualAnswer; // 추출한 답변을 저장합니다.
+        isLoading = false;
       });
     } else {
       setState(() {
         hasAnswer = true;
         answer = '서버 오류';
+        isLoading = false;
       });
     }
   }
@@ -232,6 +239,33 @@ class _GptState extends State<Gpt> with SingleTickerProviderStateMixin {
               ),
             ],
           ),
+          if (isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Colors.pink[100],
+                        backgroundColor: Colors.black.withOpacity(0.5),
+                        strokeWidth: 5.0,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        '답변을 생각 중이에요',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

@@ -42,7 +42,8 @@ class _BankBookState extends State<BankBook> {
                     "잔액 : ${snapshot.data} 코인",
                     style: const TextStyle(
                       fontSize: 40,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black,
                     ),
                   );
                 }
@@ -72,8 +73,14 @@ class _BankBookState extends State<BankBook> {
                               : Colors.red[200],
                           child: ListTile(
                             isThreeLine: true,
-                            title: Text(DateFormat("yyyy-MM-dd")
-                                .format(transaction.date!)),
+                            title: Text(
+                              DateFormat("yyyy-MM-dd")
+                                  .format(transaction.date!),
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 12,
+                              ),
+                            ),
                             subtitle: Column(
                               children: [
                                 Row(

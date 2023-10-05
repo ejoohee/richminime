@@ -142,7 +142,7 @@ class _MiniRoomState extends State<MiniRoom> {
     // 현재 디바이스의 화면 크기 구하기
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final globeHeight = screenHeight / 4;
+    final globeHeight = screenHeight / 3.7;
     final globeWidth = screenWidth * 0.41;
 
     final closetHeight = globeHeight + 25;

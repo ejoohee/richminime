@@ -66,13 +66,11 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
     String id = cardEmailController.text;
     String password = cardPasswordController.text;
     String organization = widget.code;
-    print(id);
-    print(password);
-    print(organization);
+
     final userService = UserService();
     final response =
         await userService.getConnectedId(id, password, organization);
-    print(response);
+
     setState(() {
       isLoading = false; // 로딩 완료
     });
@@ -191,10 +189,30 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
             ),
           ),
           if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: const Center(
-                child: CircularProgressIndicator(),
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Colors.pink[100],
+                        backgroundColor: Colors.black.withOpacity(0.5),
+                        strokeWidth: 5.0,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        '1분 정도 소요될 수 있습니다.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
         ],

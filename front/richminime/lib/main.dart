@@ -7,7 +7,7 @@ import 'package:richminime/screens/login.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
-
+  await Future.delayed(const Duration(seconds: 3));
   assetsAudioPlayer.open(
     Audio("assets/audios/background.mp3"),
     loopMode: LoopMode.single,
@@ -76,19 +76,19 @@ class App extends StatelessWidget {
           ),
         ),
       ),
-      home: const Login(),
-      // home: FutureBuilder<String?>(
-      //   future: storage.read(key: "accessToken"),
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.done) {
-      //       if (snapshot.hasData && snapshot.data != null) {
-      //         return const HomeScreen();
-      //       }
-      //       return const Login();
-      //     }
-      //     return const CircularProgressIndicator();
-      //   },
-      // ),
+      // home: const Login(),
+      home: FutureBuilder<String?>(
+        future: storage.read(key: "accessToken"),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData && snapshot.data != null) {
+              return const HomeScreen();
+            }
+            return const Login();
+          }
+          return const CircularProgressIndicator();
+        },
+      ),
     );
   }
 }
