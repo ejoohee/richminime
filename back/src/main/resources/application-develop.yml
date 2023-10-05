@@ -51,7 +51,6 @@ spring:
   redis:
     host: redis
     port: 6379
-    password: dbsud1004
 logging:
   level:
     org:

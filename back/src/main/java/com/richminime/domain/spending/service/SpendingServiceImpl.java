@@ -64,7 +64,7 @@ public class SpendingServiceImpl implements SpendingService {
         // 리스트로 받아서 한꺼번에 저장
         List<Spending> spendingList;
         spendingList = codefWebClient.findSpendingList(FindSpendingListReqDto.create(user, startDate.toString(), endDate.toString()), user.getUserId());
-        spendingRepository.saveAll(spendingList);
+        spendingRepository.saveAllAndFlush(spendingList);
     }
 
 
