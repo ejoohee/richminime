@@ -2,6 +2,7 @@ package com.richminime.domain.user.service;
 
 import com.richminime.domain.character.domain.Character;
 import com.richminime.domain.character.repository.CharacterRepository;
+import com.richminime.domain.clothing.constant.ClothingType;
 import com.richminime.domain.clothing.domain.Clothing;
 import com.richminime.domain.item.domain.Item;
 import com.richminime.domain.room.domain.Room;
@@ -440,7 +441,17 @@ public class UserServiceImpl implements UserService {
 
         Character character = Character.builder()
                 .user(user)
-                .clothing(Clothing.builder().clothingId(100000L).build())      //회원가입시 Clothing 팬티룩 착용
+                .clothing(
+                        Clothing.builder()
+                                .clothingId(100000L)
+                                .clothingName("기본 생성 이름")
+                                .clothingType(ClothingType.직업)
+                                .clothingImg("기본 생성 이미지")
+                                .clothingApplyImg("기본 생성 착용 이미지")
+                                .clothingInfo("기본 생성 설명")
+                                .price(0L)
+                                .build()
+                )      //회원가입시 Clothing 팬티룩 착용
                 .build();
         characterRepository.save(character);
         //회원가입 시 그에 맞는 테마 기본정보 생성
