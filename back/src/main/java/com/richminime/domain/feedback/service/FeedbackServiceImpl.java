@@ -63,31 +63,31 @@ public class FeedbackServiceImpl implements FeedbackService {
         // 전날 == 전전날 소비가 같을 때
         if(daySpending.getLessSpent() == null) {
             Long totalAmount = daySpending.getTotalAmount(); // 전날 전체 소비 금액 합계
-
             List<String> maxSpentCategoryList = daySpending.getMaxSpentCategoryList();
-            String maxSpentCategory = "";
 
-            Random random = new Random();
-            if(maxSpentCategoryList.size() == 1) {
-                maxSpentCategory = maxSpentCategoryList.get(0);
-            } else {
-                 for(String category : maxSpentCategoryList) {
-                    if(random.nextBoolean()) {
-                        maxSpentCategory = category;
-                        break;
-                    }
-                }
+            // 전날, 전전날 소비가 아예 없을 때
+            if(totalAmount == 0) {
+                return FeedbackResDto.builder()
+                        .feedbackType("피드백없음")
+                        .content("최근 며칠간 소비내역이 존재하지 않아 소비패턴을 분석할 수 없어~!")
+                        .build();
             }
 
             StringBuilder sb = new StringBuilder();
             sb.append(daySpending.getMonth() +"월 " + daySpending.getDay() + "일에 ");
-            String contentOfMaxSpent = "『" + maxSpentCategory + "』 유형에 소비를 가장 많이 했구나!";
-            String contentOfTotalSpent = "총 " + totalAmount + "원을 소비했구나!";
 
-            if(random.nextBoolean())
-                sb.append(contentOfMaxSpent);
+            Random random = new Random();
+            // 가장 많이 사용한 유형들 안내
+            if(random.nextBoolean()) {
+                for(String category : maxSpentCategoryList)
+                    sb.append("『").append(category).append("』, ");
+
+                sb.delete(sb.length()-2, sb.length()-1);
+                sb.append("』에서 가장 많은 소비를 했구나!");
+            }
+            // 총 소비량 안내
             else
-                sb.append(contentOfTotalSpent);
+                sb.append("총 ").append(totalAmount).append("원을 소비했구나!");
 
             return FeedbackResDto.builder()
                     .feedbackType("랜덤피드백")
