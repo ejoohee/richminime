@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'dart:ffi';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/constants/default_setting.dart';
 import 'package:richminime/models/room_item_model.dart';
@@ -121,11 +119,13 @@ class _MiniRoomState extends State<MiniRoom> {
       } else if (item.itemType == '러그') {
         if (item.itemId != 100002) {
           roomRug = item.itemImg!;
+          print(roomRug);
         }
       }
     }
-
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -142,11 +142,11 @@ class _MiniRoomState extends State<MiniRoom> {
     // 현재 디바이스의 화면 크기 구하기
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final globeHeight = screenHeight / 3.5;
+    final globeHeight = screenHeight / 4;
     final globeWidth = screenWidth * 0.41;
 
-    final closetHeight = globeHeight + 30;
-    final closetWidth = globeWidth - 150;
+    final closetHeight = globeHeight + 25;
+    final closetWidth = globeWidth - 140;
 
     final tvHeight = globeHeight + 68;
     final tvWidth = globeWidth + 102;
@@ -176,21 +176,40 @@ class _MiniRoomState extends State<MiniRoom> {
                 ),
               ),
         if (roomRug != '')
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(roomRug),
+          // Column(
+          //   mainAxisAlignment: MainAxisAlignment.end,
+          //   children: [
+          //     Container(
+          //       decoration: BoxDecoration(
+          //         image: DecorationImage(
+          //           fit: BoxFit.cover,
+          //           image: NetworkImage(roomRug),
+          //         ),
+          //       ),
+          //     ),
+          //     const SizedBox(
+          //       height: 300,
+          //     )
+          //   ],
+          // ),
+          Positioned(
+            left: screenWidth / 2 - 125, // x 좌표 조정
+            bottom: 0, // y 좌표 조정
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  width: 250,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        fit: BoxFit.contain,
+                        image: NetworkImage(roomRug) // roomRug 이미지가 있는 경우
+                        ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 300,
-              )
-            ],
+              ],
+            ),
           ),
         Positioned(
           left: closetWidth,
@@ -206,7 +225,7 @@ class _MiniRoomState extends State<MiniRoom> {
             },
             child: Image.asset(
               DefaultSetting.closet,
-              scale: 1.2,
+              scale: 1.1,
             ),
           ),
         ),
@@ -231,7 +250,7 @@ class _MiniRoomState extends State<MiniRoom> {
               tag: 'TV',
               child: Image.asset(
                 DefaultSetting.tv,
-                scale: 5,
+                scale: 4.5,
               ),
             ),
           ),
@@ -344,6 +363,7 @@ class _MiniRoomState extends State<MiniRoom> {
             isMinimeTapped
                 ? Container(
                     margin: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.background,
                       borderRadius: const BorderRadius.all(Radius.circular(15)),

@@ -1,6 +1,4 @@
-import "package:richminime/models/bankbook_model.dart";
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:richminime/constants/api.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/interceptor/interceptor.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:richminime/screens/login.dart';
-import 'package:richminime/services/clothig_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/services/user_service.dart';
 import 'package:marquee/marquee.dart';

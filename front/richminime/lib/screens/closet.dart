@@ -1,10 +1,6 @@
-import 'dart:ffi';
-import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
-import 'package:richminime/miniroom/mini_room.dart';
-import 'package:richminime/models/clothing_model.dart';
 import 'package:richminime/models/user_clothing_model.dart';
 import 'package:richminime/services/clothig_service.dart';
 import 'package:richminime/services/miniroom_service.dart';
@@ -252,15 +248,16 @@ class _ClosetState extends State<Closet> {
                                         decoration: BoxDecoration(
                                           color: index == sellingIndex
                                               ? Colors.black.withOpacity(0.2)
-                                              : Theme.of(context).cardColor,
+                                              : Theme.of(context)
+                                                  .highlightColor,
                                           borderRadius:
                                               BorderRadius.circular(5),
                                           boxShadow: [
                                             BoxShadow(
                                               blurRadius: 3,
                                               offset: const Offset(3, 3),
-                                              color:
-                                                  Colors.black.withOpacity(0.3),
+                                              color: Colors.blueGrey
+                                                  .withOpacity(0.3),
                                             )
                                           ],
                                         ),
@@ -493,7 +490,7 @@ class _ClosetState extends State<Closet> {
                 fontFamily: 'StarDustS',
                 fontWeight: FontWeight.w700,
                 fontSize: 18),
-            backgroundColor: const Color(0xFFFFBEBE).withOpacity(0.2),
+            backgroundColor: Theme.of(context).cardColor.withOpacity(0.2),
             borderColor: Colors.white38,
             borderRadius: 5,
             borderWidth: 2,

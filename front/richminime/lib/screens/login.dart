@@ -1,13 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/screens/home_screen.dart';
 import 'package:richminime/screens/sign_up.dart';
 import 'package:richminime/services/user_service.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
-import 'dart:async';
-import 'dart:convert';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -93,6 +88,14 @@ class _LoginState extends State<Login> {
               child: Text(
                 '로그인하기',
                 style: TextStyle(
+                  shadows: const <Shadow>[
+                    Shadow(
+                      offset: Offset(0, 0), // 그림자의 위치 (X, Y)
+                      blurRadius: 7, // 그림자의 흐림 정도
+                      color: Colors.black, // 그림자의 색상
+                    ),
+                  ],
+                  fontFamily: 'StarDust',
                   fontSize: 50,
                   fontWeight: FontWeight.w900,
                   color: Theme.of(context).textTheme.bodyLarge?.color,
@@ -112,6 +115,7 @@ class _LoginState extends State<Login> {
                   child: Column(
                     children: [
                       TextFormField(
+                        style: Theme.of(context).textTheme.bodySmall,
                         controller: emailController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -121,17 +125,24 @@ class _LoginState extends State<Login> {
                           }
                           return null;
                         },
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
+                        decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 10),
                           labelText: '이메일',
-                          fillColor: Color(0xFFFFFDFD),
+                          labelStyle: Theme.of(context).textTheme.labelSmall,
+                          fillColor: const Color(0xFFFFFDFD),
                           filled: true,
                         ),
                       ),
                       const SizedBox(height: 10),
                       TextFormField(
+                        style: Theme.of(context).textTheme.bodySmall,
                         controller: passwordController,
                         obscureText: true, // 비밀번호 숨기기 옵션
                         validator: (value) {
@@ -142,12 +153,18 @@ class _LoginState extends State<Login> {
                           }
                           return null;
                         },
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
+                        decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 10),
                           labelText: '비밀번호',
-                          fillColor: Color(0xFFFFFDFD),
+                          labelStyle: Theme.of(context).textTheme.labelSmall,
+                          fillColor: const Color(0xFFFFFDFD),
                           filled: true,
                         ),
                       ),
@@ -161,15 +178,13 @@ class _LoginState extends State<Login> {
                               alignment: Alignment.center,
                               width: 110,
                               height: 50,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFFBEBE),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Theme.of(context).cardColor,
                               ),
-                              child: const Text(
+                              child: Text(
                                 "로그인",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ),
                           ),
@@ -184,16 +199,17 @@ class _LoginState extends State<Login> {
                               alignment: Alignment.center,
                               width: 110,
                               height: 50,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFFBEBE),
-                                borderRadius: BorderRadius.zero,
+                              decoration: BoxDecoration(
+                                // color: Color(0xFFFFBEBE),
+                                borderRadius: BorderRadius.circular(20),
+
+                                color: Theme.of(context).cardColor,
+
+                                // borderRadius: BorderRadius.zero,
                               ),
-                              child: const Text(
+                              child: Text(
                                 "회원가입",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ),
                           ),

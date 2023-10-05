@@ -131,20 +131,17 @@ class _SignUp2State extends State<SignUp2> with SingleTickerProviderStateMixin {
             percent: percent,
             center: const Text('2/4'),
             barRadius: const Radius.circular(16),
-            progressColor: Colors.red[200],
+            progressColor: Theme.of(context).cardColor,
           ),
           Flexible(
             flex: 1,
             child: Container(
-              padding: const EdgeInsets.all(50),
+              padding: const EdgeInsets.all(30),
               alignment: Alignment.bottomCenter,
               child: Text(
-                "카드사 홈페이지 아이디를 보유하고 계신가요?",
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w900,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
+                "카드사 홈페이지 아이디를\n보유하고 계신가요?",
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -170,14 +167,13 @@ class _SignUp2State extends State<SignUp2> with SingleTickerProviderStateMixin {
                       alignment: Alignment.center,
                       width: 100,
                       height: 50,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFFBEBE),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Theme.of(context).cardColor,
                       ),
-                      child: const Text(
+                      child: Text(
                         '예',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
                   ),
@@ -187,14 +183,13 @@ class _SignUp2State extends State<SignUp2> with SingleTickerProviderStateMixin {
                       alignment: Alignment.center,
                       width: 100,
                       height: 50,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFFBEBE),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Theme.of(context).cardColor,
                       ),
-                      child: const Text(
+                      child: Text(
                         '아니오',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
                   )
