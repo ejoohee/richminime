@@ -8,7 +8,7 @@ import 'package:richminime/screens/sign_up4.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
-
+  await Future.delayed(const Duration(seconds: 3));
   assetsAudioPlayer.open(
     Audio("assets/audios/background.mp3"),
     loopMode: LoopMode.single,

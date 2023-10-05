@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:richminime/models/user_clothing_model.dart';
+import 'package:richminime/screens/home_screen.dart';
 import 'package:richminime/services/clothig_service.dart';
 import 'package:richminime/services/miniroom_service.dart';
 
@@ -130,7 +131,9 @@ class _ClosetState extends State<Closet> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    (Route<dynamic> route) => false);
               },
               child: const Text('확인'),
             ),

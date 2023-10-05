@@ -50,9 +50,9 @@ class AppBarHomeScreen extends StatelessWidget implements PreferredSizeWidget {
                         child: Marquee(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           text: '${snapshot.data}님의 미니룸',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 25,
-                            color: Colors.blue[200],
+                            color: Color(0xFF1a1a1a),
                             fontWeight: FontWeight.bold,
                           ),
                           scrollAxis: Axis.horizontal,
@@ -71,9 +71,9 @@ class AppBarHomeScreen extends StatelessWidget implements PreferredSizeWidget {
                         child: Marquee(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           text: '${snapshot.data}님의 옷장',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 25,
-                            color: Colors.blue[200],
+                            color: Color(0xFF1a1a1a),
                             fontWeight: FontWeight.bold,
                           ),
                           scrollAxis: Axis.horizontal,
@@ -92,9 +92,9 @@ class AppBarHomeScreen extends StatelessWidget implements PreferredSizeWidget {
                         child: Marquee(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           text: '${snapshot.data}님의 가구 보관함',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 25,
-                            color: Colors.blue[200],
+                            color: Color(0xFF1a1a1a),
                             fontWeight: FontWeight.bold,
                           ),
                           scrollAxis: Axis.horizontal,

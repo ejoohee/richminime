@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:richminime/screens/home_screen.dart';
 import 'package:richminime/services/clothig_service.dart';
 
 class ClothingStoreSelected extends StatefulWidget {
@@ -68,7 +69,9 @@ class _ClothingStoreSelectedState extends State<ClothingStoreSelected> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    (Route<dynamic> route) => false);
               },
               child: const Text('확인'),
             ),

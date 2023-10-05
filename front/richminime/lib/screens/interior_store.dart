@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:richminime/constants/default_setting.dart';
 import 'package:richminime/models/interior_theme_model.dart';
+import 'package:richminime/screens/home_screen.dart';
 import 'package:richminime/services/interior_service.dart';
 import 'package:richminime/widgets/appbar_back_home.dart';
 
@@ -98,7 +99,9 @@ class _InteriorStoreState extends State<InteriorStore> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    (Route<dynamic> route) => false);
               },
               child: const Text('확인'),
             ),

@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
           radius: 125,
           alignment: Alignment.bottomCenter,
           toggleButtonSize: 60,
-          toggleButtonColor: Colors.pink,
+          toggleButtonColor: const Color(0xFF6d9d88),
           items: [
             CircularMenuItem(
               icon: Icons.face_retouching_natural_sharp,
@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const ClothingStore()), // 옷장 페이지로 이동
                 );
               },
-              color: Colors.purple,
+              color: const Color(0xFFA6BB8D),
               iconSize: 50,
             ),
             CircularMenuItem(
@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (context) => const BankBook()), // 옷장 페이지로 이동
                 );
               },
-              color: Colors.orange,
+              color: const Color(0xFF61876E),
               iconSize: 50,
             ),
             CircularMenuItem(
@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (context) => const Analysis()), // 옷장 페이지로 이동
                 );
               },
-              color: Colors.green,
+              color: const Color(0xFF3C6255),
               iconSize: 50,
             ),
             CircularMenuItem(
@@ -138,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (context) => const Gpt()), // 옷장 페이지로 이동
                 );
               },
-              color: Colors.blue[300],
+              color: const Color(0xFF61876E),
               iconSize: 50,
             ),
             CircularMenuItem(
@@ -151,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const InteriorStore()), // 옷장 페이지로 이동
                 );
               },
-              color: Colors.yellow,
+              color: const Color(0xFFA6BB8D),
               iconSize: 50,
             ),
           ],
