@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
      * 매일 자정마다 실행됨
      * 회원 목록을 순회하면서 각 회원의 전날 소비내역을 불러옴
      */
-    @Scheduled(cron = "0 35 8 * * *")
+    @Scheduled(cron = "0 40 8 * * *")
     public void addUsersDaySpending() {
         // 어제 날짜
         LocalDate time = DateUtil.getMinusTimeFromNow(1);
