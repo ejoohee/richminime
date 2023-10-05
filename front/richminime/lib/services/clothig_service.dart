@@ -28,11 +28,8 @@ class ClothingService {
       url,
       headers: headers, // 헤더 추가
     );
-    print(response.statusCode);
-    print(response.body);
     if (response.statusCode == 200) {
       final List<dynamic> clothings = jsonDecode(response.body);
-      print(clothings);
       for (var clothing in clothings) {
         clothingInstances.add(ClothingModel.fromJson(clothing));
       }
@@ -57,8 +54,6 @@ class ClothingService {
       headers: headers,
     );
 
-    print(response.statusCode);
-    print('응답은요 ${response.body}');
     if (response.statusCode == 201) {
       Map<String, dynamic> responseData = json.decode(response.body);
       int balance = responseData['balance'];
@@ -88,7 +83,6 @@ class ClothingService {
       url,
       headers: headers,
     );
-    print(response.statusCode);
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData = json.decode(response.body);
       int sellPrice = responseData['sellPrice'];
@@ -117,8 +111,6 @@ class ClothingService {
       url,
       headers: headers,
     );
-    print('내옷장불러오기 : ${response.statusCode}');
-    print('응답은요 : ${response.body}');
 
     if (response.statusCode == 200) {
       final List<dynamic> clothings = jsonDecode(response.body);

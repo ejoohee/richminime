@@ -3,7 +3,11 @@ class SpendingData {
   List<SpendingAmount>? spendingAmountList;
   int? totalAmount;
 
-  SpendingData({this.month, this.spendingAmountList, this.totalAmount});
+  SpendingData({
+    required this.month,
+    required this.spendingAmountList,
+    required this.totalAmount,
+  });
 
   SpendingData.fromJson(Map<String, dynamic> json) {
     month = json['month'];
@@ -21,7 +25,10 @@ class SpendingAmount {
   String? category;
   int? amount;
 
-  SpendingAmount({this.category, this.amount});
+  SpendingAmount({
+    required this.category,
+    required this.amount,
+  });
 
   SpendingAmount.fromJson(Map<String, dynamic> json) {
     category = json['category'];

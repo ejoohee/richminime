@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/constants/default_setting.dart';
+import 'package:richminime/models/room_item_model.dart';
 import 'package:richminime/screens/closet.dart';
 import 'package:richminime/screens/exchange_rate.dart';
 import 'package:richminime/screens/economy_news.dart';
@@ -47,7 +48,7 @@ class _MiniRoomState extends State<MiniRoom> {
     }
   }
 
-  // TV더블탭 >> 기준금리 및 뉴스 받기
+  // TV더블탭 >> 기준금리 등 뉴스 받기
   late List<financeInfoModel> economyNews;
 
   getIR() async {
@@ -57,7 +58,7 @@ class _MiniRoomState extends State<MiniRoom> {
       List<financeInfoModel> financeData = en;
       // 데이터를 사용할 수 있음
       economyNews = financeData;
-      // 이제 데이터를 사용할 수 있습니다.
+      // 이제 데이터를 사용할 수 있다.
     } catch (e) {
       // 오류 처리
       print('Error: $e');
@@ -65,33 +66,60 @@ class _MiniRoomState extends State<MiniRoom> {
   }
 
   // 미니미 캐릭터 받아오기
-  String minime = DefaultSetting.minime;
-  bool isLoaded = false;
-  //잔액 보여주기
+  String minime = '';
+  bool changed = false;
+  //잔액도 보여주기
   var balance;
 
   loadMinime() async {
     balance = await storage.read(key: "balance");
-    print('토큰 $balance');
     String tmpMinime = await miniroomService.getCharacter();
-    print('캐릭터 옷? : $tmpMinime');
-    if (tmpMinime == '') {
-      return;
-    } else {
+    if (tmpMinime != '') {
       minime = tmpMinime;
-      isLoaded = true;
+      changed = true;
     }
-    setState(() {});
+    if (mounted) {
+      setState(() {
+        // 상태 업데이트 코드
+      });
+    }
   }
 
-  bool isVisible = false;
+  // 룸 불러오기
+  String roomBackground = '';
+  String roomRug = '';
+  // String roomFurniture = '';
+  loadMiniroom() async {
+    final List<RoomItemModel> tmpMiniroom = await miniroomService.getRoom();
+
+    for (var item in tmpMiniroom) {
+      if (item.itemType == '벽지장판') {
+        if (item.itemId != 100000) {
+          roomBackground = item.itemImg!;
+        }
+      } else if (item.itemType == '가구') {
+        if (item.itemId == 100001) {
+          //디폴트 가구세팅 아직 없지만 혹시몰라서...
+        }
+      } else if (item.itemType == '러그') {
+        if (item.itemId != 100002) {
+          roomRug = item.itemImg!;
+        }
+      }
+    }
+
+    setState(() {});
+  }
 
   @override
   void initState() {
     super.initState();
     loadMinime();
+    loadMiniroom();
   }
 
+// balance 볼래말래
+  bool isVisible = false;
   @override
   Widget build(BuildContext context) {
     // 현재 디바이스의 화면 크기 구하기
@@ -105,25 +133,53 @@ class _MiniRoomState extends State<MiniRoom> {
 
     final tvHeight = globeHeight + 68;
     final tvWidth = globeWidth + 102;
-
+//  roomBackground == ''
+//                   ? AssetImage(
+//                       DefaultSetting.emptyRoom,
+//                     )
+//                   :
     return Stack(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage(
-                DefaultSetting.emptyRoom,
+        roomBackground == ''
+            ? Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: AssetImage(
+                        DefaultSetting.emptyRoom,
+                      )),
+                ),
+              )
+            : Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(roomBackground),
+                  ),
+                ),
               ),
-            ),
+        if (roomRug != '')
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(roomRug),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 300,
+              )
+            ],
           ),
-        ),
         Positioned(
           left: closetWidth,
           top: closetHeight,
           child: GestureDetector(
             onDoubleTap: () {
-              print('옷장 탭했다');
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -143,7 +199,6 @@ class _MiniRoomState extends State<MiniRoom> {
           child: GestureDetector(
             onDoubleTap: () async {
               await getIR();
-              print('티비 탭했다');
               if (!context.mounted) return;
               Navigator.push(
                 context,
@@ -171,7 +226,6 @@ class _MiniRoomState extends State<MiniRoom> {
             onDoubleTap: () async {
               await getER();
 
-              print('지구본 탭했다');
               if (!context.mounted) return;
               Navigator.push(
                 context,
@@ -205,14 +259,14 @@ class _MiniRoomState extends State<MiniRoom> {
               sigma: 10,
               offset: const Offset(0, 0),
               color: Colors.white,
-              child: isLoaded
+              child: changed
                   ? Image.network(
                       minime,
                       width: 100,
                       height: 100,
                     )
                   : Image.asset(
-                      minime,
+                      DefaultSetting.minime,
                       width: 100,
                       height: 100,
                     ),

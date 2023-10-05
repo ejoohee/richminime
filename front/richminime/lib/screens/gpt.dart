@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:richminime/services/gpt.dart';
+import 'package:richminime/services/gpt_service.dart';
 import 'package:richminime/widgets/appbar_back_home.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'dart:convert';

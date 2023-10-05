@@ -25,9 +25,9 @@ class AnalysisService {
     if (response.statusCode == 200) {
       final Map<String, dynamic> decodedData = jsonDecode(response.body);
       return SpendingData.fromJson(decodedData);
-    } else {
-      getSpendingData();
-      throw Exception('Failed to load spending data');
+    } else if (response.statusCode == 401) {
+      return getSpendingData();
     }
+    throw Error();
   }
 }

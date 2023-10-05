@@ -3,6 +3,7 @@ import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:richminime/constants/default_setting.dart';
 import 'package:richminime/models/interior_theme_model.dart';
 import 'package:richminime/services/interior_service.dart';
+import 'package:richminime/services/miniroom_service.dart';
 
 class Interior extends StatefulWidget {
   const Interior({super.key});
@@ -12,6 +13,7 @@ class Interior extends StatefulWidget {
 }
 
 class _InteriorState extends State<Interior> {
+  final MiniroomService miniroomService = MiniroomService();
   final InteriorService interiorService = InteriorService();
 
   final List<String> categories = ["벽지장판", "러그", "가구"];
@@ -27,7 +29,7 @@ class _InteriorState extends State<Interior> {
     loadItemData();
   }
 
-  Future<void> loadItemData() async {
+  loadItemData() async {
     try {
       final loadedItemList = await interiorService.getMyAllItems();
       if (mounted) {
@@ -52,9 +54,33 @@ class _InteriorState extends State<Interior> {
     tappedIndex = index;
   }
 
-  // 룸테마적용 ->api
+  // 룸아이템적용 ->api
   applyItem() async {
-    // await
+    int itemId = sortedItemList[tryIndex].itemId!;
+    final response = await miniroomService.applyRoomItem(itemId);
+    if (mounted) {
+      setState(() {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Text(
+                response,
+                textAlign: TextAlign.center,
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('확인'),
+                ),
+              ],
+            );
+          },
+        );
+      });
+    }
   }
 
   // 테마 입어보기
