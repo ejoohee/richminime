@@ -506,7 +506,7 @@ public class UserServiceImpl implements UserService {
             time = DateUtil.getMinusTimeFromNow(1);
             dateDto = DateUtil.getYearMonthDay(time);
             String endDate = DateUtil.parseDateToString(dateDto);
-            spendingService.updateDaySpending(user, dateDto.getMonth(), dateDto.getDay(), sdf.parse(startDate), sdf.parse(startDate));
+            spendingService.updateDaySpending(user, dateDto.getMonth(), dateDto.getDay(), sdf.parse(endDate), sdf.parse(endDate));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
