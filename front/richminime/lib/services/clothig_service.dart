@@ -28,6 +28,7 @@ class ClothingService {
       url,
       headers: headers, // 헤더 추가
     );
+    print('옷가게 전체 조회 ${response.body.length}개의 옷 정보 ${response.body}');
     if (response.statusCode == 200) {
       final List<dynamic> clothings = jsonDecode(response.body);
       for (var clothing in clothings) {
