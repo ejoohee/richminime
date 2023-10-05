@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+import java.util.List;
+import java.util.Random;
+
 import static com.richminime.domain.feedback.constant.FeedbackExceptionMessage.*;
 import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
 import static com.richminime.global.constant.ExceptionMessage.*;
@@ -54,6 +57,41 @@ public class FeedbackServiceImpl implements FeedbackService {
 
         // 스펜딩 불러오기
         FindDaySpendingResDto daySpending = spendingService.findDaySpending();
+
+        // 전날 == 전전날 소비가 같을 때
+        if(daySpending.getLessSpent() == null) {
+            Long totalAmount = daySpending.getTotalAmount(); // 전날 전체 소비 금액 합계
+
+            List<String> maxSpentCategoryList = daySpending.getMaxSpentCategoryList();
+            String maxSpentCategory = "";
+
+            Random random = new Random();
+            if(maxSpentCategoryList.size() == 1) {
+                maxSpentCategory = maxSpentCategoryList.get(0);
+            } else {
+                 for(String category : maxSpentCategoryList) {
+                    if(random.nextBoolean()) {
+                        maxSpentCategory = category;
+                        break;
+                    }
+                }
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(daySpending.getMonth() +"월 " + daySpending.getDay() + "일에 ");
+            String contentOfMaxSpent = "『" + maxSpentCategory + "』 유형에 소비를 가장 많이 했구나!";
+            String contentOfTotalSpent = "총 " + totalAmount + "원을 소비했구나!";
+
+            if(random.nextBoolean())
+                sb.append(contentOfMaxSpent);
+            else
+                sb.append(contentOfTotalSpent);
+
+            return FeedbackResDto.builder()
+                    .feedbackType("랜덤피드백")
+                    .content(sb.toString())
+                    .build();
+        }
 
         String feedbackType;
         if(daySpending.getLessSpent())
