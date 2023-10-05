@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:richminime/screens/home_screen.dart';
 import 'package:richminime/screens/login.dart';
+import 'package:richminime/screens/sign_up4.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,12 +29,12 @@ class App extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Dunggeunmo',
         useMaterial3: true,
-        cardColor: const Color(0xffee6e9f),
-        highlightColor: const Color.fromARGB(255, 235, 161, 190),
+        cardColor: const Color.fromARGB(255, 227, 131, 168),
+        highlightColor: const Color.fromARGB(255, 252, 234, 240),
         colorScheme: ColorScheme.fromSwatch(
           backgroundColor: const Color.fromARGB(255, 239, 206, 222),
-          cardColor: const Color.fromARGB(255, 228, 136, 171),
-          accentColor: const Color(0xffabbce7),
+          cardColor: const Color.fromARGB(255, 227, 131, 168),
+          accentColor: const Color(0xFF1a1a1a),
           errorColor: const Color.fromARGB(255, 98, 15, 198),
         ),
         textTheme: const TextTheme(
@@ -76,19 +77,19 @@ class App extends StatelessWidget {
           ),
         ),
       ),
-      home: const Login(),
-      // home: FutureBuilder<String?>(
-      //   future: storage.read(key: "accessToken"),
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.done) {
-      //       if (snapshot.hasData && snapshot.data != null) {
-      //         return const HomeScreen();
-      //       }
-      //       return const Login();
-      //     }
-      //     return const CircularProgressIndicator();
-      //   },
-      // ),
+      // home: const Login(),
+      home: FutureBuilder<String?>(
+        future: storage.read(key: "accessToken"),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData && snapshot.data != null) {
+              return const HomeScreen();
+            }
+            return const Login();
+          }
+          return const CircularProgressIndicator();
+        },
+      ),
     );
   }
 }
