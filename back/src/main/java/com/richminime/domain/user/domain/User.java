@@ -66,10 +66,12 @@ public class User {
 //    @OneToOne(mappedBy = "user")
     private List<Room> rooms = new ArrayList<>();
 
-    @Column(name = "clothing_count", columnDefinition = "integer default 0")
+    @Column(name = "clothing_count", nullable = false)
+    @ColumnDefault("0")
     private Integer clothingCount;
 
-    @Column(name = "item_count", columnDefinition = "integer default 0")
+    @Column(name = "item_count", nullable = false)
+    @ColumnDefault("0")
     private Integer itemCount;
 
 
