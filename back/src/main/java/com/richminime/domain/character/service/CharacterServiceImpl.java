@@ -7,6 +7,7 @@ import com.richminime.domain.character.exception.CharacterClothingNotFoundExcept
 import com.richminime.domain.character.exception.CharacterNotFoundException;
 import com.richminime.domain.character.exception.CharacterUserNotFoundException;
 import com.richminime.domain.character.repository.CharacterRepository;
+import com.richminime.domain.clothing.constant.ClothingType;
 import com.richminime.domain.clothing.dao.ClothingRepository;
 import com.richminime.domain.clothing.domain.Clothing;
 import com.richminime.domain.clothing.exception.ClothingNotFoundException;
@@ -67,7 +68,15 @@ public class CharacterServiceImpl implements CharacterService{
                 .orElseThrow(() -> new CharacterNotFoundException());
         Clothing clothing;
         if(dto.getClothingId() == character.getClothing().getClothingId()){    //만약 입고있는 옷의 id와 요청한 옷의 id가 같으면 기본옷으로 교체
-            clothing = Clothing.builder().clothingId(100000L).build();
+            clothing = Clothing.builder()
+                    .clothingId(100000L)
+                    .clothingName("기본이름")
+                    .clothingType(ClothingType.일상)
+                    .clothingImg("기본 url")
+                    .clothingApplyImg("기본 착용 url")
+                    .clothingInfo("기본 정보")
+                    .price(0L)
+                    .build();
             character.chageClothing(clothing);
             return CharacterResDto.builder()
                     .clothingId(clothing.getClothingId())

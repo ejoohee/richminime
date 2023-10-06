@@ -12,10 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface ClothingRepository extends JpaRepository<Clothing, Long> {
-    List<Clothing> findAllByClothingType(ClothingType clothingType);
-
+    List<Clothing> findAllByClothingTypeAndClothingIdNot(ClothingType clothingType, Long excludeClothingId);
+    List<Clothing> findAllByClothingIdNot(Long clothingId);
     @Query("select c from Clothing c where c.clothingId = :clothingId")
     Optional<Clothing> findByclothingId (@Param("clothingId") Long clothingId);
-
 
 }

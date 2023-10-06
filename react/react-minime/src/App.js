@@ -18,14 +18,14 @@ function App() {
     <div className="app-card">
       <div className="app-card-images">
         <img
-          src="https://i.namu.wiki/i/7tIRMoXytpcOXBK3Z3lCCAxwGTr98717aahDImkLgruFRfac9--zRtJjdEouiuk5fyi-lgdr9u34y9tOgLN5NUhtoGi0gR0i2FEi3nwaqSujd2jxhZQPKD7DXkliGU46fUWzbj01SSyEbwa3Ky0Ltg.webp"
+          src="https://richminime.s3.ap-northeast-2.amazonaws.com/clothing/24%EC%A7%B1%EA%B5%AC%EC%97%AC%EC%B9%9C%EC%88%98%EC%A7%80_%EC%B0%A9%EC%9A%A9.png"
           alt="Minecraft Gameplay"
         />
       </div>
       <div className="app-card-info">
         <div className="app-card-center">
           <img
-            src="https://d2k6w3n3qf94c4.cloudfront.net/media/test/main_image/95CA34DA-9280-4CCD-980E-34CCDFE9EC18.jpeg"
+            src="https://richminime.s3.ap-northeast-2.amazonaws.com/slide/%EB%A1%9C%EA%B3%A0.png"
             alt="Minecraft Logo"
             className="app-logo"
           />
@@ -58,7 +58,7 @@ function App() {
         </div>
 
         <div className="download">
-          <button className="download-button">다운로드</button>
+          <button className="download-button" onClick={() => window.location.href="https://richminime.s3.ap-northeast-2.amazonaws.com/slide/richminime.zip"}>다운로드</button>
         </div>
         <div className="footer">
           <div className="footer-1">

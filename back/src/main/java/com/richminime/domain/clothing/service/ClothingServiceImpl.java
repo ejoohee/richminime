@@ -81,23 +81,22 @@ public class ClothingServiceImpl implements ClothingService {
     @Transactional
     @Override
     public List<ClothingResDto> findAllClothingByType(ClothingType clothingType) {
+        Long excludeClothingId = 100_000L;
+        List<Clothing> clothingList;
+
         if (clothingType == null) {
-            List<Clothing> clothingList = clothingRepository.findAll();
-            List<ClothingResDto> clothingInfoResponseDtoList = new ArrayList<>();
-            for (Clothing clothing : clothingList) {
-                ClothingResDto dto = ClothingResDto.entityToDto(clothing);
-                clothingInfoResponseDtoList.add(dto);
-            }
-            return clothingInfoResponseDtoList;
+            clothingList = clothingRepository.findAllByClothingIdNot(excludeClothingId);
         } else {
-            List<Clothing> clothingListByType = clothingRepository.findAllByClothingType(clothingType);
-            List<ClothingResDto> clothingInfoResponseDtoListByType = new ArrayList<>();
-            for (Clothing clothing : clothingListByType) {
-                ClothingResDto dto = ClothingResDto.entityToDto(clothing);
-                clothingInfoResponseDtoListByType.add(dto);
-            }
-            return clothingInfoResponseDtoListByType;
+            clothingList = clothingRepository.findAllByClothingTypeAndClothingIdNot(clothingType, excludeClothingId);
         }
+
+        List<ClothingResDto> clothingInfoResponseDtoList = new ArrayList<>();
+
+        for (Clothing clothing : clothingList) {
+            ClothingResDto dto = ClothingResDto.entityToDto(clothing);
+            clothingInfoResponseDtoList.add(dto);
+        }
+        return clothingInfoResponseDtoList;
     }
 
     @Transactional
