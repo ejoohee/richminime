@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:richminime/screens/sign_up4.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:richminime/services/user_service.dart';
@@ -14,35 +12,10 @@ class SignUp3 extends StatefulWidget {
   State<SignUp3> createState() => _SignUp3State();
 }
 
-class CardNumberInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    String newText = newValue.text.replaceAll('-', '');
-    if (newText.length > 4) {
-      newText =
-          '${newText.substring(0, 4)}-${newText.substring(4, newText.length)}';
-    }
-    if (newText.length > 9) {
-      newText =
-          '${newText.substring(0, 9)}-${newText.substring(9, newText.length)}';
-    }
-    if (newText.length > 14) {
-      newText =
-          '${newText.substring(0, 14)}-${newText.substring(14, newText.length)}';
-    }
-
-    return TextEditingValue(
-      text: newText,
-      selection: TextSelection.collapsed(offset: newText.length),
-    );
-  }
-}
-
 class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
   TextEditingController cardEmailController = TextEditingController();
   TextEditingController cardPasswordController = TextEditingController();
-  TextEditingController cardNumController = TextEditingController();
+
   late AnimationController _controller;
   late Animation<double> _animation;
   double percent = 0.5;
@@ -66,22 +39,38 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
     _controller.forward();
   }
 
+  Future<void> _showDialog(String message) async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('알림'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // AlertDialog를 닫습니다.
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future onNextButtonTap() async {
     setState(() {
       isLoading = true; // 로딩 시작
     });
     String id = cardEmailController.text;
     String password = cardPasswordController.text;
-    String cardNumber = cardNumController.text;
     String organization = widget.code;
-    print(id);
-    print(password);
-    print(cardNumber);
-    print(organization);
+
     final userService = UserService();
-    final response = await userService.getConnectedId(
-        id, password, organization, cardNumber);
-    print(response);
+    final response =
+        await userService.getConnectedId(id, password, organization);
+
     setState(() {
       isLoading = false; // 로딩 완료
     });
@@ -93,14 +82,11 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
           builder: (context) => SignUp4(
             uuid: response.split(" ")[1],
             organization: widget.code,
-            cardNumber: cardNumController.text,
           ),
         ),
       );
     } else {
-      AlertDialog(
-        title: Text(response),
-      );
+      _showDialog("카드사 정보를 확인해주세요."); // 다이얼로그로 메시지 표시
     }
   }
 
@@ -124,16 +110,13 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
                   percent: percent,
                   center: const Text('3/4'),
                   barRadius: const Radius.circular(16),
-                  progressColor: Colors.red[200],
+                  progressColor: Theme.of(context).cardColor,
                 ),
                 const SizedBox(height: 100),
                 Text(
-                  '카드사 정보를 입력해주세요',
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w900,
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
-                  ),
+                  '카드사의 회원정보를\n입력해주세요',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
                 Container(
@@ -141,45 +124,44 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
                   child: SizedBox(
                     width: 300,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextField(
+                          style: Theme.of(context).textTheme.bodySmall,
                           controller: cardEmailController,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 10),
-                            labelText: '아이디',
-                            fillColor: Color(0xFFFFFDFD),
+                            labelText: '카드사 홈페이지 아이디',
+                            labelStyle: Theme.of(context).textTheme.labelSmall,
+                            fillColor: const Color(0xFFFFFDFD),
                             filled: true,
                           ),
                         ),
                         const SizedBox(height: 10),
                         TextField(
+                          style: Theme.of(context).textTheme.bodySmall,
                           controller: cardPasswordController,
                           obscureText: true,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 10),
-                            labelText: '비밀번호',
-                            fillColor: Color(0xFFFFFDFD),
+                            labelText: '카드사 홈페이지 비밀번호',
+                            labelStyle: Theme.of(context).textTheme.labelSmall,
+                            fillColor: const Color(0xFFFFFDFD),
                             filled: true,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: cardNumController,
-                          keyboardType: TextInputType.number,
-                          maxLength: 19,
-                          inputFormatters: [CardNumberInputFormatter()],
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
-                            labelText: '카드번호',
-                            fillColor: Color(0xFFFFFDFD),
-                            filled: true,
-                            counterText: "",
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -189,15 +171,13 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
                             alignment: Alignment.center,
                             width: 110,
                             height: 50,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFFBEBE),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Theme.of(context).cardColor,
                             ),
-                            child: const Text(
+                            child: Text(
                               "다음",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
                           ),
                         ),
@@ -209,10 +189,30 @@ class _SignUp3State extends State<SignUp3> with SingleTickerProviderStateMixin {
             ),
           ),
           if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: const Center(
-                child: CircularProgressIndicator(),
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Colors.pink[100],
+                        backgroundColor: Colors.black.withOpacity(0.5),
+                        strokeWidth: 5.0,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        '1분 정도 소요될 수 있습니다.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
         ],

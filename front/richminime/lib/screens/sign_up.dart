@@ -40,7 +40,7 @@ class _SignUpState extends State<SignUp> {
             percent: 0.25,
             center: const Text('1/4'),
             barRadius: const Radius.circular(16),
-            progressColor: Colors.red[200],
+            progressColor: Theme.of(context).cardColor,
           ),
           const SizedBox(
             height: 50,
@@ -48,24 +48,31 @@ class _SignUpState extends State<SignUp> {
           Flexible(
             flex: 1,
             child: Container(
-              padding: const EdgeInsets.all(50),
+              padding: const EdgeInsets.all(30),
               alignment: Alignment.bottomCenter,
               child: Text(
-                "서비스 이용을 위해 카드사의 아이디가 필요해요",
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w900,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
+                "서비스 이용을 위해\n카드사의 정보가 필요해요",
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
               ),
             ),
           ),
           Flexible(
             flex: 2,
             child: DropdownButton(
+              dropdownColor: Colors.grey.shade200,
+              style: const TextStyle(
+                fontSize: 15,
+                fontFamily: 'Dunggeunmo',
+                fontWeight: FontWeight.w600,
+                color: Colors.black54,
+              ),
+              borderRadius: BorderRadius.circular(10),
+              padding: const EdgeInsets.all(10),
               value: _selectBank,
               items: _bankList.map((bank) {
                 return DropdownMenuItem(
+                  alignment: Alignment.center,
                   value: bank,
                   child: Text('$bank카드'),
                 );
@@ -94,22 +101,25 @@ class _SignUpState extends State<SignUp> {
                     );
                   },
                   child: Container(
-                    width: 100,
+                    width: 135,
                     height: 50,
-                    padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFFBEBE),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 15,
+                      horizontal: 20,
                     ),
-                    child: const Row(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Theme.of(context).cardColor,
+                    ),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           '다음단계',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        Icon(Icons.arrow_forward_rounded, color: Colors.white),
+                        const Icon(Icons.arrow_forward_rounded,
+                            color: Colors.white),
                       ],
                     ),
                   ),

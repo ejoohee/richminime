@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_secure_storage: ^9.0.0
-
+  flutter_native_splash: ^2.3.3
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -41,19 +41,36 @@ dependencies:
   url_launcher: ^6.1.14
   flame: ^1.8.2
   percent_indicator: ^4.2.3
+  flutter_animated_button: ^2.0.3
+  cookie_jar: ^4.0.8
+  circular_menu: ^2.0.1
+  simple_shadow: ^0.3.1
+  animated_text_kit: ^4.2.2
+  mask_text_input_formatter: ^2.5.0
+  fl_chart: ^0.63.0
+  intl: ^0.18.1
+  flutter_svg: ^2.0.7
+  marquee: ^2.2.3
+  assets_audio_player: ^3.1.1
 
   # credit_card_input_form: ^2.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons: "^0.13.1"
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/icon/appIcon.png"
+  min_sdk_android: 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -65,6 +82,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   fonts:
+    - family: MyFlutterApp
+      fonts:
+        - asset: assets/fonts/MyFlutterApp.ttf
     - family: Dunggeunmo
       fonts:
         - asset: assets/fonts/NeoDunggeunmoPro-Regular.ttf
@@ -87,15 +107,29 @@ flutter:
         - asset: assets/fonts/PF스타더스트S.ttf
         - asset: assets/fonts/PF스타더스트S Bold.ttf
           weight: 700
+    - family: G7
+      fonts:
+        - asset: assets/fonts/G7StarForceTtf-OEg6.ttf
 
   # To add assets to your application, add an assets section, like this:
   assets:
     # images
     - assets/images/minime/default.png
     - assets/images/miniroom/princess_theme.jpg
-
+    - assets/images/miniroom/default.png
+    - assets/images/miniroom/handholdingmoneybag.png
+    - assets/images/miniroom/coin.png
+    - assets/images/miniroom/tv_default.png
+    - assets/images/miniroom/globe_default.png
+    - assets/images/miniroom/closet_default.png
+    - assets/images/minime/gpt.png
+    - assets/images/icon/gpt.svg
+    - assets/audios/background.mp3
       #   - images/a_dot_ham.jpeg
 
+flutter_native_splash:
+  color: "#EFCEDE"
+  image: "assets/images/icon/appIconRMBG.png"
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
