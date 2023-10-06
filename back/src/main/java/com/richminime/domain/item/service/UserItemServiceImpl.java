@@ -18,7 +18,6 @@ import com.richminime.domain.item.repository.UserItemRepository;
 import com.richminime.domain.user.domain.User;
 import com.richminime.domain.user.exception.UserNotFoundException;
 import com.richminime.domain.user.repository.UserRepository;
-import com.richminime.global.exception.ForbiddenException;
 import com.richminime.global.util.SecurityUtils;
 import com.richminime.global.util.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,7 +72,7 @@ public class UserItemServiceImpl implements UserItemService {
 
         User loginUser = getLoginUser();
 
-        return userItemRepository.findAllByUser_UserId(loginUser.getUserId()).stream()
+        return userItemRepository.findAllByUser(loginUser.getUserId()).stream()
                 .map(userItem -> UserItemResDto.entityToDto(userItem))
                 .collect(Collectors.toList());
     }
@@ -89,13 +89,22 @@ public class UserItemServiceImpl implements UserItemService {
             return findAllUserItem();
 
         String email = securityUtils.getLoggedInUserEmail();
-        log.info("[소유한 테마 카테고리별 조회] 사용자가 소유한 테마 조건별 조회. email : {}, 카테고리 : {}", email, itemType);
+        log.info("[소유테마 카테고리별 조회] 조회 요청 email : {}, 카테고리 : {}", email, itemType);
 
-        User loginUser = getLoginUser();
+        List<UserItem> userItemList = userItemRepository.findAllByUser_EmailAndItem_ItemType(email, itemType);
 
-        return userItemRepository.findAllByUser_UserIdAndItem_ItemType(loginUser.getUserId(), itemType).stream()
-                .map(userItem -> UserItemResDto.entityToDto(userItem))
-                .collect(Collectors.toList());
+        log.info("[소유테마 카테고리별 조회] entity -> dto 변환 시작");
+        List<UserItemResDto> dtoList = new ArrayList<>();
+        for(UserItem userItem : userItemList) {
+            // 기본이미지 제외하기
+            if(userItem.getItem().getItemId() >= 100000L) continue;
+
+            UserItemResDto dto = UserItemResDto.entityToDto(userItem);
+            dtoList.add(dto);
+        }
+
+        log.info("[소유테마 카테고리별 조회] dto 변환 완료. 조회 완료.");
+        return dtoList;
     }
 
     /**

@@ -18,12 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.richminime.domain.item.constant.ItemExceptionMessage.*;
-//import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
-//import static com.richminime.global.constant.ExceptionMessage.*;
 
 @Slf4j
 @Service
@@ -45,7 +44,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemResDto> findAllItem() {
         log.info("[테마 상점 전체 조회] 테마 상점에 등록된 테마 전체 조회");
 
-        return itemRepository.findAll().stream()
+        return itemRepository.findAllByItemExceptDefault().stream()
                 .map(item -> ItemResDto.entityToDto(item))
                 .collect(Collectors.toList());
     }
@@ -53,6 +52,7 @@ public class ItemServiceImpl implements ItemService {
     /**
      * 상점에 등록된 테마 카테고리별 조회
      * 사용자가 선택한 카테고리에 맞는 테마 리스트만 조회됩니다.
+     *
      * ※ 카테고리가 null일 경우, 전체 조회 메서드가 실행됩니다.
      * @param itemType
      * @return
@@ -64,10 +64,20 @@ public class ItemServiceImpl implements ItemService {
             return findAllItem();
 
         log.info("[테마 상점 카테고리별 조회] 테마 카테고리별 조회");
+        List<Item> itemList = itemRepository.findAllByItemType(itemType);
 
-        return itemRepository.findAllByItemType(itemType).stream()
-                .map(item -> ItemResDto.entityToDto(item))
-                .collect(Collectors.toList());
+        log.info("[테마 상점 카테고리별 조회] entity -> dto 변환 시작");
+        List<ItemResDto> itemResDtoList = new ArrayList<>();
+        for(Item item : itemList) {
+            // 기본 이미지 제외하기
+            if(item.getItemId() >= 100000L) continue;
+
+            ItemResDto dto = ItemResDto.entityToDto(item);
+            itemResDtoList.add(dto);
+        }
+
+        log.info("[테마 상점 카테고리별 조회] dto 변환 완료. 조회 완료.");
+        return itemResDtoList;
     }
 
     /**
