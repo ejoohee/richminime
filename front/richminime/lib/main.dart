@@ -1,10 +1,21 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // 패키지 임포트
-import 'package:richminime/screens/bankbook.dart';
-import 'package:richminime/screens/home_screen.dart'; // HomeScreen 임포트
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:richminime/screens/home_screen.dart';
 import 'package:richminime/screens/login.dart';
+import 'package:richminime/screens/sign_up4.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final assetsAudioPlayer = AssetsAudioPlayer.newPlayer();
+  await Future.delayed(const Duration(seconds: 3));
+  assetsAudioPlayer.open(
+    Audio("assets/audios/background.mp3"),
+    loopMode: LoopMode.single,
+    autoStart: true,
+    showNotification: false,
+  );
+
   runApp(const App());
 }
 
@@ -16,34 +27,69 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        // 기존 테마 설정
+        fontFamily: 'Dunggeunmo',
         useMaterial3: true,
+        cardColor: const Color.fromARGB(255, 227, 131, 168),
+        highlightColor: const Color.fromARGB(255, 252, 234, 240),
         colorScheme: ColorScheme.fromSwatch(
-          backgroundColor: const Color(0xFFEEEBE3),
-          cardColor: const Color(0xFFFFBEBE),
+          backgroundColor: const Color.fromARGB(255, 239, 206, 222),
+          cardColor: const Color.fromARGB(255, 227, 131, 168),
+          accentColor: const Color(0xFF1a1a1a),
+          errorColor: const Color.fromARGB(255, 98, 15, 198),
         ),
         textTheme: const TextTheme(
-            bodyLarge: TextStyle(
-          color: Color(0xFFEEb4a2),
-        )),
+          bodyLarge: TextStyle(
+            fontFamily: 'Stardust',
+            wordSpacing: 5,
+            shadows: <Shadow>[
+              Shadow(
+                offset: Offset(0, 0), // 그림자의 위치 (X, Y)
+                blurRadius: 0.5, // 그림자의 흐림 정도
+                color: Colors.black, // 그림자의 색상
+              ),
+            ],
+            color: Color(0xFF6d9d88),
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),
+          bodyMedium: TextStyle(
+            fontFamily: 'Stardust',
+            color: Colors.white,
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+          ),
+          bodySmall: TextStyle(
+            fontFamily: 'Stardust',
+            color: Color(0xFF6d9d88),
+            fontSize: 18,
+          ),
+          labelSmall: TextStyle(
+            fontFamily: 'Stardust',
+            color: Color(0xFF1a1a1a),
+            fontSize: 17,
+          ),
+        ),
+        iconButtonTheme: IconButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: MaterialStatePropertyAll(
+              Theme.of(context).cardColor.withOpacity(0.4),
+            ),
+          ),
+        ),
       ),
-      home: const Login(),
-      // home: FutureBuilder<String?>(
-      //   // FutureBuilder를 사용하여 SecureStorage에서 토큰을 읽어옵니다.
-      //   future: storage.read(key: "accessToken"),
-      //   builder: (context, snapshot) {
-      //     // 토큰이 있는 경우
-      //     if (snapshot.connectionState == ConnectionState.done) {
-      //       if (snapshot.hasData && snapshot.data != null) {
-      //         return const BankBook(); // HomeScreen으로 이동
-      //       }
-      //       // 토큰이 없는 경우
-      //       return const Login(); // Login 화면으로 이동
-      //     }
-      //     // 토큰을 읽어오는 동안 로딩 인디케이터를 표시합니다.
-      //     return const CircularProgressIndicator();
-      //   },
-      // ),
+      // home: const Login(),
+      home: FutureBuilder<String?>(
+        future: storage.read(key: "accessToken"),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData && snapshot.data != null) {
+              return const HomeScreen();
+            }
+            return const Login();
+          }
+          return const CircularProgressIndicator();
+        },
+      ),
     );
   }
 }
