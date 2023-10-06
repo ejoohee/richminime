@@ -71,7 +71,9 @@ class _ClosetState extends State<Closet> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    (Route<dynamic> route) => false);
               },
               child: const Text('확인'),
             ),

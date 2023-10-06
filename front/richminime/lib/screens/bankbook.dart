@@ -68,7 +68,8 @@ class _BankBookState extends State<BankBook> {
                       return Container(
                         padding: const EdgeInsets.all(10),
                         child: Card(
-                          color: (transaction.transactionType == "적립")
+                          color: (transaction.transactionType == "적립" ||
+                                  transaction.transactionType == "판매")
                               ? Colors.green[200]
                               : Colors.red[200],
                           child: ListTile(
@@ -88,7 +89,8 @@ class _BankBookState extends State<BankBook> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('${transaction.summary}'),
-                                    Text(transaction.transactionType == "적립"
+                                    Text((transaction.transactionType == "적립" ||
+                                            transaction.transactionType == "판매")
                                         ? '+ ${transaction.amount}'
                                         : '- ${transaction.amount}'),
                                   ],

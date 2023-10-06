@@ -183,6 +183,21 @@ class _InteriorStoreState extends State<InteriorStore> {
                                   const SizedBox(
                                     height: 5,
                                   ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '가격 : <${sortedItemList[tappedIndex].price} 코인>',
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 12,
+                                      ),
+                                    ],
+                                  ),
                                   Expanded(
                                     child: ShaderMask(
                                       shaderCallback: (Rect bounds) {

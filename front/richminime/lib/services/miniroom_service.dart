@@ -62,7 +62,7 @@ class MiniroomService {
     return '';
   }
 
-  // 적용하기
+  // 옷 적용하기
   Future<String> applyCharacter(int clothingId) async {
     final url = Uri.parse('$baseUrl/character');
     final token = await storage.read(key: "accessToken");
@@ -85,6 +85,10 @@ class MiniroomService {
     );
 
     if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      if (responseData['clothingId'] == 100000) {
+        return '이미 적용된 옷이라 그냥 벗겼습니다.\n억울하면 다시 선택해주세용~';
+      }
       return '적용되었습니다.미니룸에서 확인해주세요!';
     } else if (response.statusCode == 401) {
       return applyCharacter(clothingId);
