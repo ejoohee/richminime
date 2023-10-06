@@ -14,6 +14,9 @@ import java.util.Optional;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
+    @Query(value = "select * from item where item_id < 100000", nativeQuery = true)
+    List<Item> findAllByItemExceptDefault();
+
     Optional<Item> findItemByItemId(Long itemId);
     List<Item> findAllByItemType(ItemType itemType);
 
