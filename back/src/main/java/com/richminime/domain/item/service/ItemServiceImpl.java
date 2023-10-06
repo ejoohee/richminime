@@ -76,7 +76,7 @@ public class ItemServiceImpl implements ItemService {
             itemResDtoList.add(dto);
         }
 
-        log.info("[테마 상점 카테고리별 조회] dto 변환 완료. 리스트 반환 완료.");
+        log.info("[테마 상점 카테고리별 조회] dto 변환 완료. 조회 완료.");
         return itemResDtoList;
     }
 
