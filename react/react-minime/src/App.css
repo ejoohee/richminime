@@ -3,10 +3,8 @@
 .app-card {
   display: flex;
   flex-direction: column;
-  border: 1px solid #e0e0e0;
   width: 100vw;
   height: 250vw;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   background-color: #202124;
   color: white;
   font-family: "Google Sans Display",Roboto,Arial,sans-serif;
@@ -16,8 +14,7 @@
 }
 
 .app-card-images{
-  background: linear-gradient(to top,rgb(32,32,32) 0%,rgb(0,0,0) 10%); 
-  background: linear-gradient(to top, black 0%, rgba(0, 0, 0, 1) 40%, rgba(255, 255, 255, 1) 100%);
+  background: linear-gradient(to top,#202124 0%, #202124 40%, rgba(255, 255, 255, 1) 100%);
   width: 100vw;
   height: 45vw;
 }
