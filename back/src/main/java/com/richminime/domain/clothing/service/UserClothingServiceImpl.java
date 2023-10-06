@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.richminime.domain.clothing.constant.ClothingExceptionMessage.*;
-import static com.richminime.domain.user.exception.UserExceptionMessage.USER_NOT_FOUND;
-import static com.richminime.global.constant.ExceptionMessage.INSUFFICIENT_BALANCE;
 
 @Service
 @RequiredArgsConstructor
@@ -135,14 +133,16 @@ public class UserClothingServiceImpl implements UserClothingService {
 
     @Transactional
     @Override
-    public List<UserClothingResDto> findAllMyClothingByType(ClothingType clothingType) {
+    public List<UserClothingResDto> findAllMyClothingByTypeExcludingId(ClothingType clothingType) {
         User loggedInUser = getLoggedInUser();
+        //기본이미지
+        Long excludeClothingId = 100_000L;
 
         List<UserClothing> userClothingList;
         if (clothingType == null) {
-            userClothingList = userClothingRepository.findAllByUser_UserId(loggedInUser.getUserId());
+            userClothingList = userClothingRepository.findAllByUser_UserIdAndClothing_ClothingIdNot(loggedInUser.getUserId(), excludeClothingId);
         } else {
-            userClothingList = userClothingRepository.findAllByUser_UserIdAndClothing_ClothingType(loggedInUser.getUserId(), clothingType);
+            userClothingList = userClothingRepository.findAllByUser_UserIdAndClothing_ClothingTypeAndClothing_ClothingIdNot(loggedInUser.getUserId(), clothingType, excludeClothingId);
         }
 
         List<UserClothingResDto> userClothingResDtoList = new ArrayList<>();

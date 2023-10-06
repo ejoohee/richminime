@@ -9,7 +9,8 @@ import java.util.List;
 
 @Repository
 public interface UserClothingRepository extends JpaRepository<UserClothing, Long> {
-    List<UserClothing> findAllByUser_UserId(Long userId);
-    boolean existsByUser_UserIdAndClothing_ClothingId(Long userId, Long ClothingId);
-    List<UserClothing> findAllByUser_UserIdAndClothing_ClothingType(Long userId, ClothingType clothingType);
+    List<UserClothing> findAllByUser_UserIdAndClothing_ClothingIdNot(Long userId, Long clothingId);
+    boolean existsByUser_UserIdAndClothing_ClothingId(Long userId, Long clothingId);
+    List<UserClothing> findAllByUser_UserIdAndClothing_ClothingTypeAndClothing_ClothingIdNot(Long userId, ClothingType clothingType, Long clothingId);
 }
+
