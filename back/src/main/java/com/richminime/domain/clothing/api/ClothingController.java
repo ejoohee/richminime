@@ -110,6 +110,6 @@ public class ClothingController {
     @GetMapping("/my")
     public ResponseEntity<List<UserClothingResDto>> findAllMyClothingByType(@RequestParam(required = false) ClothingType clothingType) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userClothingService.findAllMyClothingByTypeExcludingId(clothingType));
+                .body(userClothingService.findAllMyClothingByType(clothingType));
     }
 }

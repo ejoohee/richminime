@@ -12,5 +12,5 @@ import java.util.List;
 public interface UserClothingService {
     AddUserClothingResDto addMyClothing(Long clothingId);
     DeleteUserClothingResDto deleteMyClothing(Long userClothingId);
-    List<UserClothingResDto> findAllMyClothingByTypeExcludingId(ClothingType clothingType);
+    List<UserClothingResDto> findAllMyClothingByType(ClothingType clothingType);
 }

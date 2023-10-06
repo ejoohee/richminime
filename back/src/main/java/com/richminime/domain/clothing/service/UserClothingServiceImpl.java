@@ -133,7 +133,7 @@ public class UserClothingServiceImpl implements UserClothingService {
 
     @Transactional
     @Override
-    public List<UserClothingResDto> findAllMyClothingByTypeExcludingId(ClothingType clothingType) {
+    public List<UserClothingResDto> findAllMyClothingByType(ClothingType clothingType) {
         User loggedInUser = getLoggedInUser();
         //기본이미지
         Long excludeClothingId = 100_000L;
