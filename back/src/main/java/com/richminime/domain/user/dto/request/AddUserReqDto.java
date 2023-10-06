@@ -42,6 +42,7 @@ public class AddUserReqDto {
                 // 관리자는 별도로 생성할 예정
                 // 기본값 ROLE_USER
                 .userType(UserType.ROLE_USER.getValue())
+
                 .build();
     }
 

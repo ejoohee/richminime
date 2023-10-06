@@ -90,6 +90,9 @@ public class User {
         this.organizationCode = organizationCode;
         this.cardNumber = cardNumber;
         this.userType = UserType.getUserType(userType);
+        this.clothingCount = 0;
+        this.itemCount = 0;
+
 //        this.birthDate = birthDate;
     }
 
