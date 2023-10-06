@@ -5,6 +5,7 @@ import com.richminime.domain.clothing.dto.AddUserClothingResDto;
 import com.richminime.domain.clothing.dto.DeleteUserClothingResDto;
 import com.richminime.domain.clothing.dto.UserClothingReqDto;
 import com.richminime.domain.clothing.dto.UserClothingResDto;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
