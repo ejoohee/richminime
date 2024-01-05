@@ -21,7 +21,7 @@
 <br>
 
 
-## 🛠️ 기술스택처
+## 🛠️ 기술스택
 
 ### front
 
@@ -51,7 +51,7 @@
 ![erd](https://github.com/ejoohee/richminime/assets/122416957/a520c96a-7a76-46c4-b698-2e4c11087495)
 <br>
 
-##  💡 서버 아키텍
+## 💡서버 아키텍처
 ![image (2)](https://github.com/ejoohee/richminime/assets/122416957/644589dc-9814-484e-bb94-59e07f19a26a)
 
 
