@@ -1,2 +1,2 @@
-# richMinime 
+# richMinime
 

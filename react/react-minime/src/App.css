@@ -1,0 +1,168 @@
+@import url('https://fonts.cdnfonts.com/css/google-sans');
+
+.app-card {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 250vw;
+  background-color: #202124;
+  color: white;
+  font-family: "Google Sans Display",Roboto,Arial,sans-serif;
+}
+.app-card-right.name{
+  font-size: 100px;
+}
+
+.app-card-images{
+  background: linear-gradient(to top,#202124 0%, #202124 40%, rgba(255, 255, 255, 1) 100%);
+  width: 100vw;
+  height: 45vw;
+}
+.black{
+  height: 100px;
+  background-color: #202124;
+}
+.app-card-images img {
+  width: 100%;
+  height: 45vw;
+
+  object-fit: cover; 
+  display: block;
+  opacity: 0.3; 
+}
+
+.app-card-info {
+  align-items: center;
+  height: 50vw;
+}
+.app-card-center{
+
+  display: flex;
+  height: 40vw;
+}
+.app-card-right{
+  height: 30vw;
+}
+.app-card-bottom{
+  margin-left: 7vw;
+  margin-top: 10vw;
+  display: flex; 
+  width: 100vw;
+  height: 10vw;
+}
+.app-card-bottom > * {
+  width: 20vw;
+}
+.app-logo {
+  height: 20vw;
+  width: 20vw;
+  margin: 10px 30px 10px 7vw;
+  border-radius: 20px;
+}
+.app-rating{
+  display: flex;
+  flex-direction: column;   
+  justify-content: center;  
+  align-items: center;
+  width: 20vw;
+}
+.app-rating-1{
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+.app-rating-2{
+  font-size: 15px;
+  text-align: center;
+}
+.app-available{
+  display: flex;
+  flex-direction: column;   
+  justify-content: center; 
+  align-items: center;
+  width: 20vw;
+}
+
+.app-available-img{
+  width: 10vw;
+  height: 10vw;
+}
+.app-available-1{
+  font-size:15px;
+}
+
+.app-card-bottom.app-downloads{
+  display: block;
+  text-align: center;
+  height: 1vw;
+
+}
+.app-downloads{
+  width: 20vw;
+  display: flex;
+  flex-direction: column;   
+  justify-content: center;  
+  align-items: center;
+}
+.app-downloads-1{
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+.app-downloads-2{
+  font-size: 15px;
+  text-align: center;
+}
+
+.team{
+  color: #00a173;
+}
+.download-button {
+  margin-top: 15vw;
+  margin-bottom: 15vw;
+  margin-left: 25vw;
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 50vw;
+}
+
+.download-button:hover {
+  background-color: #45a049;
+}
+
+.vertical-line {
+  width: 1px;   
+  height: 9vw; 
+  border: none;
+  background-color: white; 
+  margin: 1vw 5vw 1vw 5vw;
+}
+/* .slide-component{
+  width: 20vw;
+  height: 20vw;
+  display: flex;
+} */
+/* .slide-component .slide {
+  width: 100px; 
+  height: 100px;
+  align-items: center;
+  justify-content: center; 
+} */
+/* .slice-img{
+  width: 1px;
+  height: 1px;
+} */
+
+.slide-component{
+  width: 80vw;
+}
+.slider-wrapper .slide {
+  height: 80vw;
+}
+.footer-1{
+  margin-left: 10vw;
+}
