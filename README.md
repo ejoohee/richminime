@@ -17,11 +17,6 @@
 
 <br>
 
-<br>
-
-## 💡 프로젝트 컨셉 및 주요 기능
-
-### Knocknock
 
 <br>
 
@@ -44,9 +39,6 @@
 
 ![nginx](https://img.shields.io/badge/nginx-009639.svg?&style=for-the-badge&logo=nginx&logoColor=white) ![docker](https://img.shields.io/badge/docker-2496ED.svg?&style=for-the-badge&logo=docker&logoColor=white) ![dockercompose](https://img.shields.io/badge/dockercompose-2496ED.svg?&style=for-the-badge&logo=dockercompose&logoColor=white) ![jenkins](https://img.shields.io/badge/jenkins-D24939.svg?&style=for-the-badge&logo=jenkins&logoColor=white)
 
-### 외부 API
-
-![공공데이터포털](https://img.shields.io/badge/%EA%B3%B5%EA%B3%B5%EB%8D%B0%EC%9D%B4%ED%84%B0%ED%8F%AC%ED%84%B8-045FB4.svg?&style=for-the-badge) ![자원순환정보시스템](https://img.shields.io/badge/%EC%9E%90%EC%9B%90%EC%88%9C%ED%99%98%EC%A0%95%EB%B3%B4%EC%8B%9C%EC%8A%A4%ED%85%9C-0B615E.svg?&style=for-the-badge) ![전력데이터 개방 포털시스템](https://img.shields.io/badge/%EC%A0%84%EB%A0%A5%EB%8D%B0%EC%9D%B4%ED%84%B0_%EA%B0%9C%EB%B0%A9_%ED%8F%AC%ED%84%B8%EC%8B%9C%EC%8A%A4%ED%85%9C-B40404.svg?&style=for-the-badge) ![녹색정보시스템](https://img.shields.io/badge/%EB%85%B9%EC%83%89%EC%A0%9C%ED%92%88%EC%A0%95%EB%B3%B4%EC%8B%9C%EC%8A%A4%ED%85%9C-298A08.svg?&style=for-the-badge) ![Naver Clova OCR](https://img.shields.io/badge/Naver_Clova_OCR-01DF01.svg?&style=for-the-badge)
 
 ### 협업툴
 
@@ -57,7 +49,7 @@
 
 ## 🗃️ ERD
 
-![Untitled](./exec/assets/erd.png)
+![image (2)](https://github.com/ejoohee/richminime/assets/122416957/644589dc-9814-484e-bb94-59e07f19a26a)
 
 <br>
 
